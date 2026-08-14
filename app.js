@@ -88,7 +88,7 @@ function showGate() {
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
-  topTitle.textContent = 'Mis Hojas';
+  topTitle.textContent = 'Mis-BBDDs';
 }
 
 // ---------- Navegación entre pantallas ----------
@@ -101,7 +101,7 @@ function showModules() {
   boardScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
-  topTitle.textContent = 'Mis Hojas';
+  topTitle.textContent = 'Mis-BBDDs';
   renderModules();
 }
 

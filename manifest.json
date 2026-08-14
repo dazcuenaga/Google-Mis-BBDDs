@@ -1,6 +1,6 @@
 {
-  "name": "Congelados",
-  "short_name": "Congelados",
+  "name": "Mis-BBDDs",
+  "short_name": "Mis-BBDDs",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
