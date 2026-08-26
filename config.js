@@ -242,9 +242,9 @@ const MODULES = [
         titleField: 'descripcion',
         fields: [
           { key: 'descripcion', col: 'A' },
-          { key: 'ubicacion', col: 'B' },
-          { key: 'tamano', col: 'C' },
-          { key: 'congelada', col: 'F' },
+          { key: 'ubicacion', col: 'C' },
+          { key: 'tamano', col: 'D' },
+          { key: 'congelada', col: 'G' },
         ],
       },
       {
@@ -261,6 +261,11 @@ const MODULES = [
           { label: 'Nevera', match: (it) => it.ubicacion === 'Nevera' && parseNum(it.congelada) > 0 },
           { label: 'Arcón', match: (it) => it.ubicacion === 'Arcon' && parseNum(it.congelada) > 0 },
           { label: 'Consumidos', match: (it) => parseNum(it.congelada) <= 0 },
+        ],
+        // Categoría se puede combinar con el filtro de arriba (Nevera/Arcón/...):
+        // el desplegable de faceta y el chip de filtro se aplican a la vez.
+        facetFilters: [
+          { key: 'categoria', label: 'Categoría', value: (it) => it.categoria },
         ],
         cardClass: (it) => (it.ubicacion === 'Nevera' ? 'nevera' : it.ubicacion === 'Arcon' ? 'arcon' : ''),
         quickActions: [
@@ -282,15 +287,20 @@ const MODULES = [
             },
           },
         ],
+        // Categoría se rellena como <select> con los valores de categoría que ya
+        // existan entre los productos cargados (sin lista fija en el código).
+        speciesLookup: { fromItems: true, keyField: 'categoria' },
+        selectFromLookup: { fieldKey: 'categoria' },
         fields: [
           { key: 'descripcion', label: 'Descripción', col: 'A', type: 'text', required: true, placeholder: 'Ej. Merluza' },
-          { key: 'ubicacion', label: 'Ubicación', col: 'B', type: 'select', options: ['Nevera', 'Arcon'], default: 'Nevera' },
-          { key: 'tamano', label: 'Tamaño', col: 'C', type: 'text', placeholder: 'Ej. 500gr, Bolsa, Tupper…' },
-          { key: 'metida', label: 'Cantidad metida', col: 'D', type: 'number', default: 1 },
-          { key: 'sacada', label: 'Cantidad sacada', col: 'E', type: 'number', default: 0 },
-          { key: 'congelada', label: 'Cantidad Congelada', col: 'F', type: 'computed', compute: (v) => parseNum(v.metida) - parseNum(v.sacada) },
-          { key: 'fechaEntrada', label: 'Fecha última entrada', col: 'G', type: 'date', default: 'today' },
-          { key: 'fechaSalida', label: 'Fecha última salida', col: 'H', type: 'date' },
+          { key: 'categoria', label: 'Categoría', col: 'B', type: 'text' },
+          { key: 'ubicacion', label: 'Ubicación', col: 'C', type: 'select', options: ['Nevera', 'Arcon'], default: 'Nevera' },
+          { key: 'tamano', label: 'Tamaño', col: 'D', type: 'text', placeholder: 'Ej. 500gr, Bolsa, Tupper…' },
+          { key: 'metida', label: 'Cantidad metida', col: 'E', type: 'number', default: 1 },
+          { key: 'sacada', label: 'Cantidad sacada', col: 'F', type: 'number', default: 0 },
+          { key: 'congelada', label: 'Cantidad Congelada', col: 'G', type: 'computed', compute: (v) => parseNum(v.metida) - parseNum(v.sacada) },
+          { key: 'fechaEntrada', label: 'Fecha última entrada', col: 'H', type: 'date', default: 'today' },
+          { key: 'fechaSalida', label: 'Fecha última salida', col: 'I', type: 'date' },
         ],
       },
     ],
@@ -491,7 +501,9 @@ function buildAlmacenPreciosBoard(tienda) {
     sheetName: 'Listado',
     title: tienda,
     titleField: 'producto',
-    subtitleFields: ['medida'],
+    // Peso solo se muestra si esa fila lo tiene informado (subtitleFields ya
+    // descarta los valores vacíos).
+    subtitleFields: ['peso', 'medida'],
     badge: { key: 'importe', label: '', format: 'euro' },
     searchFields: ['producto'],
     sort: { field: 'producto', type: 'text', dir: 'asc' },
