@@ -131,6 +131,46 @@ function showPicker() {
   renderPickerItems(node.items);
 }
 
+// Pantalla de un módulo con "árbol dinámico" (ej. Almacén Precios): en vez de
+// una lista fija de nodos ya definida en config.js, primero se lee toda la
+// hoja para ver qué valores hay en `groupField` (ej. las tiendas) y se
+// construye un tablero por cada uno con `buildBoard`, antes de mostrarlos
+// como si fueran los items de un picker normal.
+async function openDynamicPicker(mod) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.remove('hidden');
+  boardScreen.classList.add('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = mod.icon;
+  topTitle.textContent = mod.title;
+  boardList.innerHTML = '<div class="status">Cargando…</div>';
+  try {
+    const dyn = mod.dynamicTree;
+    const rows = await fetchBoardItems(mod.spreadsheetId, {
+      sheetName: dyn.sheetName,
+      fields: dyn.fields,
+      titleField: dyn.groupField,
+      dataStartRow: dyn.dataStartRow,
+    });
+    const values = [...new Set(rows.map((r) => r[dyn.groupField]).filter(Boolean))]
+      .sort((a, b) => String(a).localeCompare(String(b), 'es'));
+    if (values.length === 0) {
+      boardList.innerHTML = '<div class="status">No hay datos todavía en la hoja.</div>';
+      return;
+    }
+    const nodes = values.map((v) => dyn.buildBoard(v));
+    navStack = [{ type: 'picker', title: mod.title, icon: mod.icon, items: nodes }];
+    renderPickerItems(nodes);
+  } catch (err) {
+    console.error(err);
+    boardList.innerHTML = '';
+    showToast(err.message, true);
+  }
+}
+
 function showBoard(mod, board) {
   currentModule = mod;
   currentBoard = board;
@@ -179,7 +219,9 @@ function renderModules() {
       <div class="chevron">›</div>
     `;
     card.addEventListener('click', () => {
-      if (mod.tree) {
+      if (mod.dynamicTree) {
+        openDynamicPicker(mod);
+      } else if (mod.tree) {
         currentModule = mod;
         navStack = [{ type: 'picker', title: mod.title, icon: mod.icon, items: mod.tree }];
         showPicker();
@@ -277,9 +319,13 @@ async function fetchBoardItems(spreadsheetId, board) {
   const range = `${quoteSheet(board.sheetName)}!A${start}:${dataRangeEnd(board)}`;
   const data = await sheetsFetch(spreadsheetId, `/values/${encodeURIComponent(range)}`);
   const rows = data.values || [];
-  return rows
+  let boardItems = rows
     .map((r, i) => parseRow(board, r, i + start))
     .filter((it) => (it[board.titleField] || '').trim() !== '');
+  if (board.fixedFilter) {
+    boardItems = boardItems.filter((it) => it[board.fixedFilter.field] === board.fixedFilter.value);
+  }
+  return boardItems;
 }
 
 // ---------- Utilidades de columnas ----------
@@ -341,6 +387,9 @@ async function loadItems() {
     items = rows
       .map((r, i) => parseRow(currentBoard, r, i + start))
       .filter((it) => (it[currentBoard.titleField] || '').trim() !== '');
+    if (currentBoard.fixedFilter) {
+      items = items.filter((it) => it[currentBoard.fixedFilter.field] === currentBoard.fixedFilter.value);
+    }
     if (currentBoard.kind === 'resumen') {
       if (currentBoard.groupField) aggResumenGroups = buildAggResumenGroups(currentBoard, items);
       else resumenGroups = buildResumenGroups(items);
@@ -936,7 +985,7 @@ async function openAddModal() {
   dynamicFields.innerHTML = '';
   const lookup = await fetchLookup(currentBoard);
   for (const f of currentBoard.fields) {
-    if (f.type === 'computed') continue;
+    if (f.type === 'computed' || f.type === 'fixed') continue;
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), null));
   }
   wireAutoCalc(lookup, true);
@@ -952,7 +1001,7 @@ async function openEditModal(it) {
   dynamicFields.innerHTML = '';
   const lookup = await fetchLookup(currentBoard);
   for (const f of currentBoard.fields) {
-    if (f.type === 'computed') continue;
+    if (f.type === 'computed' || f.type === 'fixed') continue;
     const val = f.type === 'date' ? toDateInputValue(it[f.key]) : it[f.key];
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), val));
   }
@@ -1039,6 +1088,7 @@ itemForm.addEventListener('submit', async (e) => {
   const values = {};
   for (const f of currentBoard.fields) {
     if (f.type === 'computed') continue;
+    if (f.type === 'fixed') { values[f.key] = f.value; continue; }
     const input = el(`f_${f.key}`);
     values[f.key] = input.value.trim ? input.value.trim() : input.value;
   }

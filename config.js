@@ -64,6 +64,7 @@ const ANIMALES_SPREADSHEET_ID = '1sUIJEddbucc5SyYfwnrNulOxL2I6fRI5GINo3uYSD84';
 const ANIMALES_YEARS = [2026, 2025];
 const PLANTAS_SPREADSHEET_ID = '17yCW3G1Fj4cJU_akGp0VIEfg_XpF6J5udMKdS4nb_Mk';
 const PLANTAS_YEARS = [2026];
+const ALMACEN_PRECIOS_SPREADSHEET_ID = '1yKc2UlePpejKCC1bQWftuCBPaXWfRYbpOQRyvt_001k';
 
 const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 function mesDe(it) {
@@ -458,7 +459,67 @@ const MODULES = [
   buildIncubacionesModule(),
 
   buildPlantasModule(),
+
+  buildAlmacenPreciosModule(),
 ];
+
+// ---------------------------------------------------------------------------
+// ALMACÉN PRECIOS: hoja "Listado" con los precios de productos de varias
+// tiendas, todos en la misma pestaña (columna "Tienda" para distinguirlos).
+// La app lee esa columna y genera un submódulo (tablero) por cada tienda que
+// encuentre — si añades una tienda nueva en la hoja, aparece sola la próxima
+// vez que abras el módulo, sin tocar este archivo.
+// ---------------------------------------------------------------------------
+
+// Campos de la hoja "Listado". Con `tiendaFija` construye los campos de un
+// tablero de una tienda concreta (la columna Tienda queda fija a ese valor y
+// no se muestra en el formulario); sin ella, se usan para detectar qué
+// tiendas hay (recorrido inicial de toda la hoja).
+function almacenPreciosFields(tiendaFija) {
+  return [
+    { key: 'tienda', label: 'Tienda', col: 'A', type: tiendaFija != null ? 'fixed' : 'text', value: tiendaFija },
+    { key: 'producto', label: 'Producto', col: 'B', type: 'text', required: true },
+    { key: 'peso', label: 'Peso', col: 'C', type: 'number', step: '0.01' },
+    { key: 'importe', label: 'Importe (€)', col: 'D', type: 'number', step: '0.01', required: true },
+    { key: 'medida', label: 'Medida', col: 'E', type: 'text' },
+  ];
+}
+
+function buildAlmacenPreciosBoard(tienda) {
+  return {
+    id: `almacenprecios-${tienda}`,
+    sheetName: 'Listado',
+    title: tienda,
+    titleField: 'producto',
+    subtitleFields: ['medida'],
+    badge: { key: 'importe', label: '', format: 'euro' },
+    searchFields: ['producto'],
+    sort: { field: 'producto', type: 'text', dir: 'asc' },
+    // Solo se listan/editan filas de esta tienda; al guardar, la columna
+    // Tienda se rellena sola con este valor (ver campo type: 'fixed' arriba).
+    fixedFilter: { field: 'tienda', value: tienda },
+    fields: almacenPreciosFields(tienda),
+  };
+}
+
+function buildAlmacenPreciosModule() {
+  return {
+    id: 'almacenprecios',
+    title: 'Almacén Precios',
+    subtitle: 'Precios por tienda',
+    icon: '🏷️',
+    spreadsheetId: ALMACEN_PRECIOS_SPREADSHEET_ID,
+    // Árbol dinámico: en vez de una lista fija de nodos (como los años de
+    // Animales/Plantas), la app rellena esto al abrir el módulo, leyendo las
+    // tiendas que haya en ese momento en la hoja.
+    dynamicTree: {
+      sheetName: 'Listado',
+      groupField: 'tienda',
+      fields: almacenPreciosFields(),
+      buildBoard: buildAlmacenPreciosBoard,
+    },
+  };
+}
 
 function buildIncubacionesModule() {
   // Tabla de referencia (solo lectura): parámetros de incubación por especie.
