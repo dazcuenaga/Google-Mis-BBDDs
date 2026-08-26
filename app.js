@@ -9,8 +9,6 @@ let currentModule = null;
 let currentBoard = null;
 let navStack = [];         // pila de nodos "picker" (módulos con árbol, ej. Animales)
 let items = [];            // filas ya parseadas del tablero actual
-let resumenGroups = [];    // agrupado simple por descripción (Congelados)
-let aggResumenGroups = []; // agrupado + subgrupo agregado (Gastos/Población)
 let facetState = {};       // valor seleccionado por cada facetFilter activo
 let activeFilterIdx = 0;
 let searchTerm = '';
@@ -390,10 +388,6 @@ async function loadItems() {
     if (currentBoard.fixedFilter) {
       items = items.filter((it) => it[currentBoard.fixedFilter.field] === currentBoard.fixedFilter.value);
     }
-    if (currentBoard.kind === 'resumen') {
-      if (currentBoard.groupField) aggResumenGroups = buildAggResumenGroups(currentBoard, items);
-      else resumenGroups = buildResumenGroups(items);
-    }
     renderFacetFilters();
     updateFilterChipCounts();
     setStatus('');
@@ -475,11 +469,11 @@ function buildResumenGroups(rows) {
   return groups;
 }
 
-function renderResumen() {
+function renderResumen(allGroups) {
   const term = searchTerm.trim().toLowerCase();
   const groups = term
-    ? resumenGroups.filter((g) => g.descripcion.toLowerCase().includes(term))
-    : resumenGroups;
+    ? allGroups.filter((g) => g.descripcion.toLowerCase().includes(term))
+    : allGroups;
 
   listEl.innerHTML = '';
   if (groups.length === 0) {
@@ -572,11 +566,11 @@ function formatAggValue(value, agg) {
   return String(Math.round(n * factor) / factor);
 }
 
-function renderResumenAgg() {
+function renderResumenAgg(allGroups) {
   const term = searchTerm.trim().toLowerCase();
   const groups = term
-    ? aggResumenGroups.filter((g) => g.group.toLowerCase().includes(term))
-    : aggResumenGroups;
+    ? allGroups.filter((g) => g.group.toLowerCase().includes(term))
+    : allGroups;
 
   listEl.innerHTML = '';
   if (groups.length === 0) {
@@ -622,8 +616,14 @@ function renderResumenAgg() {
 
 function render() {
   if (currentBoard.kind === 'resumen') {
-    if (currentBoard.groupField) renderResumenAgg();
-    else renderResumen();
+    let baseItems = items;
+    if (currentBoard.facetFilters) {
+      baseItems = baseItems.filter((it) =>
+        currentBoard.facetFilters.every((f) => !facetState[f.key] || String(f.value(it)) === facetState[f.key])
+      );
+    }
+    if (currentBoard.groupField) renderResumenAgg(buildAggResumenGroups(currentBoard, baseItems));
+    else renderResumen(buildResumenGroups(baseItems));
     return;
   }
 

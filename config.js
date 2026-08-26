@@ -240,8 +240,14 @@ const MODULES = [
         sheetName: 'Contenido',
         title: 'Resumen',
         titleField: 'descripcion',
+        // Igual que en Detalles: el desplegable de Categoría se combina con la
+        // búsqueda por texto del resumen.
+        facetFilters: [
+          { key: 'categoria', label: 'Categoría', value: (it) => it.categoria },
+        ],
         fields: [
           { key: 'descripcion', col: 'A' },
+          { key: 'categoria', col: 'B' },
           { key: 'ubicacion', col: 'C' },
           { key: 'tamano', col: 'D' },
           { key: 'congelada', col: 'G' },
