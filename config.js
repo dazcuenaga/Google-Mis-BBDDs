@@ -99,8 +99,8 @@ function buildAnimalYear(year) {
             fields: [
               { key: 'animal', col: 'A' },
               { key: 'tipo', col: 'B' },
-              { key: 'importe', col: 'E' },
-              { key: 'fecha', col: 'F' },
+              { key: 'importe', col: 'G' },
+              { key: 'fecha', col: 'H' },
             ],
           },
           {
@@ -117,13 +117,18 @@ function buildAnimalYear(year) {
               { key: 'tipo', label: 'Tipo', value: (it) => it.tipo },
               { key: 'animal', label: 'Animal', value: (it) => it.animal },
             ],
+            // "Lugar de compra" y "Peso" son columnas nuevas en la hoja (insertadas antes de
+            // Producto y Cantidad respectivamente); solo aparecen en el formulario de alta/edición,
+            // no se usan para agrupar, filtrar ni en la tarjeta de la lista.
             fields: [
               { key: 'animal', label: 'Animal', col: 'A', type: 'text', required: true, list: ['AVES', 'PERRA'] },
               { key: 'tipo', label: 'Tipo', col: 'B', type: 'text', required: true, list: ['ALIMENTACION', 'LIMPIEZA', 'VETERINARIO'] },
-              { key: 'producto', label: 'Producto', col: 'C', type: 'text', required: true },
-              { key: 'cantidad', label: 'Cantidad', col: 'D', type: 'number', default: 1 },
-              { key: 'importe', label: 'Importe (€)', col: 'E', type: 'number', step: '0.01', required: true },
-              { key: 'fecha', label: 'Fecha', col: 'F', type: 'date', default: 'today' },
+              { key: 'lugarCompra', label: 'Lugar de compra', col: 'C', type: 'text' },
+              { key: 'producto', label: 'Producto', col: 'D', type: 'text', required: true },
+              { key: 'peso', label: 'Peso', col: 'E', type: 'number', step: '0.01' },
+              { key: 'cantidad', label: 'Cantidad', col: 'F', type: 'number', default: 1 },
+              { key: 'importe', label: 'Importe (€)', col: 'G', type: 'number', step: '0.01', required: true },
+              { key: 'fecha', label: 'Fecha', col: 'H', type: 'date', default: 'today' },
             ],
           },
         ],
