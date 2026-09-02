@@ -141,31 +141,37 @@ const FONTANERIA_DEPOSITO_CASA_ELEMENTOS = {
 
 // Tercer tramo, "Interior Casa": la instalación DENTRO de la vivienda, que se
 // dibuja como dos rectángulos apilados (uno por planta, lado ancho abajo y
-// corto a los lados) — Planta Baja (abajo, con contenido) y Planta Primera
-// (arriba, todavía vacía, solo una etiqueta "próximamente" hasta que se
-// describa). El tubo de entrada representa la continuación del tramo
-// anterior (llega desde la cruz de conexiones de "Depósito a Casa") y entra
-// en la Planta Baja hasta un baño situado arriba a la derecha del dibujo.
-// Dentro del baño está la llave principal, de la que salen cuatro ramales:
-// WC, lavabo, el cuarto del calentador (arriba, junto al baño) y el
-// fregadero de la cocina (a media altura del lateral derecho). Mismo patrón
-// que los dos tramos anteriores: SOLO los badges numerados son clicables,
-// `numero` sigue el orden físico del recorrido del agua.
+// corto a los lados) — Planta Baja (abajo) y Planta Primera (arriba). El
+// reparto de habitaciones de ambas plantas reproduce fielmente el plano de
+// referencia (plantas.pptx) que el usuario adjuntó tras corregir el primer
+// intento. El tubo de entrada representa la continuación del tramo anterior
+// (llega desde la cruz de conexiones de "Depósito a Casa") y entra en la
+// Planta Baja desde la parte de ABAJO del dibujo (no desde arriba), hasta un
+// baño situado en la zona central de la planta. Dentro del baño está la
+// llave principal, de la que salen seis ramales: WC, lavabo, el trastero
+// (arriba a la derecha, con el calentador de agua dentro), el fregadero de
+// la cocina, la lavadora y el lavavajillas (estos tres últimos en la pared
+// derecha). De la misma llave principal sube además una tubería (el
+// "riser") que atraviesa el hueco entre plantas y lleva agua al baño de la
+// Planta Primera. La Planta Primera tiene cinco habitaciones (dormitorios,
+// sin instalación propia) y ese baño. Mismo patrón que los dos tramos
+// anteriores: SOLO los badges numerados son clicables, `numero` sigue el
+// orden físico del recorrido del agua.
 const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
   tuboEntrada: {
     numero: 1,
     titulo: 'Tubo de entrada',
-    descripcion: 'Viene de la cruz de conexiones del tramo anterior (Depósito a Casa) y entra en la planta baja, hasta el baño.',
+    descripcion: 'Viene de la cruz de conexiones del tramo anterior (Depósito a Casa) y entra en la planta baja por la parte de abajo del dibujo, hasta la llave principal del baño.',
   },
   bano: {
     numero: 2,
     titulo: 'Cuarto de baño',
-    descripcion: 'Ocupa menos de la mitad del ancho de la planta baja, a la derecha, y una quinta parte de la altura, en la parte de arriba del dibujo. Dentro está la llave principal y las salidas al WC y al lavabo.',
+    descripcion: 'Cuarto de baño de la planta baja, en la zona central del dibujo. Dentro está la llave principal y las salidas al WC y al lavabo.',
   },
   llavePrincipal: {
     numero: 3,
     titulo: 'Llave principal',
-    descripcion: 'Punto donde llega el tubo de entrada, dentro del baño. De aquí salen las cuatro tuberías que reparten el agua por la planta baja.',
+    descripcion: 'Punto donde llega el tubo de entrada, dentro del baño. De aquí salen todas las tuberías que reparten el agua por la casa, incluida la que sube a la Planta Primera.',
   },
   wc: {
     numero: 4,
@@ -177,15 +183,35 @@ const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
     titulo: 'Lavabo',
     descripcion: 'Tubería de la llave principal al lavabo del baño.',
   },
-  cuartoCalentador: {
+  trastero: {
     numero: 6,
-    titulo: 'Cuarto del calentador',
-    descripcion: 'Cuarto pequeño en la parte de arriba de la planta baja, junto al baño, con el calentador de agua.',
+    titulo: 'Trastero',
+    descripcion: 'Cuarto situado arriba a la derecha de la planta baja, con el calentador de agua dentro.',
   },
   fregaderoCocina: {
     numero: 7,
     titulo: 'Fregadero de la cocina',
-    descripcion: 'Tubería de la llave principal al fregadero, situado a media altura del lateral derecho de la planta baja.',
+    descripcion: 'Tubería de la llave principal al fregadero de la cocina, en la pared derecha de la planta baja.',
+  },
+  lavadora: {
+    numero: 8,
+    titulo: 'Lavadora',
+    descripcion: 'Tubería de la llave principal a la lavadora, en la pared derecha de la planta baja, encima del fregadero.',
+  },
+  lavavajillas: {
+    numero: 9,
+    titulo: 'Lavavajillas',
+    descripcion: 'Tubería de la llave principal al lavavajillas, en la pared derecha de la planta baja, debajo del fregadero.',
+  },
+  habitaciones: {
+    numero: 10,
+    titulo: 'Habitaciones',
+    descripcion: 'Los cinco dormitorios de la Planta Primera. No tienen instalación de fontanería propia.',
+  },
+  banoPlantaPrimera: {
+    numero: 11,
+    titulo: 'Baño de la Planta Primera',
+    descripcion: 'Recibe agua mediante una tubería que sube desde la llave principal de la planta baja, atravesando el hueco entre plantas.',
   },
 };
 
