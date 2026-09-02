@@ -570,6 +570,7 @@ html, body {
    data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
 .font-hotspot { cursor: pointer; }
 .font-selected .font-concrete { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-panel { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-rocks,
 .font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }

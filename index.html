@@ -276,95 +276,101 @@
      Una sola vista (no depende de la altura, va todo a presión). -->
 <main id="fontDepositoCasaScreen" class="screen hidden">
   <section class="font-diagram-wrap">
-    <svg id="fontDCSvg" class="font-svg" viewBox="0 0 950 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema del tramo Depósito a Casa">
+    <svg id="fontDCSvg" class="font-svg" viewBox="0 0 700 1050" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema del tramo Depósito a Casa">
+      <!-- Orientación vertical, de abajo a arriba: depósito -> cuadro de
+           presión -> caja de registro -> cabaña. Los ramales de bocas de
+           agua salen a izquierda y derecha de la caja de registro. -->
       <g data-id="deposito">
-        <ellipse class="font-tank-base" cx="140" cy="520" rx="55" ry="14"/>
-        <rect class="font-tank-body" x="85" y="340" width="110" height="180" rx="6"/>
-        <ellipse class="font-tank-top" cx="140" cy="340" rx="55" ry="15"/>
-        <ellipse class="font-tank-cap" cx="140" cy="330" rx="28" ry="8"/>
+        <ellipse class="font-tank-base" cx="350" cy="1000" rx="55" ry="14"/>
+        <rect class="font-tank-body" x="295" y="820" width="110" height="180" rx="6"/>
+        <ellipse class="font-tank-top" cx="350" cy="820" rx="55" ry="15"/>
+        <ellipse class="font-tank-cap" cx="350" cy="810" rx="28" ry="8"/>
       </g>
 
       <!-- Bomba "lápiz" Wilo TWI5-306, sumergida dentro del depósito. -->
       <g data-id="bomba">
-        <rect class="font-bomba" x="128" y="410" width="24" height="90" rx="10"/>
-        <path class="font-bomba" d="M128,500 L152,500 L140,516 Z"/>
+        <rect class="font-bomba" x="338" y="890" width="24" height="90" rx="10"/>
+        <path class="font-bomba" d="M338,980 L362,980 L350,996 Z"/>
       </g>
 
       <g data-id="tuboBombaCuadro">
-        <path class="font-pipe-rigid" d="M195,430 L270,430"/>
+        <path class="font-pipe-rigid" d="M350,802 L350,760"/>
       </g>
 
-      <!-- Cuadro de presión: caja de activación (control eléctrico) a la
-           izquierda, presurómetro (sensor de presión) a la derecha, más cerca
-           de la salida hacia la caja de registro. -->
-      <rect class="font-panel" x="270" y="350" width="200" height="160" rx="8"/>
-      <g data-id="cajaActivacion">
-        <rect class="font-caja-activacion" x="290" y="395" width="55" height="70" rx="6"/>
-        <circle class="font-caja-activacion-knob" cx="317" cy="415" r="6"/>
+      <!-- Cuadro de presión: presurómetro (sensor de presión) arriba, más
+           cerca de la salida hacia la caja de registro; caja de activación
+           (control eléctrico) abajo. -->
+      <g data-id="cuadro">
+        <rect class="font-panel" x="250" y="620" width="200" height="140" rx="8"/>
       </g>
       <g data-id="presurometro">
-        <circle class="font-presurometro-face" cx="410" cy="430" r="32"/>
-        <line class="font-presurometro-needle" x1="410" y1="430" x2="428" y2="412"/>
-        <circle class="font-presurometro-center" cx="410" cy="430" r="4"/>
+        <circle class="font-presurometro-face" cx="350" cy="655" r="28"/>
+        <line class="font-presurometro-needle" x1="350" y1="655" x2="366" y2="639"/>
+        <circle class="font-presurometro-center" cx="350" cy="655" r="4"/>
+      </g>
+      <g data-id="cajaActivacion">
+        <rect class="font-caja-activacion" x="320" y="700" width="60" height="50" rx="6"/>
+        <circle class="font-caja-activacion-knob" cx="350" cy="725" r="6"/>
       </g>
 
       <g data-id="tuboPresurometroRegistro">
-        <path class="font-pipe-rigid" d="M442,430 L540,430"/>
+        <path class="font-pipe-rigid" d="M350,620 L350,520"/>
       </g>
 
       <!-- Caja de registro de fontanería, con la cruz de conexiones en el centro. -->
       <g data-id="cajaRegistro">
-        <rect class="font-concrete" x="540" y="350" width="170" height="160" rx="8"/>
+        <rect class="font-concrete" x="250" y="380" width="200" height="140" rx="8"/>
       </g>
       <g data-id="cruz">
-        <rect class="font-cruz" x="610" y="415" width="30" height="30" rx="4"/>
+        <rect class="font-cruz" x="335" y="435" width="30" height="30" rx="4"/>
       </g>
 
-      <!-- Ramal 1: hacia la cabaña (arriba). -->
+      <!-- Ramal 1: hacia la cabaña (sigue subiendo). -->
       <g data-id="tuberiaCabana">
-        <path class="font-pipe-rigid" d="M625,415 L625,195"/>
-        <path class="font-cabana-roof" d="M575,140 L625,100 L675,140 Z"/>
-        <rect class="font-cabana-wall" x="585" y="140" width="80" height="55" rx="3"/>
-        <rect class="font-codo" x="613" y="165" width="24" height="30"/>
+        <path class="font-pipe-rigid" d="M350,435 L350,180"/>
+        <path class="font-cabana-roof" d="M300,140 L350,100 L400,140 Z"/>
+        <rect class="font-cabana-wall" x="310" y="140" width="80" height="55" rx="3"/>
+        <rect class="font-codo" x="338" y="165" width="24" height="30"/>
       </g>
 
-      <!-- Ramal 2: boca de agua a la derecha (mirando desde el presurómetro). -->
+      <!-- Ramal 2: boca de agua del porche derecho. -->
       <g data-id="grifoDerecha">
-        <path class="font-pipe-rigid" d="M640,430 L790,430"/>
-        <circle class="font-grifo" cx="800" cy="430" r="10"/>
-        <rect class="font-grifo" x="808" y="425" width="18" height="10" rx="3"/>
+        <path class="font-pipe-rigid" d="M365,450 L610,450"/>
+        <circle class="font-grifo" cx="620" cy="450" r="10"/>
+        <rect class="font-grifo" x="628" y="445" width="18" height="10" rx="3"/>
       </g>
 
-      <!-- Ramal 3: boca de agua a la izquierda, que continúa hasta el gallinero.
-           Baja bien por debajo del depósito (cuya base termina en y=534) para
-           que no se solape con él. -->
+      <!-- Ramal 3: boca de agua del porche izquierdo, que continúa hasta el
+           gallinero. Baja bien por debajo de la caja de registro para no
+           solaparse con nada. -->
       <g data-id="grifoIzquierda">
-        <path class="font-pipe-rigid" d="M625,445 L625,640 L440,640"/>
-        <circle class="font-grifo" cx="420" cy="640" r="10"/>
-        <rect class="font-grifo" x="428" y="635" width="18" height="10" rx="3"/>
+        <path class="font-pipe-rigid" d="M335,450 L100,450"/>
+        <circle class="font-grifo" cx="90" cy="450" r="10"/>
+        <rect class="font-grifo" x="54" y="445" width="18" height="10" rx="3"/>
       </g>
       <!-- Tramo final (sin numerar, continuación del ramal izquierdo) hasta el gallinero. -->
-      <path class="font-pipe-rigid" d="M410,640 L240,640"/>
+      <path class="font-pipe-rigid" d="M90,460 L90,600 L215,600"/>
       <g data-id="gallinero">
-        <path class="font-gallinero-roof" d="M142,610 L180,580 L218,610 Z"/>
-        <rect class="font-gallinero-wall" x="150" y="610" width="60" height="40" rx="3"/>
-        <circle class="font-grifo" cx="225" cy="640" r="10"/>
-        <rect class="font-grifo" x="195" y="635" width="20" height="10" rx="3"/>
+        <path class="font-gallinero-roof" d="M142,570 L180,540 L218,570 Z"/>
+        <rect class="font-gallinero-wall" x="150" y="570" width="60" height="40" rx="3"/>
+        <circle class="font-grifo" cx="225" cy="600" r="10"/>
+        <rect class="font-grifo" x="195" y="595" width="20" height="10" rx="3"/>
       </g>
 
       <g class="font-badges">
-        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="140" cy="290" r="15"/><text x="140" y="295">1</text></g>
-        <g class="font-badge font-hotspot" data-id="bomba"><circle cx="105" cy="390" r="15"/><text x="105" y="395">2</text></g>
-        <g class="font-badge font-hotspot" data-id="tuboBombaCuadro"><circle cx="232" cy="400" r="15"/><text x="232" y="405">3</text></g>
-        <g class="font-badge font-hotspot" data-id="cajaActivacion"><circle cx="317" cy="325" r="15"/><text x="317" y="330">4</text></g>
-        <g class="font-badge font-hotspot" data-id="presurometro"><circle cx="410" cy="325" r="15"/><text x="410" y="330">5</text></g>
-        <g class="font-badge font-hotspot" data-id="tuboPresurometroRegistro"><circle cx="491" cy="400" r="15"/><text x="491" y="405">6</text></g>
-        <g class="font-badge font-hotspot" data-id="cajaRegistro"><circle cx="560" cy="325" r="15"/><text x="560" y="330">7</text></g>
-        <g class="font-badge font-hotspot" data-id="cruz"><circle cx="625" cy="395" r="15"/><text x="625" y="400">8</text></g>
-        <g class="font-badge font-hotspot" data-id="tuberiaCabana"><circle cx="690" cy="270" r="15"/><text x="690" y="275">9</text></g>
-        <g class="font-badge font-hotspot" data-id="grifoDerecha"><circle cx="800" cy="400" r="15"/><text x="800" y="405">10</text></g>
-        <g class="font-badge font-hotspot" data-id="grifoIzquierda"><circle cx="420" cy="605" r="15"/><text x="420" y="610">11</text></g>
-        <g class="font-badge font-hotspot" data-id="gallinero"><circle cx="180" cy="550" r="15"/><text x="180" y="555">12</text></g>
+        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="350" cy="770" r="15"/><text x="350" y="775">1</text></g>
+        <g class="font-badge font-hotspot" data-id="bomba"><circle cx="315" cy="870" r="15"/><text x="315" y="875">2</text></g>
+        <g class="font-badge font-hotspot" data-id="tuboBombaCuadro"><circle cx="390" cy="780" r="15"/><text x="390" y="785">3</text></g>
+        <g class="font-badge font-hotspot" data-id="cajaActivacion"><circle cx="225" cy="725" r="15"/><text x="225" y="730">4</text></g>
+        <g class="font-badge font-hotspot" data-id="presurometro"><circle cx="225" cy="655" r="15"/><text x="225" y="660">5</text></g>
+        <g class="font-badge font-hotspot" data-id="tuboPresurometroRegistro"><circle cx="390" cy="570" r="15"/><text x="390" y="575">6</text></g>
+        <g class="font-badge font-hotspot" data-id="cajaRegistro"><circle cx="490" cy="400" r="15"/><text x="490" y="405">7</text></g>
+        <g class="font-badge font-hotspot" data-id="cruz"><circle cx="350" cy="402" r="15"/><text x="350" y="407">8</text></g>
+        <g class="font-badge font-hotspot" data-id="tuberiaCabana"><circle cx="390" cy="300" r="15"/><text x="390" y="305">9</text></g>
+        <g class="font-badge font-hotspot" data-id="grifoDerecha"><circle cx="620" cy="410" r="15"/><text x="620" y="415">10</text></g>
+        <g class="font-badge font-hotspot" data-id="grifoIzquierda"><circle cx="90" cy="405" r="15"/><text x="90" y="410">11</text></g>
+        <g class="font-badge font-hotspot" data-id="gallinero"><circle cx="180" cy="505" r="15"/><text x="180" y="510">12</text></g>
+        <g class="font-badge font-hotspot" data-id="cuadro"><circle cx="485" cy="690" r="15"/><text x="485" y="695">13</text></g>
       </g>
     </svg>
   </section>

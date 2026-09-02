@@ -119,18 +119,23 @@ const FONTANERIA_DEPOSITO_CASA_ELEMENTOS = {
   },
   grifoDerecha: {
     numero: 10,
-    titulo: 'Boca de agua (derecha)',
-    descripcion: 'Grifo alimentado directamente desde la cruz de conexiones, a la derecha mirando desde el presurómetro.',
+    titulo: 'Boca de agua (derecha porche)',
+    descripcion: 'Grifo del porche derecho, alimentado directamente desde la cruz de conexiones.',
   },
   grifoIzquierda: {
     numero: 11,
-    titulo: 'Boca de agua (izquierda)',
-    descripcion: 'Primera boca de agua del ramal izquierdo de la cruz de conexiones; la tubería continúa desde aquí hasta el gallinero.',
+    titulo: 'Boca de agua (izquierda porche)',
+    descripcion: 'Grifo del porche izquierdo, alimentado desde la cruz de conexiones; la tubería continúa desde aquí hasta el gallinero.',
   },
   gallinero: {
     numero: 12,
     titulo: 'Boca de agua del gallinero',
     descripcion: 'Final del ramal izquierdo: la tubería continúa desde la primera boca de agua hasta el gallinero, donde conecta con otro grifo.',
+  },
+  cuadro: {
+    numero: 13,
+    titulo: 'Cuadro presurómetro y activador bomba',
+    descripcion: 'Localizado en Pozo Negro. Dentro lleva la caja de activación de la bomba y el presurómetro, que se ven cada uno por separado en su propio número.',
   },
 };
 
