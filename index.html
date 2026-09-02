@@ -359,7 +359,7 @@
       </g>
 
       <g class="font-badges">
-        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="350" cy="770" r="15"/><text x="350" y="775">1</text></g>
+        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="420" cy="960" r="15"/><text x="420" y="965">1</text></g>
         <g class="font-badge font-hotspot" data-id="bomba"><circle cx="315" cy="870" r="15"/><text x="315" y="875">2</text></g>
         <g class="font-badge font-hotspot" data-id="tuboBombaCuadro"><circle cx="390" cy="780" r="15"/><text x="390" y="785">3</text></g>
         <g class="font-badge font-hotspot" data-id="cajaActivacion"><circle cx="225" cy="725" r="15"/><text x="225" y="730">4</text></g>
@@ -381,8 +381,94 @@
   </section>
 </main>
 
-<!-- Módulo "Fontanería", tramo "Interior Casa": todavía sin esquema propio,
-     solo un aviso hasta que se le añada su contenido -->
+<!-- Módulo "Fontanería", tramo "Interior Casa": la instalación dentro de la
+     vivienda, dibujada como dos rectángulos apilados (uno por planta, lado
+     ancho abajo y corto a los lados) — Planta Baja (abajo, con contenido) y
+     Planta Primera (arriba, todavía vacía). Una sola vista. -->
+<main id="fontInteriorCasaScreen" class="screen hidden">
+  <section class="font-diagram-wrap">
+    <svg id="fontICSvg" class="font-svg" viewBox="0 0 700 950" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Esquema del tramo Interior Casa">
+      <!-- Planta Primera: todavía sin contenido propio. -->
+      <rect class="font-floor-outline" x="50" y="50" width="600" height="350" rx="4"/>
+      <text class="font-floor-label" x="350" y="225" text-anchor="middle">Planta Primera</text>
+      <text class="font-floor-label-sub" x="350" y="250" text-anchor="middle">(próximamente)</text>
+
+      <!-- Planta Baja. -->
+      <rect class="font-floor-outline" x="50" y="500" width="600" height="350" rx="4"/>
+      <text class="font-floor-label" x="150" y="820" text-anchor="middle">Planta Baja</text>
+
+      <!-- Tubo de entrada: viene de la cruz de conexiones del tramo anterior
+           (fuera de este dibujo) y entra en la planta baja hasta la llave
+           principal, dentro del baño. -->
+      <g data-id="tuboEntrada">
+        <path class="font-pipe-rigid" d="M525,420 L525,513"/>
+      </g>
+
+      <!-- Cuarto de baño: arriba a la derecha, menos de la mitad del ancho y
+           una quinta parte de la altura de la planta baja. -->
+      <g data-id="bano">
+        <rect class="font-habitacion" x="400" y="500" width="250" height="70" rx="4"/>
+      </g>
+
+      <!-- Llave principal, dentro del baño: aquí llega el tubo de entrada y
+           de aquí salen los cuatro ramales. -->
+      <g data-id="llavePrincipal">
+        <rect class="font-valve" x="520" y="513" width="10" height="14" rx="2"/>
+        <circle class="font-valve" cx="525" cy="525" r="10"/>
+      </g>
+
+      <!-- Ramal 1: al WC del baño (cisterna + taza). -->
+      <g data-id="wc">
+        <path class="font-pipe-rigid" d="M525,525 L598,525"/>
+        <rect class="font-wc" x="600" y="510" width="20" height="16" rx="2"/>
+        <ellipse class="font-wc" cx="613" cy="538" rx="13" ry="9"/>
+      </g>
+
+      <!-- Ramal 2: al lavabo del baño. -->
+      <g data-id="lavabo">
+        <path class="font-pipe-rigid" d="M525,525 L455,525"/>
+        <rect class="font-lavabo" x="430" y="516" width="30" height="18" rx="5"/>
+      </g>
+
+      <!-- Ramal 3: al cuarto del calentador, un cuarto pequeño junto al baño,
+           también en la parte de arriba de la planta baja. -->
+      <g data-id="cuartoCalentador">
+        <rect class="font-habitacion" x="200" y="500" width="200" height="70" rx="4"/>
+        <path class="font-pipe-rigid" d="M525,525 L525,512 L300,512 L300,522"/>
+        <rect class="font-calentador" x="291" y="505" width="18" height="30" rx="3"/>
+        <ellipse class="font-calentador" cx="300" cy="505" rx="9" ry="4"/>
+        <circle class="font-calentador-knob" cx="300" cy="520" r="3"/>
+      </g>
+
+      <!-- Ramal 4: al fregadero de la cocina, a media altura del lateral
+           derecho de la planta baja. Se desvía a x=560 nada más salir de la
+           llave para dejar libre la columna x=525 (donde va el badge 3). -->
+      <g data-id="fregaderoCocina">
+        <path class="font-pipe-rigid" d="M525,525 L560,525 L560,630 L627,630 L627,660"/>
+        <rect class="font-fregadero" x="602" y="660" width="45" height="28" rx="4"/>
+      </g>
+
+      <g class="font-badges">
+        <g class="font-badge font-hotspot" data-id="tuboEntrada"><circle cx="560" cy="460" r="15"/><text x="560" y="465">1</text></g>
+        <g class="font-badge font-hotspot" data-id="bano"><circle cx="630" cy="485" r="15"/><text x="630" y="490">2</text></g>
+        <g class="font-badge font-hotspot" data-id="llavePrincipal"><circle cx="525" cy="600" r="15"/><text x="525" y="605">3</text></g>
+        <g class="font-badge font-hotspot" data-id="wc"><circle cx="630" cy="600" r="15"/><text x="630" y="605">4</text></g>
+        <g class="font-badge font-hotspot" data-id="lavabo"><circle cx="420" cy="600" r="15"/><text x="420" y="605">5</text></g>
+        <g class="font-badge font-hotspot" data-id="cuartoCalentador"><circle cx="300" cy="485" r="15"/><text x="300" y="490">6</text></g>
+        <g class="font-badge font-hotspot" data-id="fregaderoCocina"><circle cx="555" cy="710" r="15"/><text x="555" y="715">7</text></g>
+      </g>
+    </svg>
+  </section>
+
+  <section id="fontICInfo" class="font-info">
+    <p class="font-info-hint">Toca un elemento del esquema para ver su descripción.</p>
+  </section>
+</main>
+
+<!-- Pantalla de aviso genérica "próximamente" para una futura sección de
+     Fontanería sin esquema propio todavía (kind: 'proximamente' en
+     FONTANERIA_SECCIONES) — de momento las tres secciones actuales ya tienen
+     esquema, así que no se usa, pero se deja lista. -->
 <main id="fontProximamenteScreen" class="screen hidden">
   <div class="font-proximamente">
     <span id="fontProximamenteIcon" class="font-proximamente-icon">🔧</span>

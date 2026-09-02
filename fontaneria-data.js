@@ -139,15 +139,68 @@ const FONTANERIA_DEPOSITO_CASA_ELEMENTOS = {
   },
 };
 
+// Tercer tramo, "Interior Casa": la instalación DENTRO de la vivienda, que se
+// dibuja como dos rectángulos apilados (uno por planta, lado ancho abajo y
+// corto a los lados) — Planta Baja (abajo, con contenido) y Planta Primera
+// (arriba, todavía vacía, solo una etiqueta "próximamente" hasta que se
+// describa). El tubo de entrada representa la continuación del tramo
+// anterior (llega desde la cruz de conexiones de "Depósito a Casa") y entra
+// en la Planta Baja hasta un baño situado arriba a la derecha del dibujo.
+// Dentro del baño está la llave principal, de la que salen cuatro ramales:
+// WC, lavabo, el cuarto del calentador (arriba, junto al baño) y el
+// fregadero de la cocina (a media altura del lateral derecho). Mismo patrón
+// que los dos tramos anteriores: SOLO los badges numerados son clicables,
+// `numero` sigue el orden físico del recorrido del agua.
+const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
+  tuboEntrada: {
+    numero: 1,
+    titulo: 'Tubo de entrada',
+    descripcion: 'Viene de la cruz de conexiones del tramo anterior (Depósito a Casa) y entra en la planta baja, hasta el baño.',
+  },
+  bano: {
+    numero: 2,
+    titulo: 'Cuarto de baño',
+    descripcion: 'Ocupa menos de la mitad del ancho de la planta baja, a la derecha, y una quinta parte de la altura, en la parte de arriba del dibujo. Dentro está la llave principal y las salidas al WC y al lavabo.',
+  },
+  llavePrincipal: {
+    numero: 3,
+    titulo: 'Llave principal',
+    descripcion: 'Punto donde llega el tubo de entrada, dentro del baño. De aquí salen las cuatro tuberías que reparten el agua por la planta baja.',
+  },
+  wc: {
+    numero: 4,
+    titulo: 'WC',
+    descripcion: 'Tubería de la llave principal a la cisterna del WC del baño.',
+  },
+  lavabo: {
+    numero: 5,
+    titulo: 'Lavabo',
+    descripcion: 'Tubería de la llave principal al lavabo del baño.',
+  },
+  cuartoCalentador: {
+    numero: 6,
+    titulo: 'Cuarto del calentador',
+    descripcion: 'Cuarto pequeño en la parte de arriba de la planta baja, junto al baño, con el calentador de agua.',
+  },
+  fregaderoCocina: {
+    numero: 7,
+    titulo: 'Fregadero de la cocina',
+    descripcion: 'Tubería de la llave principal al fregadero, situado a media altura del lateral derecho de la planta baja.',
+  },
+};
+
 // Submenú que se muestra al entrar en "Fontanería": los tres tramos en los
 // que se divide la instalación de agua completa. `kind: 'diagram'` tiene
 // esquema propio (id 'manantial-deposito' abre #fontaneriaScreen con
 // FONTANERIA_ELEMENTOS; id 'deposito-casa' abre #fontDepositoCasaScreen con
-// FONTANERIA_DEPOSITO_CASA_ELEMENTOS — el dispatch por id vive en
-// renderFontMenu(), en app.js). `kind: 'proximamente'` abre una pantalla
-// sencilla con `mensaje` como único contenido, hasta que se dibuje su
-// esquema (mismo patrón: cuando llegue el momento, se le añade su propia
-// pantalla + función open... y se cambia su kind a 'diagram' aquí).
+// FONTANERIA_DEPOSITO_CASA_ELEMENTOS; id 'interior-casa' abre
+// #fontInteriorCasaScreen con FONTANERIA_INTERIOR_CASA_ELEMENTOS — el
+// dispatch por id vive en renderFontMenu(), en app.js). `kind: 'proximamente'`
+// abre una pantalla sencilla con `mensaje` como único contenido, hasta que se
+// dibuje su esquema (mismo patrón: cuando llegue el momento, se le añade su
+// propia pantalla + función open... y se cambia su kind a 'diagram' aquí) —
+// de momento las tres secciones ya tienen esquema propio, pero el mecanismo
+// se deja tal cual por si hiciera falta para una futura sección nueva.
 const FONTANERIA_SECCIONES = [
   {
     id: 'manantial-deposito',
@@ -165,10 +218,9 @@ const FONTANERIA_SECCIONES = [
   },
   {
     id: 'interior-casa',
-    kind: 'proximamente',
+    kind: 'diagram',
     icon: '🏠',
     titulo: 'Interior Casa',
-    subtitulo: 'Próximamente',
-    mensaje: 'Esta sección todavía no tiene contenido. Aquí se explicará la instalación de fontanería dentro de la casa.',
+    subtitulo: 'Planta baja: baño, calentador y fregadero',
   },
 ];

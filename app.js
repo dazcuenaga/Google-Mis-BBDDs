@@ -59,10 +59,13 @@ const fontLeyendaOverlay = el('fontLeyendaOverlay');
 const fontLeyendaClose = el('fontLeyendaClose');
 const fontDepositoCasaScreen = el('fontDepositoCasaScreen');
 const fontDCInfo = el('fontDCInfo');
+const fontInteriorCasaScreen = el('fontInteriorCasaScreen');
+const fontICInfo = el('fontICInfo');
 
 let fontMod = null;          // módulo actual (definición completa: elementos)
 let fontSelectedId = null;   // id del elemento seleccionado (clave de FONTANERIA_ELEMENTOS), o null
 let fontDCSelectedId = null; // igual que fontSelectedId, pero para el tramo "Depósito a Casa"
+let fontICSelectedId = null; // igual que fontSelectedId, pero para el tramo "Interior Casa"
 const moduleList = el('moduleList');
 const boardList = el('boardList');
 const listEl = el('list');
@@ -125,6 +128,7 @@ function showGate() {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -144,6 +148,7 @@ function showModules() {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -162,6 +167,7 @@ function showBoards(mod) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -180,6 +186,7 @@ function showPicker() {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -203,6 +210,7 @@ async function openDynamicPicker(mod) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -242,6 +250,7 @@ function showBoard(mod, board) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -262,7 +271,7 @@ backBtn.addEventListener('click', () => {
   }
   // El esquema y el aviso "próximamente" vuelven al submenú de Fontanería
   // (no directamente a Módulos); el submenú en sí sí vuelve a Módulos.
-  if (!fontaneriaScreen.classList.contains('hidden') || !fontDepositoCasaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
+  if (!fontaneriaScreen.classList.contains('hidden') || !fontDepositoCasaScreen.classList.contains('hidden') || !fontInteriorCasaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
     openFontaneriaMenu(fontMod);
     return;
   }
@@ -1451,6 +1460,7 @@ function openFontaneriaMenu(mod) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -1478,6 +1488,8 @@ function renderFontMenu() {
         openFontaneria(fontMod, sec);
       } else if (sec.id === 'deposito-casa') {
         openFontDepositoCasa(fontMod, sec);
+      } else if (sec.id === 'interior-casa') {
+        openFontInteriorCasa(fontMod, sec);
       } else if (sec.kind === 'proximamente') {
         openFontProximamente(sec);
       }
@@ -1497,6 +1509,7 @@ function openFontProximamente(sec) {
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -1534,6 +1547,7 @@ function openFontaneria(mod, sec) {
   fontaneriaMenuScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   fontaneriaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'manantial-deposito');
@@ -1565,6 +1579,7 @@ function openFontDepositoCasa(mod, sec) {
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'deposito-casa');
@@ -1603,6 +1618,66 @@ document.querySelectorAll('#fontDepositoCasaScreen .font-hotspot').forEach((elm)
     fontDCSelectedId = fontDCSelectedId === id ? null : id;
     renderFontDCSelection();
     renderFontDCInfo();
+  });
+});
+
+// Esquema fijo del tramo "Interior Casa": la instalación dentro de la
+// vivienda, dibujada como dos rectángulos apilados (uno por planta) — Planta
+// Baja (con contenido: tubo de entrada, baño con llave principal, y los
+// cuatro ramales WC/lavabo/cuarto del calentador/fregadero) y Planta Primera
+// (arriba, todavía sin contenido propio, solo una etiqueta "próximamente").
+// Mismo patrón que openFontaneria/openFontDepositoCasa (ver comentarios
+// arriba), con su propio estado (`fontICSelectedId`) y una única vista.
+function openFontInteriorCasa(mod, sec) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  sec = sec || (mod.secciones || []).find((s) => s.id === 'interior-casa');
+  topIcon.textContent = sec ? sec.icon : mod.icon;
+  topTitle.textContent = sec ? sec.titulo : mod.title;
+
+  fontMod = mod;
+  fontICSelectedId = null;
+  renderFontICInfo();
+  renderFontICSelection();
+}
+
+function renderFontICInfo() {
+  if (!fontICSelectedId) {
+    fontICInfo.innerHTML = '<p class="font-info-hint">Toca un elemento del esquema para ver su descripción.</p>';
+    return;
+  }
+  const info = fontMod.elementosInteriorCasa[fontICSelectedId];
+  if (!info) return;
+  const prefix = info.numero != null ? `${info.numero}. ` : '';
+  fontICInfo.innerHTML = `
+    <p class="font-info-title">${escapeHtml(prefix + info.titulo)}</p>
+    <p class="font-info-desc">${escapeHtml(info.descripcion)}</p>
+  `;
+}
+
+function renderFontICSelection() {
+  document.querySelectorAll('#fontInteriorCasaScreen [data-id]').forEach((elm) => {
+    elm.classList.toggle('font-selected', fontICSelectedId != null && elm.dataset.id === fontICSelectedId);
+  });
+}
+
+document.querySelectorAll('#fontInteriorCasaScreen .font-hotspot').forEach((elm) => {
+  elm.addEventListener('click', () => {
+    const id = elm.dataset.id;
+    fontICSelectedId = fontICSelectedId === id ? null : id;
+    renderFontICSelection();
+    renderFontICInfo();
   });
 });
 

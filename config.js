@@ -869,6 +869,7 @@ function buildFontaneriaModule() {
     custom: 'fontaneria',
     elementos: FONTANERIA_ELEMENTOS,
     elementosDepositoCasa: FONTANERIA_DEPOSITO_CASA_ELEMENTOS,
+    elementosInteriorCasa: FONTANERIA_INTERIOR_CASA_ELEMENTOS,
     secciones: FONTANERIA_SECCIONES,
   };
 }

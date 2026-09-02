@@ -566,6 +566,19 @@ html, body {
 .font-gallinero-roof { fill: #6b4423; stroke: #4a2e18; stroke-width: 1.5; }
 .font-gallinero-wall { fill: #a67c52; stroke: #6b4423; stroke-width: 1.5; }
 
+/* Tramo "Interior Casa": plano de las plantas, baño, cuarto del calentador y fregadero */
+.font-floor-outline { fill: none; stroke: #3a4256; stroke-width: 5; }
+@media (prefers-color-scheme: light) { .font-floor-outline { stroke: #4b5568; } }
+.font-floor-label { fill: var(--text-dim); font-size: 20px; font-weight: 700; font-family: inherit; }
+.font-floor-label-sub { fill: var(--text-dim); font-size: 13px; font-style: italic; font-family: inherit; }
+.font-habitacion { fill: #6b7280; stroke: #3a4256; stroke-width: 2; }
+@media (prefers-color-scheme: light) { .font-habitacion { fill: #7d8494; } }
+.font-wc { fill: #f2ede0; stroke: #3a4256; stroke-width: 1.5; }
+.font-lavabo { fill: #f2ede0; stroke: #3a4256; stroke-width: 1.5; }
+.font-calentador { fill: #e2ddd0; stroke: #3a4256; stroke-width: 1.5; }
+.font-calentador-knob { fill: #c0392b; }
+.font-fregadero { fill: #8a93a6; stroke: #5f6472; stroke-width: 1.5; }
+
 /* Solo los badges numerados son clicables — las formas del dibujo (mismo
    data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
 .font-hotspot { cursor: pointer; }
@@ -587,6 +600,12 @@ html, body {
 .font-selected .font-cabana-roof,
 .font-selected .font-gallinero-wall,
 .font-selected .font-gallinero-roof { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-valve { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-habitacion,
+.font-selected .font-wc,
+.font-selected .font-lavabo,
+.font-selected .font-calentador { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-fregadero { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 
 /* Badges numerados */
 .font-badge circle { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
