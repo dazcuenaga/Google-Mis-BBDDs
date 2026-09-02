@@ -477,6 +477,8 @@ const MODULES = [
   buildPlantasModule(),
 
   buildAlmacenPreciosModule(),
+
+  buildElectricidadElRellanoModule(),
 ];
 
 // ---------------------------------------------------------------------------
@@ -823,5 +825,25 @@ function buildPlantasModule() {
     icon: '🌱',
     spreadsheetId: PLANTAS_SPREADSHEET_ID,
     tree: PLANTAS_YEARS.map(buildPlantasYear),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// ELECTRICIDAD EL RELLANO: no lee ninguna hoja de cálculo — es un esquema
+// eléctrico fijo (cuadro de automáticos + planos por zona), reconstruido a
+// partir de "Electricidad el Rellano.pptx". Los datos (ELECTRICIDAD_*) están
+// en electricidad-data.js. `custom: 'electricidad'` hace que app.js abra una
+// pantalla propia (openElectricidad) en vez del flujo normal de tableros.
+// ---------------------------------------------------------------------------
+function buildElectricidadElRellanoModule() {
+  return {
+    id: 'electricidad-el-rellano',
+    title: 'Electricidad el Rellano',
+    subtitle: 'Cuadro eléctrico y planos por zona',
+    icon: '⚡',
+    custom: 'electricidad',
+    controles: ELECTRICIDAD_CONTROLES,
+    aparatos: ELECTRICIDAD_APARATOS,
+    planos: ELECTRICIDAD_PLANOS,
   };
 }

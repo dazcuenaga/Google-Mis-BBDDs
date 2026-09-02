@@ -43,6 +43,26 @@
   <section class="list module-list" id="boardList"></section>
 </main>
 
+<!-- Módulo "Electricidad el Rellano": cuadro de automáticos + planos por zona -->
+<main id="electricidadScreen" class="screen hidden">
+  <section class="elec-controls">
+    <h2 class="elec-h2">Cuadro eléctrico</h2>
+    <div id="elecPanel" class="elec-panel"></div>
+    <p class="elec-legend">Toca un automático para ver qué interruptores y enchufes activa en cada plano.</p>
+    <button id="elecAparatosBtn" class="btn btn-ghost elec-aparatos-btn">🔌 Ver aparatos eléctricos (5-8)</button>
+  </section>
+
+  <div class="chips" id="elecPlanoTabs"></div>
+
+  <section class="elec-plano-wrap">
+    <div id="elecPlanoImgWrap" class="elec-plano-imgwrap">
+      <img id="elecPlanoImg" class="elec-plano-img" alt="">
+      <div id="elecHotspots" class="elec-hotspots"></div>
+    </div>
+    <div id="elecNotes" class="elec-notes"></div>
+  </section>
+</main>
+
 <!-- Listado de un tablero concreto -->
 <main id="boardScreen" class="screen hidden">
   <section class="toolbar">
@@ -78,9 +98,24 @@
   </div>
 </div>
 
+<!-- Modal "Aparatos eléctricos" del módulo Electricidad el Rellano -->
+<div id="elecAparatosOverlay" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Aparatos eléctricos</h2>
+      <button id="elecAparatosClose" class="icon-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <img id="elecAparatosImg" class="elec-aparatos-img" alt="Aparatos eléctricos">
+      <div id="elecAparatosLegend" class="elec-aparatos-legend"></div>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="electricidad-data.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>

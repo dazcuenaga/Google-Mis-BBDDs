@@ -26,6 +26,22 @@ const loginGate = el('loginGate');
 const modulesScreen = el('modulesScreen');
 const boardsScreen = el('boardsScreen');
 const boardScreen = el('boardScreen');
+const electricidadScreen = el('electricidadScreen');
+const elecPanel = el('elecPanel');
+const elecPlanoTabs = el('elecPlanoTabs');
+const elecPlanoImgWrap = el('elecPlanoImgWrap');
+const elecPlanoImg = el('elecPlanoImg');
+const elecHotspots = el('elecHotspots');
+const elecNotes = el('elecNotes');
+const elecAparatosBtn = el('elecAparatosBtn');
+const elecAparatosOverlay = el('elecAparatosOverlay');
+const elecAparatosClose = el('elecAparatosClose');
+const elecAparatosImg = el('elecAparatosImg');
+const elecAparatosLegend = el('elecAparatosLegend');
+
+let elecMod = null;             // módulo actual (definición completa: controles/aparatos/planos)
+let elecActivePlano = null;     // id del plano mostrado (ej. 'gallinero')
+let elecSelectedControl = null; // id del automático seleccionado, o null si ninguno
 const moduleList = el('moduleList');
 const boardList = el('boardList');
 const listEl = el('list');
@@ -83,6 +99,7 @@ function showGate() {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -97,6 +114,7 @@ function showModules() {
   modulesScreen.classList.remove('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -110,6 +128,7 @@ function showBoards(mod) {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -123,6 +142,7 @@ function showPicker() {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -141,6 +161,7 @@ async function openDynamicPicker(mod) {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -175,6 +196,7 @@ function showBoard(mod, board) {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.remove('hidden');
+  electricidadScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -189,6 +211,10 @@ function showBoard(mod, board) {
 }
 
 backBtn.addEventListener('click', () => {
+  if (!electricidadScreen.classList.contains('hidden')) {
+    showModules();
+    return;
+  }
   if (!currentModule) return;
   if (currentBoard) {
     currentBoard = null;
@@ -217,7 +243,9 @@ function renderModules() {
       <div class="chevron">›</div>
     `;
     card.addEventListener('click', () => {
-      if (mod.dynamicTree) {
+      if (mod.custom === 'electricidad') {
+        openElectricidad(mod);
+      } else if (mod.dynamicTree) {
         openDynamicPicker(mod);
       } else if (mod.tree) {
         currentModule = mod;
@@ -1201,6 +1229,140 @@ function showToast(msg, isError) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 3500);
 }
+
+// ---------- Módulo "Electricidad el Rellano" (esquema eléctrico fijo) ----------
+// No lee ninguna hoja: los datos vienen de electricidad-data.js. La pantalla
+// muestra el cuadro de automáticos (mod.controles), pestañas para elegir el
+// plano de cada zona (mod.planos) y, superpuestos sobre la imagen del plano,
+// unos "hotspots" en la posición de cada interruptor/enchufe (icon.x/y/w/h,
+// fracciones 0..1 del tamaño de la imagen). Al seleccionar un automático se
+// "iluminan" (clase .active) los hotspots cuyo `breaker` está controlado por
+// ese automático, en el plano visible en ese momento.
+function openElectricidad(mod) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = mod.icon;
+  topTitle.textContent = mod.title;
+
+  elecMod = mod;
+  elecSelectedControl = null;
+  elecActivePlano = mod.planos[0].id;
+  renderElecPanel();
+  renderElecPlanoTabs();
+  renderElecPlano();
+}
+
+function elecFindControl(id) {
+  for (const row of elecMod.controles) {
+    const found = row.items.find((it) => it.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
+// Un automático "afecta" a un `breaker` si es el mismo automático, si es el
+// interruptor general (id '0', apaga todo) o si es una llave de fila (L1/L2)
+// que agrupa varios automáticos (item.covers).
+function elecBreakerActive(breaker) {
+  if (!elecSelectedControl || !breaker) return false;
+  if (elecSelectedControl === '0') return true;
+  const control = elecFindControl(elecSelectedControl);
+  if (!control) return false;
+  return control.covers ? control.covers.includes(breaker) : breaker === elecSelectedControl;
+}
+
+function renderElecPanel() {
+  elecPanel.innerHTML = '';
+  for (const row of elecMod.controles) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'elec-row';
+    for (const item of row.items) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const isActive = elecSelectedControl === item.id;
+      btn.className = `elec-btn elec-btn-${item.kind}${isActive ? ' active' : ''}`;
+      btn.textContent = item.label;
+      btn.addEventListener('click', () => {
+        elecSelectedControl = isActive ? null : item.id;
+        renderElecPanel();
+        renderElecHotspots();
+      });
+      rowEl.appendChild(btn);
+    }
+    elecPanel.appendChild(rowEl);
+  }
+}
+
+function renderElecPlanoTabs() {
+  elecPlanoTabs.innerHTML = '';
+  for (const plano of elecMod.planos) {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (plano.id === elecActivePlano ? ' active' : '');
+    btn.textContent = plano.title;
+    btn.addEventListener('click', () => {
+      if (elecActivePlano === plano.id) return;
+      elecActivePlano = plano.id;
+      renderElecPlanoTabs();
+      renderElecPlano();
+    });
+    elecPlanoTabs.appendChild(btn);
+  }
+}
+
+function elecCurrentPlano() {
+  return elecMod.planos.find((p) => p.id === elecActivePlano);
+}
+
+function renderElecPlano() {
+  const plano = elecCurrentPlano();
+  elecPlanoImg.src = plano.img;
+  elecPlanoImg.alt = plano.title;
+  renderElecHotspots();
+  elecNotes.innerHTML = (plano.notes || [])
+    .map((n) => `<p class="elec-note">${escapeHtml(n)}</p>`)
+    .join('');
+}
+
+// Solo repinta los hotspots (no la imagen ni las pestañas): se llama al
+// seleccionar/deseleccionar un automático, para que el plano visible no parpadee.
+function renderElecHotspots() {
+  const plano = elecCurrentPlano();
+  elecHotspots.innerHTML = '';
+  for (const icon of plano.icons) {
+    const div = document.createElement('div');
+    const active = elecBreakerActive(icon.breaker);
+    div.className = `elec-hotspot elec-hotspot-${icon.kind}${active ? ' active' : ''}`;
+    div.style.left = `${icon.x * 100}%`;
+    div.style.top = `${icon.y * 100}%`;
+    div.style.width = `${icon.w * 100}%`;
+    div.style.height = `${icon.h * 100}%`;
+    div.title = icon.label;
+    elecHotspots.appendChild(div);
+  }
+}
+
+elecAparatosBtn.addEventListener('click', () => {
+  const aparatos = elecMod.aparatos;
+  elecAparatosImg.src = aparatos.img;
+  elecAparatosLegend.innerHTML = aparatos.items
+    .map((it) => `
+      <div class="elec-aparatos-item${elecBreakerActive(it.breaker) ? ' active' : ''}">
+        <span class="elec-aparatos-num">${escapeHtml(it.breaker)}</span>
+        <span>${escapeHtml(it.label)}</span>
+      </div>`)
+    .join('');
+  elecAparatosOverlay.classList.remove('hidden');
+});
+elecAparatosClose.addEventListener('click', () => elecAparatosOverlay.classList.add('hidden'));
+elecAparatosOverlay.addEventListener('click', (e) => {
+  if (e.target === elecAparatosOverlay) elecAparatosOverlay.classList.add('hidden');
+});
 
 // ---------- Service worker (instalación como app) ----------
 if ('serviceWorker' in navigator) {
