@@ -853,12 +853,12 @@ function buildElectricidadElRellanoModule() {
 // ---------------------------------------------------------------------------
 // FONTANERÍA: tampoco lee ninguna hoja — es la instalación de agua completa,
 // dividida en tres tramos (FONTANERIA_SECCIONES en fontaneria-data.js): al
-// abrir el módulo se ve primero un submenú con los tres, y solo el primero
-// ("Manantial a Depósito") tiene esquema propio hoy (dos vistas SVG que viven
-// directamente en index.html; las descripciones de cada elemento clicable
-// están en fontaneria-data.js). `custom: 'fontaneria'` hace que app.js abra
-// una pantalla propia (openFontaneriaMenu) en vez del flujo normal de
-// tableros.
+// abrir el módulo se ve primero un submenú con los tres. Los dos primeros
+// ("Manantial a Depósito" y "Depósito a Casa") tienen esquema propio (dibujo
+// SVG directamente en index.html; las descripciones de cada elemento
+// clicable están en fontaneria-data.js); el tercero ("Interior Casa") es
+// todavía un placeholder. `custom: 'fontaneria'` hace que app.js abra una
+// pantalla propia (openFontaneriaMenu) en vez del flujo normal de tableros.
 // ---------------------------------------------------------------------------
 function buildFontaneriaModule() {
   return {
@@ -868,6 +868,7 @@ function buildFontaneriaModule() {
     icon: '🚰',
     custom: 'fontaneria',
     elementos: FONTANERIA_ELEMENTOS,
+    elementosDepositoCasa: FONTANERIA_DEPOSITO_CASA_ELEMENTOS,
     secciones: FONTANERIA_SECCIONES,
   };
 }

@@ -549,6 +549,23 @@ html, body {
 /* Vista en planta: manantial (anillo de piedras) */
 .font-rocks-ring { fill: none; stroke: #8a8f9c; stroke-width: 10; stroke-dasharray: 6 5; }
 
+/* Tramo "Depósito a Casa": bomba, cuadro de presión, caja de registro y ramales */
+.font-bomba { fill: #8a93a6; stroke: #5f6472; stroke-width: 1.5; }
+.font-panel { fill: #4b5568; stroke: #2f3648; stroke-width: 2; }
+@media (prefers-color-scheme: light) { .font-panel { fill: #5b6578; } }
+.font-caja-activacion { fill: #6b7280; stroke: #3a4256; stroke-width: 1.5; }
+.font-caja-activacion-knob { fill: #c8862a; stroke: #8a5c17; stroke-width: 1; }
+.font-presurometro-face { fill: #f2ede0; stroke: #3a4256; stroke-width: 2; }
+.font-presurometro-needle { stroke: #c0392b; stroke-width: 2.5; stroke-linecap: round; }
+.font-presurometro-center { fill: #3a4256; }
+.font-cruz { fill: #3a4256; }
+@media (prefers-color-scheme: light) { .font-cruz { fill: #4b5568; } }
+.font-grifo { fill: #c8862a; stroke: #8a5c17; stroke-width: 1; }
+.font-cabana-roof { fill: #8a4a2f; stroke: #5c3018; stroke-width: 1.5; }
+.font-cabana-wall { fill: #d9c9a3; stroke: #a68a5c; stroke-width: 1.5; }
+.font-gallinero-roof { fill: #6b4423; stroke: #4a2e18; stroke-width: 1.5; }
+.font-gallinero-wall { fill: #a67c52; stroke: #6b4423; stroke-width: 1.5; }
+
 /* Solo los badges numerados son clicables — las formas del dibujo (mismo
    data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
 .font-hotspot { cursor: pointer; }
@@ -557,8 +574,18 @@ html, body {
 .font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-hose { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-pipe-rigid { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-tank-body,
 .font-selected .font-tank-top { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-bomba { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-caja-activacion { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-presurometro-face { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-cruz { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-grifo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-cabana-wall,
+.font-selected .font-cabana-roof,
+.font-selected .font-gallinero-wall,
+.font-selected .font-gallinero-roof { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 
 /* Badges numerados */
 .font-badge circle { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }

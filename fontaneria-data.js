@@ -61,13 +61,88 @@ const FONTANERIA_ELEMENTOS = {
   },
 };
 
+// Segundo tramo, "Depósito a Casa": la bomba dentro del depósito, el cuadro
+// de presión (caja de activación + presurómetro), la caja de registro con su
+// cruz de conexiones, y los tres ramales que salen de la cruz (cabaña, boca
+// de agua derecha, boca de agua izquierda -> gallinero). Mismo patrón que
+// FONTANERIA_ELEMENTOS: SOLO los badges numerados son clicables, `numero`
+// sigue el orden físico del recorrido del agua (bomba -> cuadro -> caja de
+// registro -> ramales). El dibujo es UNA sola vista (no hay lateral/planta
+// aquí: a diferencia del primer tramo no depende de la altura -el agua va a
+// presión, no por gravedad- así que una sola vista de planta/esquema basta),
+// vive en index.html dentro de #fontDepositoCasaScreen.
+const FONTANERIA_DEPOSITO_CASA_ELEMENTOS = {
+  deposito: {
+    numero: 1,
+    titulo: 'Depósito',
+    descripcion: 'El mismo depósito de 2500 litros del tramo anterior. Dentro lleva instalada la bomba que impulsa el agua hacia la casa.',
+  },
+  bomba: {
+    numero: 2,
+    titulo: 'Bomba Wilo TWI5-306',
+    descripcion: 'Bomba sumergible tipo lápiz, modelo Wilo TWI5-306, instalada dentro del depósito. Impulsa el agua a presión hacia la casa.',
+  },
+  tuboBombaCuadro: {
+    numero: 3,
+    titulo: 'Tubo a cuadro de presión',
+    descripcion: 'Tubo de PVC semirrígido que lleva el agua a presión desde la bomba hasta el cuadro.',
+  },
+  cajaActivacion: {
+    numero: 4,
+    titulo: 'Caja de activación de la bomba',
+    descripcion: 'Caja eléctrica de mando y protección de la bomba Wilo TWI5-306.',
+  },
+  presurometro: {
+    numero: 5,
+    titulo: 'Presurómetro',
+    descripcion: 'Controla la presión de la instalación: arranca la bomba cuando se abre un grifo y la para al alcanzar la presión de corte. De aquí sale la tubería hacia la caja de registro.',
+  },
+  tuboPresurometroRegistro: {
+    numero: 6,
+    titulo: 'Tubo a caja de registro',
+    descripcion: 'Tubo de PVC semirrígido que lleva el agua desde el presurómetro hasta la caja de registro de fontanería.',
+  },
+  cajaRegistro: {
+    numero: 7,
+    titulo: 'Caja de registro de fontanería',
+    descripcion: 'Arqueta de registro donde el agua se reparte hacia la cabaña, el gallinero y las bocas de agua mediante una cruz de conexiones.',
+  },
+  cruz: {
+    numero: 8,
+    titulo: 'Cruz de conexiones',
+    descripcion: 'Pieza en cruz que reparte el agua que llega del presurómetro en tres direcciones: hacia la cabaña, hacia una boca de agua a la derecha y hacia otra boca de agua a la izquierda que continúa hasta el gallinero.',
+  },
+  tuberiaCabana: {
+    numero: 9,
+    titulo: 'Tubería a la cabaña',
+    descripcion: 'Rama de la cruz de conexiones que lleva el agua hasta la cabaña.',
+  },
+  grifoDerecha: {
+    numero: 10,
+    titulo: 'Boca de agua (derecha)',
+    descripcion: 'Grifo alimentado directamente desde la cruz de conexiones, a la derecha mirando desde el presurómetro.',
+  },
+  grifoIzquierda: {
+    numero: 11,
+    titulo: 'Boca de agua (izquierda)',
+    descripcion: 'Primera boca de agua del ramal izquierdo de la cruz de conexiones; la tubería continúa desde aquí hasta el gallinero.',
+  },
+  gallinero: {
+    numero: 12,
+    titulo: 'Boca de agua del gallinero',
+    descripcion: 'Final del ramal izquierdo: la tubería continúa desde la primera boca de agua hasta el gallinero, donde conecta con otro grifo.',
+  },
+};
+
 // Submenú que se muestra al entrar en "Fontanería": los tres tramos en los
-// que se divide la instalación de agua completa. `kind: 'diagram'` es el
-// único con esquema propio hoy (abre la pantalla de siempre, con las dos
-// vistas SVG y FONTANERIA_ELEMENTOS); `kind: 'proximamente'` abre una
-// pantalla sencilla con `mensaje` como único contenido, hasta que se dibuje
-// su esquema (mismo patrón: cuando llegue el momento, se le añade su propio
-// `kind: 'diagram'`, su SVG en index.html y sus datos, sin tocar el submenú).
+// que se divide la instalación de agua completa. `kind: 'diagram'` tiene
+// esquema propio (id 'manantial-deposito' abre #fontaneriaScreen con
+// FONTANERIA_ELEMENTOS; id 'deposito-casa' abre #fontDepositoCasaScreen con
+// FONTANERIA_DEPOSITO_CASA_ELEMENTOS — el dispatch por id vive en
+// renderFontMenu(), en app.js). `kind: 'proximamente'` abre una pantalla
+// sencilla con `mensaje` como único contenido, hasta que se dibuje su
+// esquema (mismo patrón: cuando llegue el momento, se le añade su propia
+// pantalla + función open... y se cambia su kind a 'diagram' aquí).
 const FONTANERIA_SECCIONES = [
   {
     id: 'manantial-deposito',
@@ -78,11 +153,10 @@ const FONTANERIA_SECCIONES = [
   },
   {
     id: 'deposito-casa',
-    kind: 'proximamente',
+    kind: 'diagram',
     icon: '🚿',
     titulo: 'Depósito a Casa',
-    subtitulo: 'Próximamente',
-    mensaje: 'Esta sección todavía no tiene contenido. Aquí se explicará el tramo de tubería desde el depósito hasta la entrada de la casa.',
+    subtitulo: 'Bomba, cuadro de presión, caja de registro y bocas de agua',
   },
   {
     id: 'interior-casa',

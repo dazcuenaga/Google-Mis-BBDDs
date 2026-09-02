@@ -57,9 +57,12 @@ const fontInfo = el('fontInfo');
 const fontLeyendaBtn = el('fontLeyendaBtn');
 const fontLeyendaOverlay = el('fontLeyendaOverlay');
 const fontLeyendaClose = el('fontLeyendaClose');
+const fontDepositoCasaScreen = el('fontDepositoCasaScreen');
+const fontDCInfo = el('fontDCInfo');
 
 let fontMod = null;          // módulo actual (definición completa: elementos)
 let fontSelectedId = null;   // id del elemento seleccionado (clave de FONTANERIA_ELEMENTOS), o null
+let fontDCSelectedId = null; // igual que fontSelectedId, pero para el tramo "Depósito a Casa"
 const moduleList = el('moduleList');
 const boardList = el('boardList');
 const listEl = el('list');
@@ -120,6 +123,7 @@ function showGate() {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
@@ -138,6 +142,7 @@ function showModules() {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -155,6 +160,7 @@ function showBoards(mod) {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -172,6 +178,7 @@ function showPicker() {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
@@ -194,6 +201,7 @@ async function openDynamicPicker(mod) {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -232,6 +240,7 @@ function showBoard(mod, board) {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -253,7 +262,7 @@ backBtn.addEventListener('click', () => {
   }
   // El esquema y el aviso "próximamente" vuelven al submenú de Fontanería
   // (no directamente a Módulos); el submenú en sí sí vuelve a Módulos.
-  if (!fontaneriaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
+  if (!fontaneriaScreen.classList.contains('hidden') || !fontDepositoCasaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
     openFontaneriaMenu(fontMod);
     return;
   }
@@ -1440,6 +1449,7 @@ function openFontaneriaMenu(mod) {
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
@@ -1464,9 +1474,11 @@ function renderFontMenu() {
       <div class="chevron">›</div>
     `;
     card.addEventListener('click', () => {
-      if (sec.kind === 'diagram') {
+      if (sec.id === 'manantial-deposito') {
         openFontaneria(fontMod, sec);
-      } else {
+      } else if (sec.id === 'deposito-casa') {
+        openFontDepositoCasa(fontMod, sec);
+      } else if (sec.kind === 'proximamente') {
         openFontProximamente(sec);
       }
     });
@@ -1484,6 +1496,7 @@ function openFontProximamente(sec) {
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -1519,10 +1532,11 @@ function openFontaneria(mod, sec) {
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontaneriaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
-  sec = sec || (mod.secciones || []).find((s) => s.kind === 'diagram');
+  sec = sec || (mod.secciones || []).find((s) => s.id === 'manantial-deposito');
   topIcon.textContent = sec ? sec.icon : mod.icon;
   topTitle.textContent = sec ? sec.titulo : mod.title;
 
@@ -1531,6 +1545,66 @@ function openFontaneria(mod, sec) {
   renderFontInfo();
   renderFontSelection();
 }
+
+// Esquema fijo del tramo "Depósito a Casa": bomba dentro del depósito, cuadro
+// de presión (caja de activación + presurómetro), caja de registro con su
+// cruz de conexiones, y los tres ramales que salen de ella (cabaña, boca de
+// agua derecha, boca de agua izquierda -> gallinero). Mismo patrón que
+// openFontaneria/renderFontInfo/renderFontSelection (ver comentario arriba),
+// pero con su propio estado (`fontDCSelectedId`) y una única vista — este
+// tramo no depende de la altura (el agua va a presión, no por gravedad), así
+// que no hace falta la distinción lateral/planta del primer tramo.
+function openFontDepositoCasa(mod, sec) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  sec = sec || (mod.secciones || []).find((s) => s.id === 'deposito-casa');
+  topIcon.textContent = sec ? sec.icon : mod.icon;
+  topTitle.textContent = sec ? sec.titulo : mod.title;
+
+  fontMod = mod;
+  fontDCSelectedId = null;
+  renderFontDCInfo();
+  renderFontDCSelection();
+}
+
+function renderFontDCInfo() {
+  if (!fontDCSelectedId) {
+    fontDCInfo.innerHTML = '<p class="font-info-hint">Toca un elemento del esquema para ver su descripción.</p>';
+    return;
+  }
+  const info = fontMod.elementosDepositoCasa[fontDCSelectedId];
+  if (!info) return;
+  const prefix = info.numero != null ? `${info.numero}. ` : '';
+  fontDCInfo.innerHTML = `
+    <p class="font-info-title">${escapeHtml(prefix + info.titulo)}</p>
+    <p class="font-info-desc">${escapeHtml(info.descripcion)}</p>
+  `;
+}
+
+function renderFontDCSelection() {
+  document.querySelectorAll('#fontDepositoCasaScreen [data-id]').forEach((elm) => {
+    elm.classList.toggle('font-selected', fontDCSelectedId != null && elm.dataset.id === fontDCSelectedId);
+  });
+}
+
+document.querySelectorAll('#fontDepositoCasaScreen .font-hotspot').forEach((elm) => {
+  elm.addEventListener('click', () => {
+    const id = elm.dataset.id;
+    fontDCSelectedId = fontDCSelectedId === id ? null : id;
+    renderFontDCSelection();
+    renderFontDCInfo();
+  });
+});
 
 function renderFontInfo() {
   if (!fontSelectedId) {
