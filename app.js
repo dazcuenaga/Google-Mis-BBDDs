@@ -42,6 +42,18 @@ const elecAparatosLegend = el('elecAparatosLegend');
 let elecMod = null;             // módulo actual (definición completa: controles/aparatos/planos)
 let elecActivePlano = null;     // id del plano mostrado (ej. 'gallinero')
 let elecSelectedControl = null; // id del automático seleccionado, o null si ninguno
+
+const fontaneriaScreen = el('fontaneriaScreen');
+const fontViewTabs = el('fontViewTabs');
+const fontSvgLateral = el('fontSvgLateral');
+const fontSvgPlanta = el('fontSvgPlanta');
+const fontInfo = el('fontInfo');
+const fontLeyendaBtn = el('fontLeyendaBtn');
+const fontLeyendaOverlay = el('fontLeyendaOverlay');
+const fontLeyendaClose = el('fontLeyendaClose');
+
+let fontMod = null;          // módulo actual (definición completa: elementos)
+let fontSelectedId = null;   // id del elemento seleccionado (clave de FONTANERIA_ELEMENTOS), o null
 const moduleList = el('moduleList');
 const boardList = el('boardList');
 const listEl = el('list');
@@ -100,6 +112,7 @@ function showGate() {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -115,6 +128,7 @@ function showModules() {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -129,6 +143,7 @@ function showBoards(mod) {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -143,6 +158,7 @@ function showPicker() {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -162,6 +178,7 @@ async function openDynamicPicker(mod) {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -197,6 +214,7 @@ function showBoard(mod, board) {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.remove('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -212,6 +230,10 @@ function showBoard(mod, board) {
 
 backBtn.addEventListener('click', () => {
   if (!electricidadScreen.classList.contains('hidden')) {
+    showModules();
+    return;
+  }
+  if (!fontaneriaScreen.classList.contains('hidden')) {
     showModules();
     return;
   }
@@ -245,6 +267,8 @@ function renderModules() {
     card.addEventListener('click', () => {
       if (mod.custom === 'electricidad') {
         openElectricidad(mod);
+      } else if (mod.custom === 'fontaneria') {
+        openFontaneria(mod);
       } else if (mod.dynamicTree) {
         openDynamicPicker(mod);
       } else if (mod.tree) {
@@ -1373,6 +1397,89 @@ elecAparatosBtn.addEventListener('click', () => {
 elecAparatosClose.addEventListener('click', () => elecAparatosOverlay.classList.add('hidden'));
 elecAparatosOverlay.addEventListener('click', (e) => {
   if (e.target === elecAparatosOverlay) elecAparatosOverlay.classList.add('hidden');
+});
+
+// ---------- Módulo "Fontanería" (esquema fijo del sistema de agua) ----------
+// No lee ninguna hoja: las descripciones de cada elemento (título/texto)
+// vienen de fontaneria-data.js; el propio dibujo (dos vistas SVG, lateral y
+// en planta) está directamente en index.html, con cada forma clicable
+// marcada con class="font-hotspot" y data-id="<clave>" (misma clave que en
+// FONTANERIA_ELEMENTOS). Un único estado (`fontSelectedId`) controla la
+// selección en las dos vistas a la vez: tocar cualquier elemento —o su badge
+// numerado, que también lleva class="font-hotspot"— lo selecciona o
+// deselecciona, resalta TODAS las copias de ese id en ambas vistas (para que
+// la selección se vea igual si se cambia de vista) y muestra su título y
+// descripción debajo del esquema. No hay texto explicativo ni leyenda fijos
+// sobre el dibujo: la leyenda vive en un modal aparte, abierto a demanda.
+function openFontaneria(mod) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = mod.icon;
+  topTitle.textContent = mod.title;
+
+  fontMod = mod;
+  fontSelectedId = null;
+  renderFontInfo();
+  renderFontSelection();
+}
+
+function renderFontInfo() {
+  if (!fontSelectedId) {
+    fontInfo.innerHTML = '<p class="font-info-hint">Toca un elemento del esquema para ver su descripción.</p>';
+    return;
+  }
+  const info = fontMod.elementos[fontSelectedId];
+  if (!info) return;
+  const prefix = info.numero != null ? `${info.numero}. ` : '';
+  fontInfo.innerHTML = `
+    <p class="font-info-title">${escapeHtml(prefix + info.titulo)}</p>
+    <p class="font-info-desc">${escapeHtml(info.descripcion)}</p>
+  `;
+}
+
+// Aplica/quita .font-selected a TODAS las copias de un id (forma + badge, en
+// las dos vistas a la vez), para que la selección no dependa de qué vista
+// esté visible en ese momento.
+function renderFontSelection() {
+  document.querySelectorAll('#fontaneriaScreen .font-hotspot').forEach((elm) => {
+    elm.classList.toggle('font-selected', fontSelectedId != null && elm.dataset.id === fontSelectedId);
+  });
+}
+
+// El dibujo es markup estático (no se regenera con datos), así que los
+// listeners se enlazan una sola vez al cargar el script, igual que el resto
+// de botones fijos de la app.
+document.querySelectorAll('#fontaneriaScreen .font-hotspot').forEach((elm) => {
+  elm.addEventListener('click', () => {
+    const id = elm.dataset.id;
+    fontSelectedId = fontSelectedId === id ? null : id;
+    renderFontSelection();
+    renderFontInfo();
+  });
+});
+
+fontViewTabs.querySelectorAll('.chip').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    fontViewTabs.querySelectorAll('.chip').forEach((c) => c.classList.remove('active'));
+    btn.classList.add('active');
+    const view = btn.dataset.view;
+    fontSvgLateral.classList.toggle('hidden', view !== 'lateral');
+    fontSvgPlanta.classList.toggle('hidden', view !== 'planta');
+  });
+});
+
+fontLeyendaBtn.addEventListener('click', () => fontLeyendaOverlay.classList.remove('hidden'));
+fontLeyendaClose.addEventListener('click', () => fontLeyendaOverlay.classList.add('hidden'));
+fontLeyendaOverlay.addEventListener('click', (e) => {
+  if (e.target === fontLeyendaOverlay) fontLeyendaOverlay.classList.add('hidden');
 });
 
 // ---------- Service worker (instalación como app) ----------

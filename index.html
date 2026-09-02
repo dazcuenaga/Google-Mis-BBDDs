@@ -63,6 +63,176 @@
   </section>
 </main>
 
+<!-- Módulo "Fontanería": esquema del manantial, arqueta, abrevaderos y depósito -->
+<main id="fontaneriaScreen" class="screen hidden">
+  <div class="chips" id="fontViewTabs">
+    <button type="button" class="chip active" data-view="lateral">Vista lateral</button>
+    <button type="button" class="chip" data-view="planta">Vista en planta</button>
+  </div>
+
+  <section class="font-diagram-wrap">
+    <svg id="fontSvgLateral" class="font-svg" viewBox="0 0 1200 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista lateral del esquema de fontanería">
+      <defs>
+        <marker id="fArrowLateral" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,0 L5,10 Z" class="font-arrowhead"/>
+        </marker>
+        <marker id="fArrowGravedad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" class="font-arrowhead-gravedad"/>
+        </marker>
+      </defs>
+
+      <path class="font-soil" d="M0,380 Q60,222 110,214 Q162,222 222,380 L1200,380 L1200,620 L0,620 Z"/>
+
+      <g class="font-hotspot" data-id="manantial">
+        <rect class="font-hit" x="55" y="270" width="90" height="115" fill="#000" opacity="0" pointer-events="all"/>
+        <path class="font-rocks" d="M70,300 q9,-15 22,-6 q7,-13 20,-4 q9,-9 19,2 l-3,24 -55,4 Z"/>
+        <path class="font-water-flow" d="M96,300 q9,18 3,36 q-7,15 5,32"/>
+      </g>
+
+      <path class="font-pipe-rigid font-gravedad" d="M104,362 L256,352" marker-end="url(#fArrowGravedad)"/>
+
+      <g class="font-hotspot" data-id="arqueta">
+        <rect class="font-hit" x="256" y="266" width="168" height="120" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="260" y="270" width="160" height="112" rx="4"/>
+        <rect class="font-concrete-lid" x="266" y="270" width="148" height="16" rx="2"/>
+        <path class="font-water" d="M270,336 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 L406,374 L270,374 Z"/>
+        <circle class="font-valve" cx="404" cy="322" r="6"/>
+        <circle class="font-valve" cx="404" cy="352" r="6"/>
+      </g>
+
+      <path class="font-pipe-rigid" d="M410,322 L462,322"/>
+      <path class="font-pipe-rigid" d="M410,352 L916,352 L928,352"/>
+
+      <g class="font-hotspot" data-id="abrevadero1">
+        <rect class="font-hit" x="458" y="288" width="224" height="96" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="462" y="292" width="216" height="88" rx="4"/>
+        <path class="font-water" d="M472,318 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 L668,372 L472,372 Z"/>
+        <g class="font-filtracion">
+          <path d="M500,378 L500,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M540,378 L540,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M580,378 L580,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M620,378 L620,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M660,378 L660,404" marker-end="url(#fArrowLateral)"/>
+        </g>
+      </g>
+
+      <g class="font-hotspot" data-id="abrevadero2">
+        <rect class="font-hit" x="696" y="288" width="224" height="96" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="700" y="292" width="216" height="88" rx="4"/>
+        <path class="font-water" d="M710,318 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 L906,372 L710,372 Z"/>
+        <g class="font-filtracion">
+          <path d="M738,378 L738,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M778,378 L778,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M818,378 L818,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M858,378 L858,404" marker-end="url(#fArrowLateral)"/>
+          <path d="M898,378 L898,404" marker-end="url(#fArrowLateral)"/>
+        </g>
+      </g>
+
+      <g class="font-hotspot" data-id="codo">
+        <rect class="font-hit" x="920" y="322" width="40" height="46" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-codo" x="930" y="338" width="20" height="20" rx="4"/>
+        <circle class="font-codo-tapa" cx="940" cy="332" r="6"/>
+      </g>
+
+      <g class="font-hotspot" data-id="manguera">
+        <rect class="font-hit" x="960" y="330" width="130" height="40" fill="#000" opacity="0" pointer-events="all"/>
+        <path class="font-hose" d="M950,348 q30,10 60,-2 q30,-12 60,2 q20,10 40,0"/>
+      </g>
+
+      <g class="font-hotspot" data-id="deposito">
+        <rect class="font-hit" x="1092" y="205" width="115" height="195" fill="#000" opacity="0" pointer-events="all"/>
+        <ellipse class="font-tank-base" cx="1150" cy="380" rx="50" ry="12"/>
+        <rect class="font-tank-body" x="1100" y="230" width="100" height="150" rx="6"/>
+        <ellipse class="font-tank-top" cx="1150" cy="230" rx="50" ry="14"/>
+        <ellipse class="font-tank-cap" cx="1150" cy="222" rx="26" ry="8"/>
+      </g>
+
+      <g class="font-badges">
+        <g class="font-badge font-hotspot" data-id="manantial"><circle cx="70" cy="268" r="15"/><text x="70" y="273">1</text></g>
+        <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="270" cy="256" r="15"/><text x="270" y="261">2</text></g>
+        <g class="font-badge font-hotspot" data-id="abrevadero1"><circle cx="472" cy="278" r="15"/><text x="472" y="283">3</text></g>
+        <g class="font-badge font-hotspot" data-id="abrevadero2"><circle cx="710" cy="278" r="15"/><text x="710" y="283">4</text></g>
+        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1005" cy="318" r="15"/><text x="1005" y="323">5</text></g>
+        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1150" cy="200" r="15"/><text x="1150" y="205">6</text></g>
+      </g>
+    </svg>
+
+    <svg id="fontSvgPlanta" class="font-svg hidden" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista en planta del esquema de fontanería">
+      <defs>
+        <marker id="fArrowPlanta" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" class="font-arrowhead"/>
+        </marker>
+      </defs>
+
+      <g class="font-hotspot" data-id="manantial">
+        <rect class="font-hit" x="30" y="90" width="140" height="140" fill="#000" opacity="0" pointer-events="all"/>
+        <circle class="font-rocks-ring" cx="100" cy="160" r="55"/>
+        <circle class="font-water" cx="100" cy="160" r="26"/>
+      </g>
+
+      <path class="font-pipe-rigid" d="M156,160 L220,160"/>
+
+      <g class="font-hotspot" data-id="arqueta">
+        <rect class="font-hit" x="216" y="106" width="168" height="108" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="220" y="110" width="160" height="100" rx="4"/>
+        <rect class="font-water" x="230" y="122" width="140" height="76" rx="2"/>
+        <circle class="font-valve" cx="378" cy="140" r="6"/>
+        <circle class="font-valve" cx="378" cy="180" r="6"/>
+      </g>
+
+      <path class="font-pipe-rigid" d="M384,140 L460,140"/>
+      <path class="font-pipe-rigid" d="M384,180 L916,180 L928,180"/>
+
+      <g class="font-hotspot" data-id="abrevadero1">
+        <rect class="font-hit" x="456" y="112" width="228" height="96" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="460" y="120" width="220" height="80" rx="4"/>
+        <rect class="font-water" x="470" y="130" width="200" height="60" rx="2"/>
+        <path class="font-filtracion" d="M492,160 L648,160" marker-end="url(#fArrowPlanta)"/>
+      </g>
+
+      <g class="font-hotspot" data-id="abrevadero2">
+        <rect class="font-hit" x="696" y="112" width="228" height="96" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-concrete" x="700" y="120" width="220" height="80" rx="4"/>
+        <rect class="font-water" x="710" y="130" width="200" height="60" rx="2"/>
+        <path class="font-filtracion" d="M732,160 L888,160" marker-end="url(#fArrowPlanta)"/>
+      </g>
+
+      <g class="font-hotspot" data-id="codo">
+        <rect class="font-hit" x="920" y="150" width="40" height="46" fill="#000" opacity="0" pointer-events="all"/>
+        <rect class="font-codo" x="930" y="166" width="20" height="20" rx="4"/>
+        <circle class="font-codo-tapa" cx="940" cy="160" r="6"/>
+      </g>
+
+      <g class="font-hotspot" data-id="manguera">
+        <rect class="font-hit" x="960" y="142" width="130" height="40" fill="#000" opacity="0" pointer-events="all"/>
+        <path class="font-hose" d="M950,180 q30,10 60,-2 q30,-12 60,2 q20,10 40,0"/>
+      </g>
+
+      <g class="font-hotspot" data-id="deposito">
+        <rect class="font-hit" x="1078" y="90" width="140" height="140" fill="#000" opacity="0" pointer-events="all"/>
+        <circle class="font-tank-top" cx="1148" cy="160" r="70"/>
+        <circle class="font-tank-cap" cx="1148" cy="160" r="32"/>
+      </g>
+
+      <g class="font-badges">
+        <g class="font-badge font-hotspot" data-id="manantial"><circle cx="100" cy="90" r="15"/><text x="100" y="95">1</text></g>
+        <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="300" cy="96" r="15"/><text x="300" y="101">2</text></g>
+        <g class="font-badge font-hotspot" data-id="abrevadero1"><circle cx="570" cy="106" r="15"/><text x="570" y="111">3</text></g>
+        <g class="font-badge font-hotspot" data-id="abrevadero2"><circle cx="810" cy="106" r="15"/><text x="810" y="111">4</text></g>
+        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1025" cy="128" r="15"/><text x="1025" y="133">5</text></g>
+        <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1148" cy="80" r="15"/><text x="1148" y="85">6</text></g>
+      </g>
+    </svg>
+  </section>
+
+  <section id="fontInfo" class="font-info">
+    <p class="font-info-hint">Toca un elemento del esquema para ver su descripción.</p>
+  </section>
+
+  <button id="fontLeyendaBtn" class="btn btn-ghost font-leyenda-btn">📖 Ver leyenda</button>
+</main>
+
 <!-- Listado de un tablero concreto -->
 <main id="boardScreen" class="screen hidden">
   <section class="toolbar">
@@ -112,10 +282,41 @@
   </div>
 </div>
 
+<!-- Modal "Leyenda" del módulo Fontanería -->
+<div id="fontLeyendaOverlay" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Leyenda</h2>
+      <button id="fontLeyendaClose" class="icon-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="font-leyenda-rows">
+        <div class="font-leyenda-row">
+          <svg class="font-leyenda-swatch" viewBox="0 0 60 20"><line x1="4" y1="10" x2="56" y2="10" class="font-pipe-rigid"/></svg>
+          <span>Tubería rígida (PVC/PE)</span>
+        </div>
+        <div class="font-leyenda-row">
+          <svg class="font-leyenda-swatch" viewBox="0 0 60 20"><path d="M4,10 q13,8 26,0 q13,-8 26,0" class="font-hose"/></svg>
+          <span>Manguera flexible</span>
+        </div>
+        <div class="font-leyenda-row">
+          <svg class="font-leyenda-swatch" viewBox="0 0 60 20"><path d="M4,10 L48,10" class="font-filtracion" marker-end="url(#fArrowPlanta)"/></svg>
+          <span>Filtración / flujo por filtración</span>
+        </div>
+        <div class="font-leyenda-row">
+          <svg class="font-leyenda-swatch" viewBox="0 0 60 20"><path d="M4,10 L48,10" class="font-pipe-rigid font-gravedad" marker-end="url(#fArrowGravedad)"/></svg>
+          <span>Dirección del agua por gravedad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="electricidad-data.js"></script>
+<script src="fontaneria-data.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>

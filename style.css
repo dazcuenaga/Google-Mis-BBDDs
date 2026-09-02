@@ -496,6 +496,92 @@ html, body {
   color: var(--text-dim);
 }
 
+/* ---------- Módulo "Fontanería" ---------- */
+#fontViewTabs { padding: 14px 16px 4px; }
+.font-diagram-wrap {
+  padding: 4px 16px 8px;
+}
+.font-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Suelo / colina */
+.font-soil { fill: #6b5233; }
+@media (prefers-color-scheme: light) { .font-soil { fill: #c9a876; } }
+
+/* Manantial */
+.font-rocks { fill: #8a8f9c; stroke: #5f6472; stroke-width: 1.5; }
+.font-water-flow { fill: none; stroke: #3b82f6; stroke-width: 4; stroke-linecap: round; }
+
+/* Tuberías */
+.font-pipe-rigid { stroke: #3a4256; stroke-width: 6; stroke-linecap: round; fill: none; }
+@media (prefers-color-scheme: light) { .font-pipe-rigid { stroke: #4b5568; } }
+.font-hose { stroke: #7a8296; stroke-width: 7; stroke-linecap: round; fill: none; stroke-dasharray: 2 9; }
+
+/* Arqueta / abrevaderos (hormigón + agua) */
+.font-concrete { fill: #9aa2b3; stroke: #6b7280; stroke-width: 2; }
+.font-concrete-lid { fill: #7d8494; }
+.font-water { fill: #2f7fd6; opacity: 0.88; }
+.font-valve { fill: #c8862a; stroke: #8a5c17; stroke-width: 1; }
+
+/* Filtración / dirección del agua */
+.font-filtracion { stroke: #3b82f6; stroke-width: 2.5; stroke-dasharray: 4 4; fill: none; }
+.font-arrowhead { fill: #3b82f6; }
+.font-gravedad { stroke-width: 5; }
+.font-arrowhead-gravedad { fill: #3a4256; }
+@media (prefers-color-scheme: light) { .font-arrowhead-gravedad { fill: #4b5568; } }
+
+/* Codo con tapa */
+.font-codo { fill: #3a4256; }
+@media (prefers-color-scheme: light) { .font-codo { fill: #4b5568; } }
+.font-codo-tapa { fill: #c8862a; stroke: #8a5c17; stroke-width: 1; }
+
+/* Depósito */
+.font-tank-body, .font-tank-top { fill: #2f6b3f; stroke: #1f4a2b; stroke-width: 2; }
+.font-tank-cap { fill: #244f30; stroke: #1f4a2b; stroke-width: 1.5; }
+.font-tank-base { fill: #1f4a2b; opacity: 0.5; }
+
+/* Vista en planta: manantial (anillo de piedras) */
+.font-rocks-ring { fill: none; stroke: #8a8f9c; stroke-width: 10; stroke-dasharray: 6 5; }
+
+/* Hotspots clicables */
+.font-hotspot { cursor: pointer; }
+.font-hotspot .font-hit { cursor: pointer; }
+.font-hotspot.font-selected .font-concrete { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-hotspot.font-selected .font-rocks,
+.font-hotspot.font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-hotspot.font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-hotspot.font-selected .font-hose { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-hotspot.font-selected .font-tank-body,
+.font-hotspot.font-selected .font-tank-top { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+
+/* Badges numerados */
+.font-badge circle { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
+.font-badge text { fill: white; font-size: 15px; font-weight: 700; text-anchor: middle; font-family: inherit; pointer-events: none; }
+.font-badge.font-selected circle { fill: var(--warn); }
+
+.font-info {
+  margin: 4px 16px 8px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  min-height: 20px;
+}
+.font-info-hint { margin: 0; color: var(--text-dim); font-size: 13px; }
+.font-info-title { margin: 0 0 6px; font-size: 15px; font-weight: 700; }
+.font-info-desc { margin: 0; font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+.font-leyenda-btn { margin: 4px 16px 20px; align-self: flex-start; }
+
+.font-leyenda-rows { display: flex; flex-direction: column; gap: 12px; }
+.font-leyenda-row { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.font-leyenda-swatch { flex: none; width: 56px; height: 18px; }
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f4f6fb;
