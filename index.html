@@ -63,7 +63,12 @@
   </section>
 </main>
 
-<!-- Módulo "Fontanería": esquema del manantial, arqueta, abrevaderos y depósito -->
+<!-- Submenú de "Fontanería": elige qué tramo de la instalación ver -->
+<main id="fontaneriaMenuScreen" class="screen hidden">
+  <section class="list module-list" id="fontMenuList"></section>
+</main>
+
+<!-- Módulo "Fontanería", tramo "Manantial a Depósito": esquema del manantial, arqueta, abrevaderos y depósito -->
 <main id="fontaneriaScreen" class="screen hidden">
   <div class="chips" id="fontViewTabs">
     <button type="button" class="chip active" data-view="lateral">Vista lateral</button>
@@ -71,7 +76,7 @@
   </div>
 
   <section class="font-diagram-wrap">
-    <svg id="fontSvgLateral" class="font-svg" viewBox="0 0 1200 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista lateral del esquema de fontanería">
+    <svg id="fontSvgLateral" class="font-svg" viewBox="0 0 1300 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista lateral del esquema de fontanería">
       <defs>
         <marker id="fArrowLateral" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
           <path d="M0,0 L10,0 L5,10 Z" class="font-arrowhead"/>
@@ -81,7 +86,7 @@
         </marker>
       </defs>
 
-      <path class="font-soil" d="M0,380 Q60,222 110,214 Q162,222 222,380 L1200,380 L1200,620 L0,620 Z"/>
+      <path class="font-soil" d="M0,380 Q60,222 110,214 Q162,222 222,380 L1300,380 L1300,620 L0,620 Z"/>
 
       <g data-id="manantial">
         <path class="font-rocks" d="M70,300 q9,-15 22,-6 q7,-13 20,-4 q9,-9 19,2 l-3,24 -55,4 Z"/>
@@ -153,6 +158,16 @@
         <ellipse class="font-tank-cap" cx="1150" cy="222" rx="26" ry="8"/>
       </g>
 
+      <!-- Dos salidas del depósito, una más arriba (sobrante, por rebose) y otra
+           más abajo (hacia la bomba) — cada una sigue camino propio hacia otro
+           depósito vecino, fuera de este esquema. -->
+      <g data-id="salidaFonsoJoseLuis">
+        <path class="font-pipe-rigid" d="M1200,262 L1260,262"/>
+      </g>
+      <g data-id="salidaChuchoCarmen">
+        <path class="font-pipe-rigid" d="M1200,350 L1260,350"/>
+      </g>
+
       <g class="font-badges">
         <g class="font-badge font-hotspot" data-id="manantial"><circle cx="70" cy="268" r="15"/><text x="70" y="273">1</text></g>
         <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="270" cy="256" r="15"/><text x="270" y="261">2</text></g>
@@ -161,10 +176,12 @@
         <g class="font-badge font-hotspot" data-id="manguera"><circle cx="990" cy="318" r="15"/><text x="990" y="323">5</text></g>
         <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1150" cy="200" r="15"/><text x="1150" y="205">6</text></g>
         <g class="font-badge font-hotspot" data-id="codo"><circle cx="906" cy="310" r="15"/><text x="906" y="315">7</text></g>
+        <g class="font-badge font-hotspot" data-id="salidaFonsoJoseLuis"><circle cx="1230" cy="240" r="15"/><text x="1230" y="245">8</text></g>
+        <g class="font-badge font-hotspot" data-id="salidaChuchoCarmen"><circle cx="1230" cy="328" r="15"/><text x="1230" y="333">9</text></g>
       </g>
     </svg>
 
-    <svg id="fontSvgPlanta" class="font-svg hidden" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista en planta del esquema de fontanería">
+    <svg id="fontSvgPlanta" class="font-svg hidden" viewBox="0 0 1300 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vista en planta del esquema de fontanería">
       <defs>
         <marker id="fArrowPlanta" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0,0 L10,5 L0,10 Z" class="font-arrowhead"/>
@@ -222,6 +239,16 @@
         <circle class="font-tank-cap" cx="1148" cy="160" r="32"/>
       </g>
 
+      <!-- Dos salidas del depósito, una más arriba (sobrante, por rebose) y otra
+           más abajo (hacia la bomba) — mismo par que en la vista lateral, aquí
+           mostradas saliendo del depósito en dos puntos distintos. -->
+      <g data-id="salidaFonsoJoseLuis">
+        <path class="font-pipe-rigid" d="M1211,130 L1260,130"/>
+      </g>
+      <g data-id="salidaChuchoCarmen">
+        <path class="font-pipe-rigid" d="M1211,190 L1260,190"/>
+      </g>
+
       <g class="font-badges">
         <g class="font-badge font-hotspot" data-id="manantial"><circle cx="100" cy="90" r="15"/><text x="100" y="95">1</text></g>
         <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="300" cy="96" r="15"/><text x="300" y="101">2</text></g>
@@ -230,6 +257,8 @@
         <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1000" cy="128" r="15"/><text x="1000" y="133">5</text></g>
         <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1148" cy="80" r="15"/><text x="1148" y="85">6</text></g>
         <g class="font-badge font-hotspot" data-id="codo"><circle cx="906" cy="128" r="15"/><text x="906" y="133">7</text></g>
+        <g class="font-badge font-hotspot" data-id="salidaFonsoJoseLuis"><circle cx="1235" cy="108" r="15"/><text x="1235" y="113">8</text></g>
+        <g class="font-badge font-hotspot" data-id="salidaChuchoCarmen"><circle cx="1235" cy="168" r="15"/><text x="1235" y="173">9</text></g>
       </g>
     </svg>
   </section>
@@ -239,6 +268,16 @@
   </section>
 
   <button id="fontLeyendaBtn" class="btn btn-ghost font-leyenda-btn">📖 Ver leyenda</button>
+</main>
+
+<!-- Módulo "Fontanería", tramos "Depósito a Casa" e "Interior Casa": todavía sin
+     esquema propio, solo un aviso hasta que se les añada su contenido -->
+<main id="fontProximamenteScreen" class="screen hidden">
+  <div class="font-proximamente">
+    <span id="fontProximamenteIcon" class="font-proximamente-icon">🔧</span>
+    <h2 id="fontProximamenteTitle">Próximamente</h2>
+    <p id="fontProximamenteText">Esta sección todavía no tiene contenido.</p>
+  </div>
 </main>
 
 <!-- Listado de un tablero concreto -->

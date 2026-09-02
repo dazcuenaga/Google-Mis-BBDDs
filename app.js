@@ -43,7 +43,13 @@ let elecMod = null;             // módulo actual (definición completa: control
 let elecActivePlano = null;     // id del plano mostrado (ej. 'gallinero')
 let elecSelectedControl = null; // id del automático seleccionado, o null si ninguno
 
+const fontaneriaMenuScreen = el('fontaneriaMenuScreen');
+const fontMenuList = el('fontMenuList');
 const fontaneriaScreen = el('fontaneriaScreen');
+const fontProximamenteScreen = el('fontProximamenteScreen');
+const fontProximamenteIcon = el('fontProximamenteIcon');
+const fontProximamenteTitle = el('fontProximamenteTitle');
+const fontProximamenteText = el('fontProximamenteText');
 const fontViewTabs = el('fontViewTabs');
 const fontSvgLateral = el('fontSvgLateral');
 const fontSvgPlanta = el('fontSvgPlanta');
@@ -112,7 +118,9 @@ function showGate() {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -128,7 +136,9 @@ function showModules() {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -143,7 +153,9 @@ function showBoards(mod) {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -158,7 +170,9 @@ function showPicker() {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -178,7 +192,9 @@ async function openDynamicPicker(mod) {
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -214,7 +230,9 @@ function showBoard(mod, board) {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.remove('hidden');
   electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
   fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -233,7 +251,13 @@ backBtn.addEventListener('click', () => {
     showModules();
     return;
   }
-  if (!fontaneriaScreen.classList.contains('hidden')) {
+  // El esquema y el aviso "próximamente" vuelven al submenú de Fontanería
+  // (no directamente a Módulos); el submenú en sí sí vuelve a Módulos.
+  if (!fontaneriaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
+    openFontaneriaMenu(fontMod);
+    return;
+  }
+  if (!fontaneriaMenuScreen.classList.contains('hidden')) {
     showModules();
     return;
   }
@@ -268,7 +292,7 @@ function renderModules() {
       if (mod.custom === 'electricidad') {
         openElectricidad(mod);
       } else if (mod.custom === 'fontaneria') {
-        openFontaneria(mod);
+        openFontaneriaMenu(mod);
       } else if (mod.dynamicTree) {
         openDynamicPicker(mod);
       } else if (mod.tree) {
@@ -1399,20 +1423,15 @@ elecAparatosOverlay.addEventListener('click', (e) => {
   if (e.target === elecAparatosOverlay) elecAparatosOverlay.classList.add('hidden');
 });
 
-// ---------- Módulo "Fontanería" (esquema fijo del sistema de agua) ----------
-// No lee ninguna hoja: las descripciones de cada elemento (título/texto)
-// vienen de fontaneria-data.js; el propio dibujo (dos vistas SVG, lateral y
-// en planta) está directamente en index.html. SOLO los badges numerados son
-// clicables (class="font-hotspot" data-id="<clave>"); las formas del dibujo
-// (arqueta, abrevaderos, codo…) llevan el mismo data-id pero NO son
-// clicables — solo se resaltan cuando su número está seleccionado. Un único
-// estado (`fontSelectedId`) controla la selección en las dos vistas a la
-// vez: tocar un badge lo selecciona o deselecciona, resalta TODAS las copias
-// de ese id (forma + badge) en ambas vistas (para que la selección se vea
-// igual si se cambia de vista) y muestra su título y descripción debajo del
-// esquema. No hay texto explicativo ni leyenda fijos sobre el dibujo: la
-// leyenda vive en un modal aparte, abierto a demanda.
-function openFontaneria(mod) {
+// ---------- Módulo "Fontanería" (instalación de agua, en tres tramos) ----------
+// No lee ninguna hoja. Al abrir el módulo se ve primero un submenú
+// (openFontaneriaMenu) con los tres tramos de FONTANERIA_SECCIONES (ver
+// fontaneria-data.js): solo "Manantial a Depósito" (kind: 'diagram') tiene
+// esquema propio hoy; los otros dos (kind: 'proximamente') abren un aviso
+// simple (openFontProximamente) hasta que se les dibuje el suyo. El backBtn
+// desde el esquema o desde el aviso vuelve a este submenú, no directamente a
+// Módulos (ver el handler de backBtn más arriba).
+function openFontaneriaMenu(mod) {
   currentModule = mod;
   currentBoard = null;
   navStack = [];
@@ -1420,10 +1439,92 @@ function openFontaneria(mod) {
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
-  fontaneriaScreen.classList.remove('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
+
+  fontMod = mod;
+  renderFontMenu();
+}
+
+function renderFontMenu() {
+  fontMenuList.innerHTML = '';
+  for (const sec of fontMod.secciones) {
+    const card = document.createElement('div');
+    card.className = 'card module-card';
+    card.innerHTML = `
+      <div class="module-icon">${sec.icon}</div>
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(sec.titulo)}</p>
+        <div class="card-meta">${escapeHtml(sec.subtitulo || '')}</div>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => {
+      if (sec.kind === 'diagram') {
+        openFontaneria(fontMod, sec);
+      } else {
+        openFontProximamente(sec);
+      }
+    });
+    fontMenuList.appendChild(card);
+  }
+}
+
+// Aviso simple para un tramo de Fontanería que todavía no tiene esquema
+// propio (kind: 'proximamente' en FONTANERIA_SECCIONES). El backBtn lo trata
+// igual que la pantalla del esquema: vuelve al submenú, no a Módulos.
+function openFontProximamente(sec) {
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = sec.icon;
+  topTitle.textContent = sec.titulo;
+
+  fontProximamenteIcon.textContent = sec.icon;
+  fontProximamenteTitle.textContent = sec.titulo;
+  fontProximamenteText.textContent = sec.mensaje || 'Esta sección todavía no tiene contenido.';
+}
+
+// Esquema fijo del tramo "Manantial a Depósito" (el único tramo de Fontanería
+// con contenido dibujado hoy). Las descripciones de cada elemento (título/
+// texto) vienen de fontaneria-data.js; el propio dibujo (dos vistas SVG,
+// lateral y en planta) está directamente en index.html. SOLO los badges
+// numerados son clicables (class="font-hotspot" data-id="<clave>"); las
+// formas del dibujo (arqueta, abrevaderos, codo…) llevan el mismo data-id
+// pero NO son clicables — solo se resaltan cuando su número está
+// seleccionado. Un único estado (`fontSelectedId`) controla la selección en
+// las dos vistas a la vez: tocar un badge lo selecciona o deselecciona,
+// resalta TODAS las copias de ese id (forma + badge) en ambas vistas (para
+// que la selección se vea igual si se cambia de vista) y muestra su título y
+// descripción debajo del esquema. No hay texto explicativo ni leyenda fijos
+// sobre el dibujo: la leyenda vive en un modal aparte, abierto a demanda.
+// `sec` es opcional (la sección de FONTANERIA_SECCIONES que llevó aquí,
+// para el icono/título de la cabecera); si no se pasa —como hacían las
+// pruebas anteriores llamando a esta función directamente— se busca sola.
+function openFontaneria(mod, sec) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontaneriaScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  sec = sec || (mod.secciones || []).find((s) => s.kind === 'diagram');
+  topIcon.textContent = sec ? sec.icon : mod.icon;
+  topTitle.textContent = sec ? sec.titulo : mod.title;
 
   fontMod = mod;
   fontSelectedId = null;

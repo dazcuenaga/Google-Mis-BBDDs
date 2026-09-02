@@ -578,6 +578,20 @@ html, body {
 
 .font-leyenda-btn { margin: 4px 16px 20px; align-self: flex-start; }
 
+/* Aviso "próximamente" (tramos de Fontanería aún sin esquema propio) */
+.font-proximamente {
+  max-width: 360px;
+  margin: 48px auto 0;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+}
+.font-proximamente-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+.font-proximamente h2 { margin: 0 0 8px; }
+.font-proximamente p { color: var(--text-dim); font-size: 14px; margin: 0; line-height: 1.5; }
+
 .font-leyenda-rows { display: flex; flex-direction: column; gap: 12px; }
 .font-leyenda-row { display: flex; align-items: center; gap: 12px; font-size: 14px; }
 .font-leyenda-swatch { flex: none; width: 56px; height: 18px; }
