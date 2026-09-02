@@ -2,11 +2,14 @@
 // subterráneo -> arqueta -> dos abrevaderos -> manguera -> depósito). Igual
 // que Electricidad el Rellano, no lee ninguna hoja de cálculo — es contenido
 // fijo. El propio dibujo (dos vistas SVG: lateral y en planta) vive en
-// index.html; cada forma clicable lleva class="font-hotspot" y
-// data-id="<id>" que coincide con una clave de FONTANERIA_ELEMENTOS, para que
-// app.js pueda enlazar clic -> título/descripción sin duplicar coordenadas
-// aquí. `numero` es el discreto badge numerado que se dibuja sobre el
-// esquema (null si el elemento no lleva número, como el codo con tapa).
+// index.html. SOLO los badges numerados son clicables (class="font-hotspot"
+// data-id="<id>") — las formas del dibujo (arqueta, abrevaderos, etc.) llevan
+// el mismo data-id pero sin class="font-hotspot", para que se resalten al
+// seleccionar su número sin ser ellas mismas clicables (evita además
+// problemas de solapamiento entre formas muy juntas). `numero` es el badge
+// que se dibuja sobre el esquema; todos los elementos tienen uno (incluido el
+// codo con tapa, número 7, añadido aparte porque en el esquema original no
+// llevaba número).
 const FONTANERIA_ELEMENTOS = {
   manantial: {
     numero: 1,
@@ -29,7 +32,7 @@ const FONTANERIA_ELEMENTOS = {
     descripcion: 'Se llena por filtración desde el primer abrevadero.',
   },
   codo: {
-    numero: null,
+    numero: 7,
     titulo: 'Codo con tapa',
     descripcion: 'Está en la pared final del segundo abrevadero. Permite conectar la manguera y tomar agua directamente del abrevadero en caso de necesidad.',
   },

@@ -1402,15 +1402,16 @@ elecAparatosOverlay.addEventListener('click', (e) => {
 // ---------- Módulo "Fontanería" (esquema fijo del sistema de agua) ----------
 // No lee ninguna hoja: las descripciones de cada elemento (título/texto)
 // vienen de fontaneria-data.js; el propio dibujo (dos vistas SVG, lateral y
-// en planta) está directamente en index.html, con cada forma clicable
-// marcada con class="font-hotspot" y data-id="<clave>" (misma clave que en
-// FONTANERIA_ELEMENTOS). Un único estado (`fontSelectedId`) controla la
-// selección en las dos vistas a la vez: tocar cualquier elemento —o su badge
-// numerado, que también lleva class="font-hotspot"— lo selecciona o
-// deselecciona, resalta TODAS las copias de ese id en ambas vistas (para que
-// la selección se vea igual si se cambia de vista) y muestra su título y
-// descripción debajo del esquema. No hay texto explicativo ni leyenda fijos
-// sobre el dibujo: la leyenda vive en un modal aparte, abierto a demanda.
+// en planta) está directamente en index.html. SOLO los badges numerados son
+// clicables (class="font-hotspot" data-id="<clave>"); las formas del dibujo
+// (arqueta, abrevaderos, codo…) llevan el mismo data-id pero NO son
+// clicables — solo se resaltan cuando su número está seleccionado. Un único
+// estado (`fontSelectedId`) controla la selección en las dos vistas a la
+// vez: tocar un badge lo selecciona o deselecciona, resalta TODAS las copias
+// de ese id (forma + badge) en ambas vistas (para que la selección se vea
+// igual si se cambia de vista) y muestra su título y descripción debajo del
+// esquema. No hay texto explicativo ni leyenda fijos sobre el dibujo: la
+// leyenda vive en un modal aparte, abierto a demanda.
 function openFontaneria(mod) {
   currentModule = mod;
   currentBoard = null;
@@ -1446,14 +1447,18 @@ function renderFontInfo() {
 
 // Aplica/quita .font-selected a TODAS las copias de un id (forma + badge, en
 // las dos vistas a la vez), para que la selección no dependa de qué vista
-// esté visible en ese momento.
+// esté visible en ese momento. Ojo: esto recorre TODO elemento con data-id
+// (no solo .font-hotspot), porque solo los badges numerados son clicables
+// pero la forma del dibujo (arqueta, abrevaderos…) también debe iluminarse.
 function renderFontSelection() {
-  document.querySelectorAll('#fontaneriaScreen .font-hotspot').forEach((elm) => {
+  document.querySelectorAll('#fontaneriaScreen [data-id]').forEach((elm) => {
     elm.classList.toggle('font-selected', fontSelectedId != null && elm.dataset.id === fontSelectedId);
   });
 }
 
-// El dibujo es markup estático (no se regenera con datos), así que los
+// Solo los badges numerados llevan class="font-hotspot" (las formas del
+// dibujo no son clicables, solo se resaltan — ver renderFontSelection). El
+// dibujo es markup estático (no se regenera con datos), así que los
 // listeners se enlazan una sola vez al cargar el script, igual que el resto
 // de botones fijos de la app.
 document.querySelectorAll('#fontaneriaScreen .font-hotspot').forEach((elm) => {

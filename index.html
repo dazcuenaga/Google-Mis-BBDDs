@@ -83,16 +83,14 @@
 
       <path class="font-soil" d="M0,380 Q60,222 110,214 Q162,222 222,380 L1200,380 L1200,620 L0,620 Z"/>
 
-      <g class="font-hotspot" data-id="manantial">
-        <rect class="font-hit" x="55" y="270" width="90" height="115" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="manantial">
         <path class="font-rocks" d="M70,300 q9,-15 22,-6 q7,-13 20,-4 q9,-9 19,2 l-3,24 -55,4 Z"/>
         <path class="font-water-flow" d="M96,300 q9,18 3,36 q-7,15 5,32"/>
       </g>
 
       <path class="font-pipe-rigid font-gravedad" d="M104,362 L256,352" marker-end="url(#fArrowGravedad)"/>
 
-      <g class="font-hotspot" data-id="arqueta">
-        <rect class="font-hit" x="256" y="266" width="168" height="120" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="arqueta">
         <rect class="font-concrete" x="260" y="270" width="160" height="112" rx="4"/>
         <rect class="font-concrete-lid" x="266" y="270" width="148" height="16" rx="2"/>
         <path class="font-water" d="M270,336 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 q10,-8 20,0 L406,374 L270,374 Z"/>
@@ -100,11 +98,14 @@
         <circle class="font-valve" cx="404" cy="352" r="6"/>
       </g>
 
+      <!-- Salida superior de la arqueta: alimenta directamente el primer abrevadero. -->
       <path class="font-pipe-rigid" d="M410,322 L462,322"/>
-      <path class="font-pipe-rigid" d="M410,352 L916,352 L928,352"/>
+      <!-- Salida inferior de la arqueta: discurre por el lateral (por debajo) de
+           AMBOS abrevaderos y solo sube a la vista al llegar a la pared final
+           del segundo, donde conecta con el codo con tapa (ver más abajo). -->
+      <path class="font-pipe-rigid" d="M410,352 L410,384 L900,384"/>
 
-      <g class="font-hotspot" data-id="abrevadero1">
-        <rect class="font-hit" x="458" y="288" width="224" height="96" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="abrevadero1">
         <rect class="font-concrete" x="462" y="292" width="216" height="88" rx="4"/>
         <path class="font-water" d="M472,318 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 L668,372 L472,372 Z"/>
         <g class="font-filtracion">
@@ -116,8 +117,7 @@
         </g>
       </g>
 
-      <g class="font-hotspot" data-id="abrevadero2">
-        <rect class="font-hit" x="696" y="288" width="224" height="96" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="abrevadero2">
         <rect class="font-concrete" x="700" y="292" width="216" height="88" rx="4"/>
         <path class="font-water" d="M710,318 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 q12,-8 24,0 L906,372 L710,372 Z"/>
         <g class="font-filtracion">
@@ -129,19 +129,24 @@
         </g>
       </g>
 
-      <g class="font-hotspot" data-id="codo">
-        <rect class="font-hit" x="920" y="322" width="40" height="46" fill="#000" opacity="0" pointer-events="all"/>
-        <rect class="font-codo" x="930" y="338" width="20" height="20" rx="4"/>
-        <circle class="font-codo-tapa" cx="940" cy="332" r="6"/>
+      <!-- Codo con tapa: dibujado DESPUÉS del segundo abrevadero (por encima en
+           el z-order) y solapado con su pared final (x=900, dentro del rango
+           700-916 del abrevadero2), para que se vea claramente EMBEBIDO en esa
+           pared y no como un elemento suelto fuera de la balsa. El tramo de
+           tubería que sube desde la línea enterrada (y=384) hasta el codo
+           también se dibuja aquí, encima del abrevadero, para que se vea cómo
+           la tubería "se introduce" en la pared hasta llegar a él. -->
+      <g data-id="codo">
+        <path class="font-pipe-rigid" d="M900,384 L900,348"/>
+        <rect class="font-codo" x="900" y="338" width="20" height="20" rx="4"/>
+        <circle class="font-codo-tapa" cx="910" cy="332" r="6"/>
       </g>
 
-      <g class="font-hotspot" data-id="manguera">
-        <rect class="font-hit" x="960" y="330" width="130" height="40" fill="#000" opacity="0" pointer-events="all"/>
-        <path class="font-hose" d="M950,348 q30,10 60,-2 q30,-12 60,2 q20,10 40,0"/>
+      <g data-id="manguera">
+        <path class="font-hose" d="M918,340 q28,10 56,-2 q28,-12 56,2 q20,10 40,0"/>
       </g>
 
-      <g class="font-hotspot" data-id="deposito">
-        <rect class="font-hit" x="1092" y="205" width="115" height="195" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="deposito">
         <ellipse class="font-tank-base" cx="1150" cy="380" rx="50" ry="12"/>
         <rect class="font-tank-body" x="1100" y="230" width="100" height="150" rx="6"/>
         <ellipse class="font-tank-top" cx="1150" cy="230" rx="50" ry="14"/>
@@ -153,8 +158,9 @@
         <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="270" cy="256" r="15"/><text x="270" y="261">2</text></g>
         <g class="font-badge font-hotspot" data-id="abrevadero1"><circle cx="472" cy="278" r="15"/><text x="472" y="283">3</text></g>
         <g class="font-badge font-hotspot" data-id="abrevadero2"><circle cx="710" cy="278" r="15"/><text x="710" y="283">4</text></g>
-        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1005" cy="318" r="15"/><text x="1005" y="323">5</text></g>
+        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="990" cy="318" r="15"/><text x="990" y="323">5</text></g>
         <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1150" cy="200" r="15"/><text x="1150" y="205">6</text></g>
+        <g class="font-badge font-hotspot" data-id="codo"><circle cx="906" cy="310" r="15"/><text x="906" y="315">7</text></g>
       </g>
     </svg>
 
@@ -165,52 +171,53 @@
         </marker>
       </defs>
 
-      <g class="font-hotspot" data-id="manantial">
-        <rect class="font-hit" x="30" y="90" width="140" height="140" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="manantial">
         <circle class="font-rocks-ring" cx="100" cy="160" r="55"/>
         <circle class="font-water" cx="100" cy="160" r="26"/>
       </g>
 
       <path class="font-pipe-rigid" d="M156,160 L220,160"/>
 
-      <g class="font-hotspot" data-id="arqueta">
-        <rect class="font-hit" x="216" y="106" width="168" height="108" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="arqueta">
         <rect class="font-concrete" x="220" y="110" width="160" height="100" rx="4"/>
         <rect class="font-water" x="230" y="122" width="140" height="76" rx="2"/>
         <circle class="font-valve" cx="378" cy="140" r="6"/>
         <circle class="font-valve" cx="378" cy="180" r="6"/>
       </g>
 
+      <!-- Salida superior: alimenta directamente el primer abrevadero. -->
       <path class="font-pipe-rigid" d="M384,140 L460,140"/>
-      <path class="font-pipe-rigid" d="M384,180 L916,180 L928,180"/>
+      <!-- Salida inferior: discurre por el lateral de ambos abrevaderos (línea
+           enterrada a y=180, visible bajo/junto a ellos) y solo sube a la vista
+           dentro de la pared final del segundo abrevadero (ver grupo "codo"). -->
+      <path class="font-pipe-rigid" d="M384,180 L900,180"/>
 
-      <g class="font-hotspot" data-id="abrevadero1">
-        <rect class="font-hit" x="456" y="112" width="228" height="96" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="abrevadero1">
         <rect class="font-concrete" x="460" y="120" width="220" height="80" rx="4"/>
         <rect class="font-water" x="470" y="130" width="200" height="60" rx="2"/>
         <path class="font-filtracion" d="M492,160 L648,160" marker-end="url(#fArrowPlanta)"/>
       </g>
 
-      <g class="font-hotspot" data-id="abrevadero2">
-        <rect class="font-hit" x="696" y="112" width="228" height="96" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="abrevadero2">
         <rect class="font-concrete" x="700" y="120" width="220" height="80" rx="4"/>
         <rect class="font-water" x="710" y="130" width="200" height="60" rx="2"/>
         <path class="font-filtracion" d="M732,160 L888,160" marker-end="url(#fArrowPlanta)"/>
       </g>
 
-      <g class="font-hotspot" data-id="codo">
-        <rect class="font-hit" x="920" y="150" width="40" height="46" fill="#000" opacity="0" pointer-events="all"/>
-        <rect class="font-codo" x="930" y="166" width="20" height="20" rx="4"/>
-        <circle class="font-codo-tapa" cx="940" cy="160" r="6"/>
+      <!-- Codo con tapa: dibujado DESPUÉS del segundo abrevadero, solapado con
+           su pared final (x=900-920, dentro de 700-920), para que quede claro
+           que está embebido en esa pared, no fuera de la balsa. -->
+      <g data-id="codo">
+        <path class="font-pipe-rigid" d="M900,180 L900,160"/>
+        <rect class="font-codo" x="900" y="150" width="20" height="20" rx="4"/>
+        <circle class="font-codo-tapa" cx="910" cy="160" r="6"/>
       </g>
 
-      <g class="font-hotspot" data-id="manguera">
-        <rect class="font-hit" x="960" y="142" width="130" height="40" fill="#000" opacity="0" pointer-events="all"/>
-        <path class="font-hose" d="M950,180 q30,10 60,-2 q30,-12 60,2 q20,10 40,0"/>
+      <g data-id="manguera">
+        <path class="font-hose" d="M918,172 q28,10 56,-2 q28,-12 56,2 q20,10 40,0"/>
       </g>
 
-      <g class="font-hotspot" data-id="deposito">
-        <rect class="font-hit" x="1078" y="90" width="140" height="140" fill="#000" opacity="0" pointer-events="all"/>
+      <g data-id="deposito">
         <circle class="font-tank-top" cx="1148" cy="160" r="70"/>
         <circle class="font-tank-cap" cx="1148" cy="160" r="32"/>
       </g>
@@ -220,8 +227,9 @@
         <g class="font-badge font-hotspot" data-id="arqueta"><circle cx="300" cy="96" r="15"/><text x="300" y="101">2</text></g>
         <g class="font-badge font-hotspot" data-id="abrevadero1"><circle cx="570" cy="106" r="15"/><text x="570" y="111">3</text></g>
         <g class="font-badge font-hotspot" data-id="abrevadero2"><circle cx="810" cy="106" r="15"/><text x="810" y="111">4</text></g>
-        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1025" cy="128" r="15"/><text x="1025" y="133">5</text></g>
+        <g class="font-badge font-hotspot" data-id="manguera"><circle cx="1000" cy="128" r="15"/><text x="1000" y="133">5</text></g>
         <g class="font-badge font-hotspot" data-id="deposito"><circle cx="1148" cy="80" r="15"/><text x="1148" y="85">6</text></g>
+        <g class="font-badge font-hotspot" data-id="codo"><circle cx="906" cy="128" r="15"/><text x="906" y="133">7</text></g>
       </g>
     </svg>
   </section>

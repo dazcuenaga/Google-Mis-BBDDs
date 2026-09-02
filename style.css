@@ -549,16 +549,16 @@ html, body {
 /* Vista en planta: manantial (anillo de piedras) */
 .font-rocks-ring { fill: none; stroke: #8a8f9c; stroke-width: 10; stroke-dasharray: 6 5; }
 
-/* Hotspots clicables */
+/* Solo los badges numerados son clicables — las formas del dibujo (mismo
+   data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
 .font-hotspot { cursor: pointer; }
-.font-hotspot .font-hit { cursor: pointer; }
-.font-hotspot.font-selected .font-concrete { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
-.font-hotspot.font-selected .font-rocks,
-.font-hotspot.font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
-.font-hotspot.font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
-.font-hotspot.font-selected .font-hose { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
-.font-hotspot.font-selected .font-tank-body,
-.font-hotspot.font-selected .font-tank-top { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-concrete { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-rocks,
+.font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-hose { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-tank-body,
+.font-selected .font-tank-top { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 
 /* Badges numerados */
 .font-badge circle { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
