@@ -438,8 +438,14 @@ html, body {
   border-radius: 6px;
   border: 2px solid transparent;
   background: transparent;
+  cursor: pointer;
   transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
+/* Nota: algunos planos (ej. Exterior, interruptores A/B/C/D) tienen iconos
+   prácticamente pegados unos a otros — NO ampliar el área clicable con un
+   margen fijo (ej. ::after con inset negativo), porque con iconos tan juntos
+   el área ampliada de uno tapa el centro del vecino y lo hace inclicable. */
+.elec-hotspot:active { background: rgba(245, 158, 11, 0.25); }
 .elec-hotspot.active {
   background: rgba(245, 158, 11, 0.38);
   border-color: var(--warn);

@@ -1,4 +1,4 @@
-const CACHE = 'congelados-v41';
+const CACHE = 'congelados-v42';
 const SHELL = ['./', './index.html', './style.css', './app.js', './electricidad-data.js', './config.js', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', (e) => {

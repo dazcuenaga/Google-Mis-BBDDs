@@ -1331,6 +1331,10 @@ function renderElecPlano() {
 
 // Solo repinta los hotspots (no la imagen ni las pestañas): se llama al
 // seleccionar/deseleccionar un automático, para que el plano visible no parpadee.
+// Los propios hotspots también son clicables: tocar un interruptor/enchufe
+// selecciona su automático (mismo estado `elecSelectedControl` que usan los
+// botones del cuadro), así que el botón correspondiente se enciende igual
+// que si se hubiera pulsado directamente en el panel.
 function renderElecHotspots() {
   const plano = elecCurrentPlano();
   elecHotspots.innerHTML = '';
@@ -1343,6 +1347,13 @@ function renderElecHotspots() {
     div.style.width = `${icon.w * 100}%`;
     div.style.height = `${icon.h * 100}%`;
     div.title = icon.label;
+    if (icon.breaker) {
+      div.addEventListener('click', () => {
+        elecSelectedControl = elecSelectedControl === icon.breaker ? null : icon.breaker;
+        renderElecPanel();
+        renderElecHotspots();
+      });
+    }
     elecHotspots.appendChild(div);
   }
 }
