@@ -227,7 +227,7 @@ function buildAnimalesModule() {
 const MODULES = [
   {
     id: 'congelados',
-    title: 'Congelados',
+    title: 'Congelador',
     subtitle: 'Inventario de nevera y arcón',
     icon: '🧊',
     spreadsheetId: '1xtBrpzA9EaLztJ7-KR_XmyfxuywBK_Uf5xFxd1Usijk',
@@ -897,3 +897,48 @@ function buildRecetasModule() {
     recetasPorSeccion: RECETAS_POR_SECCION,
   };
 }
+
+// ---------------------------------------------------------------------------
+// CATEGORÍAS DE MÓDULOS: agrupa los módulos de MODULES en un nivel superior
+// de navegación (Módulos → categoría → módulo, en vez de Módulos → módulo
+// directamente). Cada categoría es solo `{id, icon, title, subtitle,
+// moduleIds}` — `moduleIds` referencia los `id` de MODULES por string, no
+// los objetos en sí, así que el orden de este array es independiente del
+// orden de MODULES (y da igual si esta constante se define antes o después).
+// app.js (renderModules/renderCategoryModules en la sección "Categorías de
+// módulos") resuelve cada id contra MODULES en el momento de renderizar. Si
+// se añade un módulo nuevo, hay que añadir su id a la categoría que
+// corresponda aquí — si no aparece en ninguna, no se mostrará en ningún
+// sitio (a diferencia de MODULES, no hay un aviso/log si un id se queda
+// huérfano, así que conviene revisar este array al añadir un módulo).
+// ---------------------------------------------------------------------------
+const MODULE_CATEGORIES = [
+  {
+    id: 'alimentacion',
+    icon: '🍽️',
+    title: 'Alimentación',
+    subtitle: 'Congelador, Recetas y Almacén de Precios',
+    moduleIds: ['congelados', 'recetas', 'almacenprecios'],
+  },
+  {
+    id: 'infraestructura',
+    icon: '🛠️',
+    title: 'Infraestructura',
+    subtitle: 'Fontanería y Electricidad',
+    moduleIds: ['fontaneria', 'electricidad-el-rellano'],
+  },
+  {
+    id: 'agricultura-ganaderia',
+    icon: '🌾',
+    title: 'Agricultura y Ganadería',
+    subtitle: 'Animales, Incubaciones y Plantas',
+    moduleIds: ['animales', 'incubaciones', 'plantas'],
+  },
+  {
+    id: 'por-hacer',
+    icon: '📝',
+    title: 'Por hacer',
+    subtitle: 'Tareas y Lista de Lectura',
+    moduleIds: ['familytodos', 'listalectura'],
+  },
+];

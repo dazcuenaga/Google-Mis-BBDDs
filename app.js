@@ -77,6 +77,9 @@ const recetaFichaBody = el('recetaFichaBody');
 let recetasMod = null;           // módulo actual (definición completa: secciones + recetasPorSeccion)
 let recetasSeccionActual = null; // sección actual (objeto de RECETAS_SECCIONES), para el back y la lista
 const moduleList = el('moduleList');
+const categoryScreen = el('categoryScreen');
+const categoryModuleList = el('categoryModuleList');
+let currentCategory = null; // categoría actual (objeto de MODULE_CATEGORIES), para el back y para volver tras cerrar un módulo
 const boardList = el('boardList');
 const listEl = el('list');
 const statusEl = el('status');
@@ -131,6 +134,7 @@ function onLogin() {
 function showGate() {
   loginGate.classList.remove('hidden');
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -152,8 +156,10 @@ function showGate() {
 function showModules() {
   currentModule = null;
   currentBoard = null;
+  currentCategory = null;
   navStack = [];
   modulesScreen.classList.remove('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -176,6 +182,7 @@ function showBoards(mod) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -198,6 +205,7 @@ function showPicker() {
   const node = navStack[navStack.length - 1];
   currentBoard = null;
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -225,6 +233,7 @@ async function openDynamicPicker(mod) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.remove('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -268,6 +277,7 @@ function showBoard(mod, board) {
   currentModule = mod;
   currentBoard = board;
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.remove('hidden');
   electricidadScreen.classList.add('hidden');
@@ -294,22 +304,24 @@ function showBoard(mod, board) {
 
 backBtn.addEventListener('click', () => {
   if (!electricidadScreen.classList.contains('hidden')) {
-    showModules();
+    backToModuleList();
     return;
   }
   // El esquema y el aviso "próximamente" vuelven al submenú de Fontanería
-  // (no directamente a Módulos); el submenú en sí sí vuelve a Módulos.
+  // (no directamente a la lista de módulos de la categoría); el submenú en
+  // sí sí vuelve a esa lista.
   if (!fontaneriaScreen.classList.contains('hidden') || !fontDepositoCasaScreen.classList.contains('hidden') || !fontInteriorCasaScreen.classList.contains('hidden') || !fontProximamenteScreen.classList.contains('hidden')) {
     openFontaneriaMenu(fontMod);
     return;
   }
   if (!fontaneriaMenuScreen.classList.contains('hidden')) {
-    showModules();
+    backToModuleList();
     return;
   }
   // Mismo patrón de navegación en tres niveles que Fontanería: la ficha de
   // una receta vuelve a la lista de su apartado, la lista vuelve al submenú
-  // de Recetas, y el submenú en sí vuelve a Módulos.
+  // de Recetas, y el submenú en sí vuelve a la lista de módulos de la
+  // categoría.
   if (!recetaFichaScreen.classList.contains('hidden')) {
     openRecetasSeccion(recetasMod, recetasSeccionActual);
     return;
@@ -319,6 +331,14 @@ backBtn.addEventListener('click', () => {
     return;
   }
   if (!recetasMenuScreen.classList.contains('hidden')) {
+    backToModuleList();
+    return;
+  }
+  // La lista de módulos de una categoría vuelve a Módulos (las categorías).
+  // currentModule ya es null aquí (openCategory lo pone a null), así que
+  // este check tiene que ir antes del `if (!currentModule) return;` de
+  // abajo o un backBtn en esta pantalla no haría nada.
+  if (!categoryScreen.classList.contains('hidden')) {
     showModules();
     return;
   }
@@ -327,18 +347,78 @@ backBtn.addEventListener('click', () => {
     currentBoard = null;
     if (navStack.length > 0) showPicker();
     else if (currentModule.boards && currentModule.boards.length > 1) showBoards(currentModule);
-    else showModules();
+    else backToModuleList();
   } else if (navStack.length > 1) {
     navStack.pop();
     showPicker();
   } else {
-    showModules();
+    backToModuleList();
   }
 });
 
+// ---------- Categorías de módulos (Módulos → categoría → módulo) ----------
+// La pantalla "Módulos" (moduleList, arriba) ya no lista los módulos
+// directamente: lista las CATEGORÍAS de MODULE_CATEGORIES (config.js).
+// Tocar una categoría abre #categoryScreen (openCategory) con los módulos
+// de esa categoría concretos (renderCategoryModules) — ahí es donde vive el
+// dispatch por tipo de módulo (custom:'electricidad'/'fontaneria'/'recetas',
+// dynamicTree, tree, boards) que antes estaba en esta misma función cuando
+// renderModules() todavía listaba módulos sueltos.
 function renderModules() {
   moduleList.innerHTML = '';
-  for (const mod of MODULES) {
+  for (const cat of MODULE_CATEGORIES) {
+    const card = document.createElement('div');
+    card.className = 'card module-card';
+    card.innerHTML = `
+      <div class="module-icon">${cat.icon}</div>
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(cat.title)}</p>
+        <div class="card-meta">${escapeHtml(cat.subtitle || '')}</div>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => openCategory(cat));
+    moduleList.appendChild(card);
+  }
+}
+
+function openCategory(cat) {
+  currentCategory = cat;
+  currentModule = null;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  categoryScreen.classList.remove('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = cat.icon;
+  topTitle.textContent = cat.title;
+  renderCategoryModules(cat);
+}
+
+// Vuelve a la pantalla de la que salió cualquier módulo: la lista de
+// módulos de la categoría actual si venimos de una (caso normal, ya que
+// todo módulo hoy vive dentro de una categoría), o Módulos (las categorías)
+// como red de seguridad si por lo que sea no hay categoría activa.
+function backToModuleList() {
+  if (currentCategory) openCategory(currentCategory);
+  else showModules();
+}
+
+function renderCategoryModules(cat) {
+  categoryModuleList.innerHTML = '';
+  const mods = cat.moduleIds.map((id) => MODULES.find((m) => m.id === id)).filter(Boolean);
+  for (const mod of mods) {
     const card = document.createElement('div');
     card.className = 'card module-card';
     card.innerHTML = `
@@ -369,7 +449,7 @@ function renderModules() {
         showBoard(mod, mod.boards[0]);
       }
     });
-    moduleList.appendChild(card);
+    categoryModuleList.appendChild(card);
   }
 }
 
@@ -1354,6 +1434,7 @@ function openElectricidad(mod) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   recetasMenuScreen.classList.add('hidden');
@@ -1502,6 +1583,7 @@ function openFontaneriaMenu(mod) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1554,6 +1636,7 @@ function renderFontMenu() {
 // igual que la pantalla del esquema: vuelve al submenú, no a Módulos.
 function openFontProximamente(sec) {
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1595,6 +1678,7 @@ function openFontaneria(mod, sec) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1630,6 +1714,7 @@ function openFontDepositoCasa(mod, sec) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1693,6 +1778,7 @@ function openFontInteriorCasa(mod, sec) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1816,6 +1902,7 @@ function openRecetasMenu(mod) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1865,6 +1952,7 @@ function openRecetasSeccion(mod, sec) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');
@@ -1933,6 +2021,7 @@ function openRecetaFicha(mod, sec, receta) {
   currentBoard = null;
   navStack = [];
   modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
   electricidadScreen.classList.add('hidden');

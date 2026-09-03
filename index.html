@@ -33,9 +33,18 @@
   </div>
 </section>
 
-<!-- Selector de módulos (una vez logueado) -->
+<!-- Selector de módulos (una vez logueado): ahora es un selector de
+     CATEGORÍAS (Alimentación, Infraestructura, Agricultura y Ganadería, Por
+     hacer — ver MODULE_CATEGORIES en config.js); tocar una categoría abre
+     #categoryScreen con los módulos de esa categoría. -->
 <main id="modulesScreen" class="screen hidden">
   <section class="list module-list" id="moduleList"></section>
+</main>
+
+<!-- Módulos dentro de una categoría concreta (mismo marcado que moduleList,
+     reutiliza las mismas clases .list.module-list/.module-card). -->
+<main id="categoryScreen" class="screen hidden">
+  <section class="list module-list" id="categoryModuleList"></section>
 </main>
 
 <!-- Selector de tablero dentro de un módulo (si tiene varios) -->
