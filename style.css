@@ -593,6 +593,17 @@ html, body {
 #fontICSvg .font-pipe-rigid { stroke: #2f7dd1; }
 @media (prefers-color-scheme: light) { #fontICSvg .font-pipe-rigid { stroke: #1a5490; } }
 
+/* Tubo de agua caliente (Interior Casa): sale del calentador (en el
+   trastero) en rojo, para distinguirlo del resto de tubos, que son de agua
+   fría (azules). Mismo grosor/remate que .font-pipe-rigid, pero con clase
+   propia -no puede heredar de .font-pipe-rigid- para que ambos colores
+   convivan en el mismo esquema. Cada aparato que recibe agua caliente
+   (lavabos, ducha, lavadora, lavavajillas) dibuja su propio tramo completo
+   desde el calentador, igual que ya hacen los tramos de agua fría desde la
+   llave principal. */
+.font-pipe-caliente { stroke: #c0392b; stroke-width: 6; stroke-linecap: round; fill: none; }
+@media (prefers-color-scheme: light) { .font-pipe-caliente { stroke: #a5311f; } }
+
 /* Solo los badges numerados son clicables — las formas del dibujo (mismo
    data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
 .font-hotspot { cursor: pointer; }
@@ -602,7 +613,8 @@ html, body {
 .font-selected .font-rocks-ring { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-codo { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-hose { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
-.font-selected .font-pipe-rigid { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-pipe-rigid,
+.font-selected .font-pipe-caliente { stroke: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-tank-body,
 .font-selected .font-tank-top { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
 .font-selected .font-bomba { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }

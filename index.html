@@ -417,15 +417,19 @@
         <ellipse class="font-wc" cx="245" cy="83" rx="8" ry="6"/>
       </g>
 
-      <!-- Ramal: al lavabo del baño de la Planta Primera. -->
+      <!-- Ramal: al lavabo del baño de la Planta Primera. También recibe
+           agua caliente del calentador (tubo rojo, ver más abajo). -->
       <g data-id="lavaboPlantaPrimera">
         <path class="font-pipe-rigid" d="M267,180 L267,129"/>
+        <path class="font-pipe-caliente" d="M470,445 L470,415 L224,415 L224,124 L258,124"/>
         <rect class="font-lavabo" x="258" y="118" width="18" height="11" rx="4"/>
       </g>
 
-      <!-- Ramal: a la ducha del baño de la Planta Primera. -->
+      <!-- Ramal: a la ducha del baño de la Planta Primera. También recibe
+           agua caliente del calentador (tubo rojo, ver más abajo). -->
       <g data-id="duchaPlantaPrimera">
         <path class="font-pipe-rigid" d="M267,180 L267,160 L294,160 L294,143"/>
+        <path class="font-pipe-caliente" d="M470,445 L470,415 L224,415 L224,156 L283,156"/>
         <rect class="font-ducha" x="283" y="145" width="22" height="22" rx="3"/>
         <circle class="font-ducha-drain" cx="294" cy="156" r="2"/>
       </g>
@@ -472,9 +476,11 @@
         <ellipse class="font-wc" cx="386" cy="536" rx="10" ry="7"/>
       </g>
 
-      <!-- Ramal: al lavabo del baño. -->
+      <!-- Ramal: al lavabo del baño. También recibe agua caliente del
+           calentador (tubo rojo, ver más abajo), por su propio ramal. -->
       <g data-id="lavabo">
         <path class="font-pipe-rigid" d="M352,570 L318,570 L318,532"/>
+        <path class="font-pipe-caliente" d="M470,445 L500,445 L500,580 L333,580 L333,522"/>
         <rect class="font-lavabo" x="308" y="518" width="22" height="14" rx="4"/>
       </g>
 
@@ -486,18 +492,25 @@
         <rect class="font-fregadero" x="611" y="612" width="39" height="57"/>
       </g>
 
-      <!-- Ramal: a la lavadora, pared derecha, encima del fregadero. Sale del
-           tubo del fregadero (punto x=470,y=640), no de la llave principal. -->
+      <!-- Ramal: a la lavadora, pared derecha, encima del fregadero. El tubo
+           de agua fría sale del tubo del fregadero (punto x=470,y=640), no de
+           la llave principal. El de agua caliente (rojo) sale del calentador
+           y pasa primero junto al fregadero (x=595,y=650) antes de subir
+           hasta la lavadora, igual que hace el de agua fría. -->
       <g data-id="lavadora">
         <path class="font-pipe-rigid" d="M470,640 L470,582 L611,582"/>
+        <path class="font-pipe-caliente" d="M470,445 L500,445 L500,650 L595,650 L595,598 L611,598"/>
         <rect class="font-lavadora" x="611" y="552" width="39" height="60"/>
       </g>
 
-      <!-- Ramal: al lavavajillas, pared derecha, debajo del fregadero. Sale
-           del tubo del fregadero (punto x=470,y=640), no de la llave
-           principal. -->
+      <!-- Ramal: al lavavajillas, pared derecha, debajo del fregadero. El
+           tubo de agua fría sale del tubo del fregadero (punto x=470,y=640),
+           no de la llave principal. El de agua caliente (rojo) sale del
+           calentador y pasa primero junto al fregadero (x=595,y=650) antes de
+           bajar hasta el lavavajillas, igual que hace el de agua fría. -->
       <g data-id="lavavajillas">
         <path class="font-pipe-rigid" d="M470,640 L470,699 L611,699"/>
+        <path class="font-pipe-caliente" d="M470,445 L500,445 L500,650 L595,650 L595,715 L611,715"/>
         <rect class="font-lavavajillas" x="611" y="669" width="39" height="60"/>
       </g>
 

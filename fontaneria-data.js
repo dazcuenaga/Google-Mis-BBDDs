@@ -155,11 +155,22 @@ const FONTANERIA_DEPOSITO_CASA_ELEMENTOS = {
 // sube además una tubería (el "riser") que atraviesa el hueco entre plantas
 // y lleva agua al baño de la Planta Primera, donde hay WC, lavabo y ducha
 // propios. La Planta Primera tiene también cinco habitaciones (dormitorios,
-// sin instalación propia). TODOS los tubos de este tramo son de agua fría
-// (se pintan en azul, a diferencia de los otros dos tramos, que mantienen el
-// gris estándar). Mismo patrón que los dos tramos anteriores: SOLO los
-// badges numerados son clicables, `numero` sigue el orden físico del
-// recorrido del agua.
+// sin instalación propia). Los tubos de agua FRÍA de este tramo se pintan en
+// azul (a diferencia de los otros dos tramos, que mantienen el gris
+// estándar). Además, del calentador (dentro del trastero) sale un tubo de
+// agua CALIENTE, pintado en rojo (clase .font-pipe-caliente), que llega a
+// los dos lavabos, a la ducha, a la lavadora y al lavavajillas — en el caso
+// de la lavadora y el lavavajillas, ese tubo rojo pasa primero junto al
+// fregadero antes de llegar a cada aparato, igual que hace el tubo de agua
+// fría. El WC (planta baja y Planta Primera) y el propio fregadero NO tienen
+// tubo de agua caliente, solo fría. Cada aparato que recibe agua caliente
+// dibuja su propio tramo rojo completo desde el calentador dentro de su
+// propio <g data-id>, igual que ya hacían los ramales de agua fría desde la
+// llave principal (mismo patrón, no hay un <g> aparte para el tubo
+// caliente). Mismo patrón que los dos tramos anteriores: SOLO los badges
+// numerados son clicables, `numero` sigue el orden físico del recorrido del
+// agua (el agua caliente reutiliza los mismos números que la fría, ya que
+// llega a los mismos aparatos).
 const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
   tuboEntrada: {
     numero: 1,
@@ -184,27 +195,27 @@ const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
   lavabo: {
     numero: 5,
     titulo: 'Lavabo',
-    descripcion: 'Tubería de la llave principal al lavabo del baño. (agua fría)',
+    descripcion: 'Tubería de la llave principal al lavabo del baño (agua fría). Además recibe un tubo rojo de agua caliente que viene directamente del calentador del trastero (agua caliente).',
   },
   trastero: {
     numero: 6,
     titulo: 'Trastero',
-    descripcion: 'Cuarto situado arriba a la derecha de la planta baja, con el calentador de agua dentro.',
+    descripcion: 'Cuarto situado arriba a la derecha de la planta baja, con el calentador de agua dentro. De él sale el tubo rojo de agua caliente que abastece a los dos lavabos, la ducha, la lavadora y el lavavajillas (en el caso de la lavadora y el lavavajillas, pasando primero junto al fregadero).',
   },
   fregaderoCocina: {
     numero: 7,
     titulo: 'Fregadero de la cocina',
-    descripcion: 'Tubería de la llave principal al fregadero de la cocina, en la pared derecha de la planta baja. La lavadora y el lavavajillas se derivan de este mismo tubo. (agua fría)',
+    descripcion: 'Tubería de la llave principal al fregadero de la cocina, en la pared derecha de la planta baja (agua fría). La lavadora y el lavavajillas se derivan de este mismo tubo de agua fría. El tubo rojo de agua caliente del calentador pasa cerca de aquí de camino a la lavadora y al lavavajillas, pero el propio fregadero no tiene toma de agua caliente.',
   },
   lavadora: {
     numero: 8,
     titulo: 'Lavadora',
-    descripcion: 'Tubería que se deriva del tubo del fregadero de la cocina (no de la llave principal directamente) hasta la lavadora, en la pared derecha de la planta baja, encima del fregadero. (agua fría)',
+    descripcion: 'Tubería que se deriva del tubo del fregadero de la cocina (no de la llave principal directamente) hasta la lavadora, en la pared derecha de la planta baja, encima del fregadero (agua fría). También recibe un tubo rojo de agua caliente que sale del calentador y pasa primero junto al fregadero antes de llegar aquí (agua caliente).',
   },
   lavavajillas: {
     numero: 9,
     titulo: 'Lavavajillas',
-    descripcion: 'Tubería que se deriva del tubo del fregadero de la cocina (no de la llave principal directamente) hasta el lavavajillas, en la pared derecha de la planta baja, debajo del fregadero. (agua fría)',
+    descripcion: 'Tubería que se deriva del tubo del fregadero de la cocina (no de la llave principal directamente) hasta el lavavajillas, en la pared derecha de la planta baja, debajo del fregadero (agua fría). También recibe un tubo rojo de agua caliente que sale del calentador y pasa primero junto al fregadero antes de llegar aquí (agua caliente).',
   },
   habitaciones: {
     numero: 10,
@@ -224,12 +235,12 @@ const FONTANERIA_INTERIOR_CASA_ELEMENTOS = {
   lavaboPlantaPrimera: {
     numero: 13,
     titulo: 'Lavabo (Planta Primera)',
-    descripcion: 'Tubería que sube desde la llave principal de la planta baja hasta el lavabo del baño de la Planta Primera. (agua fría)',
+    descripcion: 'Tubería que sube desde la llave principal de la planta baja hasta el lavabo del baño de la Planta Primera (agua fría). Además recibe un tubo rojo de agua caliente que sube directamente desde el calentador del trastero (agua caliente).',
   },
   duchaPlantaPrimera: {
     numero: 14,
     titulo: 'Ducha (Planta Primera)',
-    descripcion: 'Tubería que sube desde la llave principal de la planta baja hasta la ducha del baño de la Planta Primera. (agua fría)',
+    descripcion: 'Tubería que sube desde la llave principal de la planta baja hasta la ducha del baño de la Planta Primera (agua fría). Además recibe un tubo rojo de agua caliente que sube directamente desde el calentador del trastero (agua caliente).',
   },
 };
 
