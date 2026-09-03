@@ -66,6 +66,16 @@ let fontMod = null;          // módulo actual (definición completa: elementos)
 let fontSelectedId = null;   // id del elemento seleccionado (clave de FONTANERIA_ELEMENTOS), o null
 let fontDCSelectedId = null; // igual que fontSelectedId, pero para el tramo "Depósito a Casa"
 let fontICSelectedId = null; // igual que fontSelectedId, pero para el tramo "Interior Casa"
+
+const recetasMenuScreen = el('recetasMenuScreen');
+const recetasMenuList = el('recetasMenuList');
+const recetasSeccionScreen = el('recetasSeccionScreen');
+const recetasSeccionList = el('recetasSeccionList');
+const recetaFichaScreen = el('recetaFichaScreen');
+const recetaFichaBody = el('recetaFichaBody');
+
+let recetasMod = null;           // módulo actual (definición completa: secciones + recetasPorSeccion)
+let recetasSeccionActual = null; // sección actual (objeto de RECETAS_SECCIONES), para el back y la lista
 const moduleList = el('moduleList');
 const boardList = el('boardList');
 const listEl = el('list');
@@ -129,6 +139,9 @@ function showGate() {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -149,6 +162,9 @@ function showModules() {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -168,6 +184,9 @@ function showBoards(mod) {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -187,6 +206,9 @@ function showPicker() {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -211,6 +233,9 @@ async function openDynamicPicker(mod) {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -251,6 +276,9 @@ function showBoard(mod, board) {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -276,6 +304,21 @@ backBtn.addEventListener('click', () => {
     return;
   }
   if (!fontaneriaMenuScreen.classList.contains('hidden')) {
+    showModules();
+    return;
+  }
+  // Mismo patrón de navegación en tres niveles que Fontanería: la ficha de
+  // una receta vuelve a la lista de su apartado, la lista vuelve al submenú
+  // de Recetas, y el submenú en sí vuelve a Módulos.
+  if (!recetaFichaScreen.classList.contains('hidden')) {
+    openRecetasSeccion(recetasMod, recetasSeccionActual);
+    return;
+  }
+  if (!recetasSeccionScreen.classList.contains('hidden')) {
+    openRecetasMenu(recetasMod);
+    return;
+  }
+  if (!recetasMenuScreen.classList.contains('hidden')) {
     showModules();
     return;
   }
@@ -311,6 +354,8 @@ function renderModules() {
         openElectricidad(mod);
       } else if (mod.custom === 'fontaneria') {
         openFontaneriaMenu(mod);
+      } else if (mod.custom === 'recetas') {
+        openRecetasMenu(mod);
       } else if (mod.dynamicTree) {
         openDynamicPicker(mod);
       } else if (mod.tree) {
@@ -1311,6 +1356,9 @@ function openElectricidad(mod) {
   modulesScreen.classList.add('hidden');
   boardsScreen.classList.add('hidden');
   boardScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   electricidadScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -1461,6 +1509,9 @@ function openFontaneriaMenu(mod) {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -1510,6 +1561,9 @@ function openFontProximamente(sec) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -1548,6 +1602,9 @@ function openFontaneria(mod, sec) {
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   fontaneriaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'manantial-deposito');
@@ -1580,6 +1637,9 @@ function openFontDepositoCasa(mod, sec) {
   fontaneriaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'deposito-casa');
@@ -1640,6 +1700,9 @@ function openFontInteriorCasa(mod, sec) {
   fontaneriaScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.add('hidden');
   fontProximamenteScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'interior-casa');
@@ -1736,6 +1799,168 @@ fontLeyendaClose.addEventListener('click', () => fontLeyendaOverlay.classList.ad
 fontLeyendaOverlay.addEventListener('click', (e) => {
   if (e.target === fontLeyendaOverlay) fontLeyendaOverlay.classList.add('hidden');
 });
+
+// ---------- Módulo "Recetas" (recetario fijo, en cuatro apartados) ----------
+// No lee ninguna hoja. Al abrir el módulo se ve primero un submenú
+// (openRecetasMenu) con los cuatro apartados de RECETAS_SECCIONES (ver
+// recetas-data.js: Salsas, Encurtidos, Postres, Comidas). Tocar un apartado
+// abre su lista de recetas (openRecetasSeccion, RECETAS_POR_SECCION[id] —
+// vacía todavía para Encurtidos/Postres/Comidas, se muestra un aviso en vez
+// de una lista vacía). Tocar una receta de la lista abre su ficha a pantalla
+// completa (openRecetaFicha): título, ingredientes y preparación. El backBtn
+// desde la ficha vuelve a la lista de su apartado, y desde la lista vuelve al
+// submenú (no directamente a Módulos) — mismo patrón de navegación en tres
+// niveles que Fontanería (ver backBtn más arriba).
+function openRecetasMenu(mod) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = mod.icon;
+  topTitle.textContent = mod.title;
+
+  recetasMod = mod;
+  recetasSeccionActual = null;
+  renderRecetasMenu();
+}
+
+function renderRecetasMenu() {
+  recetasMenuList.innerHTML = '';
+  for (const sec of recetasMod.secciones) {
+    const card = document.createElement('div');
+    card.className = 'card module-card';
+    card.innerHTML = `
+      <div class="module-icon">${sec.icon}</div>
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(sec.titulo)}</p>
+        <div class="card-meta">${escapeHtml(sec.subtitulo || '')}</div>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => openRecetasSeccion(recetasMod, sec));
+    recetasMenuList.appendChild(card);
+  }
+}
+
+// Lista de recetas de un apartado concreto. Si el apartado todavía no tiene
+// ninguna receta (Encurtidos/Postres/Comidas de momento, RECETAS_POR_SECCION
+// vacío para esos ids), se muestra un aviso simple en vez de una lista vacía
+// — mismo criterio que el "próximamente" de Fontanería para un tramo sin
+// esquema todavía, pero aquí no hace falta una pantalla propia: el mensaje
+// cabe dentro de esta misma lista.
+function openRecetasSeccion(mod, sec) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = sec.icon;
+  topTitle.textContent = sec.titulo;
+
+  recetasMod = mod;
+  recetasSeccionActual = sec;
+  renderRecetasSeccionList();
+}
+
+function renderRecetasSeccionList() {
+  const recetas = (recetasMod.recetasPorSeccion && recetasMod.recetasPorSeccion[recetasSeccionActual.id]) || [];
+  recetasSeccionList.innerHTML = '';
+  if (recetas.length === 0) {
+    recetasSeccionList.innerHTML = `
+      <div class="receta-empty">
+        <span class="receta-empty-icon">${recetasSeccionActual.icon}</span>
+        <p>Todavía no hay recetas en ${escapeHtml(recetasSeccionActual.titulo)}.</p>
+      </div>
+    `;
+    return;
+  }
+  for (const receta of recetas) {
+    const card = document.createElement('div');
+    card.className = 'card receta-card';
+    card.innerHTML = `
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(receta.titulo)}</p>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => openRecetaFicha(recetasMod, recetasSeccionActual, receta));
+    recetasSeccionList.appendChild(card);
+  }
+}
+
+// Ficha de una receta concreta: ingredientes (lista) + preparación (pasos
+// numerados, en el mismo orden en que se escribieron). Pantalla completa, no
+// modal — mismo criterio que el resto de pantallas "de detalle" de este
+// módulo. El backBtn vuelve a la lista de recetas del apartado (ver backBtn
+// más arriba).
+function openRecetaFicha(mod, sec, receta) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = sec.icon;
+  topTitle.textContent = receta.titulo;
+
+  recetasMod = mod;
+  recetasSeccionActual = sec;
+  renderRecetaFicha(receta);
+}
+
+function renderRecetaFicha(receta) {
+  const ingredientesHtml = (receta.ingredientes || [])
+    .map((ing) => `<li>${escapeHtml(ing)}</li>`)
+    .join('');
+  const pasosHtml = (receta.pasos || [])
+    .map((paso, i) => `
+      <div class="receta-paso">
+        <span class="receta-paso-num">${i + 1}</span>
+        <p class="receta-paso-text">${escapeHtml(paso)}</p>
+      </div>
+    `)
+    .join('');
+  recetaFichaBody.innerHTML = `
+    <h2 class="receta-ficha-title">${escapeHtml(receta.titulo)}</h2>
+    <h3 class="receta-ficha-section-title">Ingredientes</h3>
+    <ul class="receta-ingredientes">${ingredientesHtml}</ul>
+    <h3 class="receta-ficha-section-title">Preparación</h3>
+    <div class="receta-pasos">${pasosHtml}</div>
+  `;
+}
 
 // ---------- Service worker (instalación como app) ----------
 if ('serviceWorker' in navigator) {

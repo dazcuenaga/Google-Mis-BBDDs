@@ -550,6 +550,26 @@
   </div>
 </main>
 
+<!-- Submenú de "Recetas": elige qué apartado ver (Salsas, Encurtidos,
+     Postres, Comidas) — mismo patrón que el submenú de Fontanería. -->
+<main id="recetasMenuScreen" class="screen hidden">
+  <section class="list module-list" id="recetasMenuList"></section>
+</main>
+
+<!-- Módulo "Recetas": lista de recetas de un apartado concreto. Si el
+     apartado todavía no tiene ninguna receta, app.js pinta aquí mismo un
+     aviso "todavía no hay recetas" en vez de una lista vacía. -->
+<main id="recetasSeccionScreen" class="screen hidden">
+  <section class="list" id="recetasSeccionList"></section>
+</main>
+
+<!-- Módulo "Recetas": ficha de una receta concreta (título + ingredientes +
+     preparación), pantalla completa. Contenido generado por
+     renderRecetaFicha() en app.js. -->
+<main id="recetaFichaScreen" class="screen hidden">
+  <section class="receta-ficha" id="recetaFichaBody"></section>
+</main>
+
 <!-- Listado de un tablero concreto -->
 <main id="boardScreen" class="screen hidden">
   <section class="toolbar">
@@ -634,6 +654,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="electricidad-data.js"></script>
 <script src="fontaneria-data.js"></script>
+<script src="recetas-data.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>

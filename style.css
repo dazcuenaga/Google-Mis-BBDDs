@@ -674,6 +674,76 @@ html, body {
 .font-leyenda-row { display: flex; align-items: center; gap: 12px; font-size: 14px; }
 .font-leyenda-swatch { flex: none; width: 56px; height: 18px; }
 
+/* ---------- Módulo "Recetas" ---------- */
+.receta-card { cursor: pointer; }
+
+/* Aviso "todavía no hay recetas" para un apartado sin contenido todavía
+   (Encurtidos/Postres/Comidas de momento) — mismo estilo que el aviso
+   "próximamente" de Fontanería, pero pintado dentro de la propia lista en
+   vez de en una pantalla aparte (aquí no hace falta pantalla propia). */
+.receta-empty {
+  max-width: 360px;
+  margin: 48px auto 0;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+}
+.receta-empty-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+.receta-empty p { color: var(--text-dim); font-size: 14px; margin: 0; line-height: 1.5; }
+
+.receta-ficha { padding: 16px; max-width: 640px; margin: 0 auto; }
+.receta-ficha-title { font-size: 22px; font-weight: 700; margin: 0 0 18px; }
+.receta-ficha-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 22px 0 10px;
+}
+.receta-ficha-section-title:first-of-type { margin-top: 0; }
+
+.receta-ingredientes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.receta-ingredientes li {
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  padding-left: 30px;
+  position: relative;
+}
+.receta-ingredientes li::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 15px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.receta-pasos { display: flex; flex-direction: column; gap: 12px; }
+.receta-paso { display: flex; gap: 12px; align-items: flex-start; }
+.receta-paso-num {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.receta-paso-text { margin: 0; font-size: 14px; line-height: 1.5; padding-top: 3px; }
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f4f6fb;

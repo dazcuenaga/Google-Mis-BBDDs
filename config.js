@@ -481,6 +481,8 @@ const MODULES = [
   buildElectricidadElRellanoModule(),
 
   buildFontaneriaModule(),
+
+  buildRecetasModule(),
 ];
 
 // ---------------------------------------------------------------------------
@@ -871,5 +873,27 @@ function buildFontaneriaModule() {
     elementosDepositoCasa: FONTANERIA_DEPOSITO_CASA_ELEMENTOS,
     elementosInteriorCasa: FONTANERIA_INTERIOR_CASA_ELEMENTOS,
     secciones: FONTANERIA_SECCIONES,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// RECETAS: tampoco lee ninguna hoja — es un recetario fijo, dividido en
+// cuatro apartados (RECETAS_SECCIONES en recetas-data.js: Salsas,
+// Encurtidos, Postres, Comidas). Al abrir el módulo se ve un submenú con los
+// cuatro (mismo patrón que el submenú de Fontanería); cada apartado muestra
+// su propia lista de recetas (RECETAS_POR_SECCION[id] — de momento solo
+// Salsas tiene contenido), y tocar una receta abre su ficha (ingredientes +
+// preparación) a pantalla completa. `custom: 'recetas'` hace que app.js abra
+// una pantalla propia (openRecetasMenu) en vez del flujo normal de tableros.
+// ---------------------------------------------------------------------------
+function buildRecetasModule() {
+  return {
+    id: 'recetas',
+    title: 'Recetas',
+    subtitle: 'Salsas, encurtidos, postres y comidas',
+    icon: '🍲',
+    custom: 'recetas',
+    secciones: RECETAS_SECCIONES,
+    recetasPorSeccion: RECETAS_POR_SECCION,
   };
 }
