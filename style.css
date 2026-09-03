@@ -693,8 +693,22 @@ html, body {
 .receta-empty-icon { font-size: 48px; display: block; margin-bottom: 8px; }
 .receta-empty p { color: var(--text-dim); font-size: 14px; margin: 0; line-height: 1.5; }
 
+/* Aviso a nivel de apartado completo (p.ej. la regla de oro de seguridad
+   alimentaria de Encurtidos y Conservas), encima de la lista de recetas. */
+.receta-seccion-nota {
+  max-width: 640px;
+  margin: 0 auto 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.receta-seccion-nota p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-dim); }
+
 .receta-ficha { padding: 16px; max-width: 640px; margin: 0 auto; }
 .receta-ficha-title { font-size: 22px; font-weight: 700; margin: 0 0 18px; }
+.receta-ficha-meta { margin: -10px 0 18px; font-size: 13px; color: var(--text-dim); }
 .receta-ficha-section-title {
   font-size: 13px;
   font-weight: 700;
@@ -725,6 +739,10 @@ html, body {
   border-radius: 50%;
   background: var(--primary);
 }
+/* Ingrediente en formato "tabla" (nombre + cantidad/proporción), usado por
+   las fichas de conservas — se apilan en dos líneas dentro de la misma li. */
+.receta-ing-nombre { display: block; font-weight: 600; }
+.receta-ing-cantidad { display: block; color: var(--text-dim); font-size: 13px; margin-top: 2px; line-height: 1.4; }
 
 .receta-pasos { display: flex; flex-direction: column; gap: 12px; }
 .receta-paso { display: flex; gap: 12px; align-items: flex-start; }
@@ -743,6 +761,19 @@ html, body {
   margin-top: 1px;
 }
 .receta-paso-text { margin: 0; font-size: 14px; line-height: 1.5; padding-top: 3px; }
+
+/* Caja de "Conservación" al final de una ficha (párrafo final del PDF de
+   conservas: cuánto dura, cómo guardarla una vez abierta, etc.). */
+.receta-nota {
+  margin-top: 22px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--primary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.receta-nota strong { color: var(--text); }
 
 @media (prefers-color-scheme: light) {
   :root {

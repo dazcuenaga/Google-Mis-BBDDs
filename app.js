@@ -1888,13 +1888,25 @@ function openRecetasSeccion(mod, sec) {
 function renderRecetasSeccionList() {
   const recetas = (recetasMod.recetasPorSeccion && recetasMod.recetasPorSeccion[recetasSeccionActual.id]) || [];
   recetasSeccionList.innerHTML = '';
+  // Aviso a nivel de apartado (p.ej. la regla de oro de seguridad
+  // alimentaria de Encurtidos y Conservas) — se muestra por encima de la
+  // lista de recetas, y también por encima del aviso de "todavía no hay
+  // recetas" si el apartado sigue vacío, porque aplica igualmente.
+  if (recetasSeccionActual.nota) {
+    const nota = document.createElement('div');
+    nota.className = 'receta-seccion-nota';
+    nota.innerHTML = `<p>${escapeHtml(recetasSeccionActual.nota)}</p>`;
+    recetasSeccionList.appendChild(nota);
+  }
   if (recetas.length === 0) {
-    recetasSeccionList.innerHTML = `
+    const empty = document.createElement('div');
+    empty.innerHTML = `
       <div class="receta-empty">
         <span class="receta-empty-icon">${recetasSeccionActual.icon}</span>
         <p>Todavía no hay recetas en ${escapeHtml(recetasSeccionActual.titulo)}.</p>
       </div>
     `;
+    recetasSeccionList.appendChild(empty.firstElementChild);
     return;
   }
   for (const receta of recetas) {
@@ -1942,8 +1954,20 @@ function openRecetaFicha(mod, sec, receta) {
 }
 
 function renderRecetaFicha(receta) {
+  // Cada ingrediente puede ser un string simple (recetas de mojo) o un
+  // objeto { nombre, cantidad } (fichas de conservas, con su propia
+  // "cantidad / proporción recomendada" como en el PDF origen) — se
+  // distingue con typeof y cada uno se renderiza con su propio marcado.
   const ingredientesHtml = (receta.ingredientes || [])
-    .map((ing) => `<li>${escapeHtml(ing)}</li>`)
+    .map((ing) => {
+      if (typeof ing === 'string') return `<li>${escapeHtml(ing)}</li>`;
+      return `
+        <li>
+          <span class="receta-ing-nombre">${escapeHtml(ing.nombre)}</span>
+          <span class="receta-ing-cantidad">${escapeHtml(ing.cantidad)}</span>
+        </li>
+      `;
+    })
     .join('');
   const pasosHtml = (receta.pasos || [])
     .map((paso, i) => `
@@ -1953,12 +1977,18 @@ function renderRecetaFicha(receta) {
       </div>
     `)
     .join('');
+  const resumenHtml = receta.resumen ? `<p class="receta-ficha-meta">${escapeHtml(receta.resumen)}</p>` : '';
+  const notaHtml = receta.notaConservacion
+    ? `<div class="receta-nota"><strong>Conservación:</strong> ${escapeHtml(receta.notaConservacion)}</div>`
+    : '';
   recetaFichaBody.innerHTML = `
     <h2 class="receta-ficha-title">${escapeHtml(receta.titulo)}</h2>
+    ${resumenHtml}
     <h3 class="receta-ficha-section-title">Ingredientes</h3>
     <ul class="receta-ingredientes">${ingredientesHtml}</ul>
     <h3 class="receta-ficha-section-title">Preparación</h3>
     <div class="receta-pasos">${pasosHtml}</div>
+    ${notaHtml}
   `;
 }
 
