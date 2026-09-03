@@ -583,6 +583,15 @@ html, body {
 .font-fregadero { fill: #0f9ed5; stroke: #0b6f9e; stroke-width: 1.5; }
 .font-lavadora { fill: #a02b93; stroke: #6e1d65; stroke-width: 1.5; }
 .font-lavavajillas { fill: #1a1a1a; stroke: #666666; stroke-width: 1.5; }
+.font-ducha { fill: #f2ede0; stroke: #3a4256; stroke-width: 1.5; }
+.font-ducha-drain { fill: #8a93a6; }
+
+/* Tubos de Interior Casa: agua fría, en azul (a diferencia de los otros dos
+   tramos, que mantienen el gris/pizarra estándar — cambio pedido solo para
+   este esquema). Ámbito acotado con #fontICSvg para no afectar a
+   Manantial-a-Depósito ni Depósito-a-Casa. */
+#fontICSvg .font-pipe-rigid { stroke: #2f7dd1; }
+@media (prefers-color-scheme: light) { #fontICSvg .font-pipe-rigid { stroke: #1a5490; } }
 
 /* Solo los badges numerados son clicables — las formas del dibujo (mismo
    data-id, sin class="font-hotspot") no reciben clic, solo se resaltan. */
@@ -610,7 +619,9 @@ html, body {
 .font-selected .font-bano-room,
 .font-selected .font-wc,
 .font-selected .font-lavabo,
-.font-selected .font-calentador { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-calentador,
+.font-selected .font-ducha { stroke: var(--warn); stroke-width: 3; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }
+.font-selected .font-ducha-drain { fill: var(--warn); }
 .font-selected .font-fregadero,
 .font-selected .font-lavadora,
 .font-selected .font-lavavajillas { fill: var(--warn); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7)); }

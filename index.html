@@ -403,10 +403,31 @@
       </g>
 
       <!-- Baño de la Planta Primera: recibe agua por la tubería que sube
-           desde la llave principal de la planta baja (el "riser"). -->
+           desde la llave principal de la planta baja (el "riser"). Dentro
+           hay WC, lavabo y ducha, cada uno con su propia derivación. -->
       <g data-id="banoPlantaPrimera">
         <path class="font-pipe-rigid" d="M352,553 L352,400 L267,400 L267,180"/>
         <rect class="font-bano-room" x="224" y="50" width="87" height="130"/>
+      </g>
+
+      <!-- Ramal: al WC del baño de la Planta Primera. -->
+      <g data-id="wcPlantaPrimera">
+        <path class="font-pipe-rigid" d="M267,180 L267,160 L245,160 L245,89"/>
+        <rect class="font-wc" x="238" y="64" width="13" height="10" rx="2"/>
+        <ellipse class="font-wc" cx="245" cy="83" rx="8" ry="6"/>
+      </g>
+
+      <!-- Ramal: al lavabo del baño de la Planta Primera. -->
+      <g data-id="lavaboPlantaPrimera">
+        <path class="font-pipe-rigid" d="M267,180 L267,129"/>
+        <rect class="font-lavabo" x="258" y="118" width="18" height="11" rx="4"/>
+      </g>
+
+      <!-- Ramal: a la ducha del baño de la Planta Primera. -->
+      <g data-id="duchaPlantaPrimera">
+        <path class="font-pipe-rigid" d="M267,180 L267,160 L294,160 L294,143"/>
+        <rect class="font-ducha" x="283" y="145" width="22" height="22" rx="3"/>
+        <circle class="font-ducha-drain" cx="294" cy="156" r="2"/>
       </g>
 
       <!-- Planta Baja. -->
@@ -457,21 +478,26 @@
         <rect class="font-lavabo" x="308" y="518" width="22" height="14" rx="4"/>
       </g>
 
-      <!-- Ramal: al fregadero de la cocina, pared derecha de la planta baja. -->
+      <!-- Ramal: al fregadero de la cocina, pared derecha de la planta baja.
+           La lavadora y el lavavajillas se derivan de ESTE tubo (ver abajo),
+           no directamente de la llave principal. -->
       <g data-id="fregaderoCocina">
         <path class="font-pipe-rigid" d="M352,570 L352,640 L611,640"/>
         <rect class="font-fregadero" x="611" y="612" width="39" height="57"/>
       </g>
 
-      <!-- Ramal: a la lavadora, pared derecha, encima del fregadero. -->
+      <!-- Ramal: a la lavadora, pared derecha, encima del fregadero. Sale del
+           tubo del fregadero (punto x=470,y=640), no de la llave principal. -->
       <g data-id="lavadora">
-        <path class="font-pipe-rigid" d="M352,570 L352,582 L611,582"/>
+        <path class="font-pipe-rigid" d="M470,640 L470,582 L611,582"/>
         <rect class="font-lavadora" x="611" y="552" width="39" height="60"/>
       </g>
 
-      <!-- Ramal: al lavavajillas, pared derecha, debajo del fregadero. -->
+      <!-- Ramal: al lavavajillas, pared derecha, debajo del fregadero. Sale
+           del tubo del fregadero (punto x=470,y=640), no de la llave
+           principal. -->
       <g data-id="lavavajillas">
-        <path class="font-pipe-rigid" d="M352,570 L352,699 L611,699"/>
+        <path class="font-pipe-rigid" d="M470,640 L470,699 L611,699"/>
         <rect class="font-lavavajillas" x="611" y="669" width="39" height="60"/>
       </g>
 
@@ -487,6 +513,9 @@
         <g class="font-badge font-hotspot" data-id="lavavajillas"><circle cx="575" cy="699" r="15"/><text x="575" y="704">9</text></g>
         <g class="font-badge font-hotspot" data-id="habitaciones"><circle cx="137" cy="137" r="15"/><text x="137" y="142">10</text></g>
         <g class="font-badge font-hotspot" data-id="banoPlantaPrimera"><circle cx="310" cy="210" r="15"/><text x="310" y="215">11</text></g>
+        <g class="font-badge font-hotspot" data-id="wcPlantaPrimera"><circle cx="345" cy="75" r="15"/><text x="345" y="80">12</text></g>
+        <g class="font-badge font-hotspot" data-id="lavaboPlantaPrimera"><circle cx="345" cy="123" r="15"/><text x="345" y="128">13</text></g>
+        <g class="font-badge font-hotspot" data-id="duchaPlantaPrimera"><circle cx="345" cy="160" r="15"/><text x="345" y="165">14</text></g>
       </g>
     </svg>
   </section>
