@@ -846,6 +846,23 @@ function buildPlantasYear(year) {
       `Cantidad: ${formatAggValue(g.totals.cantidadCompra, { decimals: 0 })}`,
       `Última compra: ${g.totals.fecha || '—'}`,
     ],
+    // Foto + época de siembra: igual que en Huerta → Detalle, buscadas en la
+    // pestaña "imagenes" por nombre de planta (el nombre del grupo == "planta").
+    photoLookup: { board: plantasImagenesHuertaBoard, keyField: 'elemento', matchField: 'planta', extraField: { key: 'epoca', label: 'Siembra' } },
+    // Filtro por época: combo con las 4 estaciones fijas; se queda un grupo si
+    // ALGUNA de sus filas tiene una planta cuyo texto de Siembra contiene la
+    // palabra elegida (comparación por subcadena, sin distinguir mayúsculas).
+    containsFilters: [
+      {
+        key: 'siembra',
+        label: 'Época siembra',
+        options: ['PRIMAVERA', 'VERANO', 'OTOÑO', 'INVIERNO'],
+        value: (it) => {
+          const m = lookupValue(photoMap, it.planta);
+          return m ? m.epoca : '';
+        },
+      },
+    ],
     aggregates: [
       { key: 'importe', op: 'sum', label: 'Importe', format: 'euro' },
       { key: 'cantidadCompra', op: 'sum', label: 'Cantidad', decimals: 0 },

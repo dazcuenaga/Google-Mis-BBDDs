@@ -10,6 +10,7 @@ let currentBoard = null;
 let navStack = [];         // pila de nodos "picker" (módulos con árbol, ej. Animales)
 let items = [];            // filas ya parseadas del tablero actual
 let facetState = {};       // valor seleccionado por cada facetFilter activo
+let containsFilterState = {}; // valor seleccionado por cada containsFilter activo (ej. Época siembra)
 let activeFilterIdx = 0;
 let searchTerm = '';
 let editingRow = null;     // null = alta nueva, número = edición de esa fila
@@ -610,6 +611,7 @@ async function loadItems() {
     }
     photoMap = currentBoard.photoLookup ? await fetchPhotoLookup(currentBoard) : null;
     renderFacetFilters();
+    renderContainsFilters();
     updateFilterChipCounts();
     setStatus('');
     render();
@@ -814,10 +816,14 @@ function renderResumenAgg(allGroups) {
         </div>`;
     }
     const tagValues = currentBoard.groupTags ? currentBoard.groupTags(g) : [];
+    const photoExtraTag = photoLookupExtraText(currentBoard, g.group);
+    if (photoExtraTag) tagValues.push(photoExtraTag);
     const tags = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
+    const photoHtml = cardPhotoHtml(currentBoard, g.group);
     const hasDrilldown = !!currentBoard.subGroupField;
     card.innerHTML = `
       <div class="card-top">
+        ${photoHtml}
         <div class="card-main">
           <p class="card-title">${escapeHtml(g.group)}</p>
           ${tags ? `<div class="card-meta">${tags}</div>` : ''}
@@ -835,27 +841,36 @@ function renderResumenAgg(allGroups) {
   }
 }
 
-// Si el tablero tiene `photoLookup` y hay foto para esta fila (buscada por
-// nombre en photoMap, tolerando mayúsculas/espacios), la miniatura para la
-// tarjeta del listado. Si no hay foto, no añade nada (la tarjeta se ve igual
-// que antes de tener este campo).
-function cardPhotoHtml(board, it) {
-  if (!board.photoLookup || !photoMap) return '';
-  const match = lookupValue(photoMap, it[board.photoLookup.matchField]);
+// Si el tablero tiene `photoLookup` y hay foto para ese nombre (buscada en
+// photoMap, tolerando mayúsculas/espacios), la miniatura para la tarjeta del
+// listado. Si no hay foto, no añade nada (la tarjeta se ve igual que antes de
+// tener este campo). `name` es el valor a buscar: el campo del item
+// (`it[board.photoLookup.matchField]`) en las tarjetas normales, o el propio
+// nombre del grupo (`g.group`) en un Resumen agrupado por ese mismo campo.
+function cardPhotoHtml(board, name) {
+  if (!board.photoLookup || !photoMap || !name) return '';
+  const match = lookupValue(photoMap, name);
   const url = match && match.imagen ? driveImageUrl(match.imagen) : '';
   return url ? `<img class="card-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.remove()">` : '';
 }
 
 // Si el `photoLookup` del tablero tiene `extraField` (ej. la época de siembra/
 // poda, en la misma fila de la hoja de fotos que el enlace a la imagen) y hay
-// texto para esta fila, lo devuelve como "Etiqueta: texto" para mostrarlo como
-// una etiqueta más junto a las demás (especie, fecha…).
-function photoLookupExtraText(board, it) {
+// texto para ese nombre, lo devuelve como "Etiqueta: texto" para mostrarlo
+// como una etiqueta más junto a las demás (especie, fecha…). Mismo `name` que
+// cardPhotoHtml.
+function photoLookupExtraText(board, name) {
   const extra = board.photoLookup && board.photoLookup.extraField;
-  if (!extra || !photoMap) return '';
-  const match = lookupValue(photoMap, it[board.photoLookup.matchField]);
+  if (!extra || !photoMap || !name) return '';
+  const match = lookupValue(photoMap, name);
   const val = match && match[extra.key];
   return val ? `${extra.label}: ${val}` : '';
+}
+
+// El nombre a buscar en photoMap para una fila normal de un tablero con
+// `photoLookup`: el valor de su `matchField` (ej. it.animales, it.arbol…).
+function photoLookupName(board, it) {
+  return board.photoLookup ? it[board.photoLookup.matchField] : null;
 }
 
 function render() {
@@ -864,6 +879,13 @@ function render() {
     if (currentBoard.facetFilters) {
       baseItems = baseItems.filter((it) =>
         currentBoard.facetFilters.every((f) => !facetState[f.key] || String(f.value(it)) === facetState[f.key])
+      );
+    }
+    if (currentBoard.containsFilters) {
+      baseItems = baseItems.filter((it) =>
+        currentBoard.containsFilters.every((f) =>
+          !containsFilterState[f.key] || String(f.value(it) || '').toLowerCase().includes(containsFilterState[f.key].toLowerCase())
+        )
       );
     }
     if (currentBoard.groupField) renderResumenAgg(buildAggResumenGroups(currentBoard, baseItems));
@@ -883,6 +905,13 @@ function render() {
   if (board.facetFilters) {
     filtered = filtered.filter((it) =>
       board.facetFilters.every((f) => !facetState[f.key] || String(f.value(it)) === facetState[f.key])
+    );
+  }
+  if (board.containsFilters) {
+    filtered = filtered.filter((it) =>
+      board.containsFilters.every((f) =>
+        !containsFilterState[f.key] || String(f.value(it) || '').toLowerCase().includes(containsFilterState[f.key].toLowerCase())
+      )
     );
   }
   if (board.sort) {
@@ -911,7 +940,7 @@ function render() {
 
     const tagValues = (board.subtitleFields || []).map((k) => it[k]).filter((v) => v);
     if (board.extraTags) tagValues.push(...board.extraTags(it));
-    const photoExtraTag = photoLookupExtraText(board, it);
+    const photoExtraTag = photoLookupExtraText(board, photoLookupName(board, it));
     if (photoExtraTag) tagValues.push(photoExtraTag);
     const tags = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
 
@@ -933,7 +962,7 @@ function render() {
       ? `<div class="card-actions">${visibleActions.map((a, i) => `<button type="button" class="quick-btn${a.variant ? ' quick-btn-' + a.variant : ''}" data-idx="${i}">${escapeHtml(a.label)}</button>`).join('')}</div>`
       : '';
 
-    const photoHtml = cardPhotoHtml(board, it);
+    const photoHtml = cardPhotoHtml(board, photoLookupName(board, it));
 
     card.innerHTML = `
       <div class="card-top">
@@ -1042,6 +1071,35 @@ function renderFacetFilters() {
     }
     sel.addEventListener('change', () => {
       facetState[facet.key] = sel.value;
+      render();
+    });
+    facetFiltersEl.appendChild(sel);
+  }
+}
+
+// Como renderFacetFilters(), pero con una lista de opciones FIJA (no sacada de
+// los datos) y coincidencia "contiene el texto" en vez de igualdad exacta —
+// ej. el combo Época siembra (Primavera/Verano/Otoño/Invierno) de Huerta →
+// Resumen, que filtra por si el texto de Siembra de esa hoja de fotos contiene
+// la palabra elegida. Se añade al mismo contenedor que los facetFilters, justo
+// después (renderFacetFilters ya limpió el contenedor al principio de la carga).
+function renderContainsFilters() {
+  containsFilterState = {};
+  if (!currentBoard.containsFilters) return;
+  for (const cf of currentBoard.containsFilters) {
+    const sel = document.createElement('select');
+    const optAll = document.createElement('option');
+    optAll.value = '';
+    optAll.textContent = cf.label;
+    sel.appendChild(optAll);
+    for (const opt of cf.options) {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt.charAt(0) + opt.slice(1).toLowerCase();
+      sel.appendChild(o);
+    }
+    sel.addEventListener('change', () => {
+      containsFilterState[cf.key] = sel.value;
       render();
     });
     facetFiltersEl.appendChild(sel);
