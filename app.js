@@ -14,6 +14,7 @@ let activeFilterIdx = 0;
 let searchTerm = '';
 let editingRow = null;     // null = alta nueva, número = edición de esa fila
 let sheetIdCache = {};     // `${spreadsheetId}:${sheetName}` -> sheetId numérico
+let photoMap = null;       // tablero.photoLookup: {nombre -> fila de la hoja de fotos} del tablero actual
 
 // ---------- Elementos ----------
 const el = (id) => document.getElementById(id);
@@ -607,6 +608,7 @@ async function loadItems() {
     if (currentBoard.fixedFilter) {
       items = items.filter((it) => it[currentBoard.fixedFilter.field] === currentBoard.fixedFilter.value);
     }
+    photoMap = currentBoard.photoLookup ? await fetchPhotoLookup(currentBoard) : null;
     renderFacetFilters();
     updateFilterChipCounts();
     setStatus('');
@@ -833,6 +835,17 @@ function renderResumenAgg(allGroups) {
   }
 }
 
+// Si el tablero tiene `photoLookup` y hay foto para esta fila (buscada por
+// nombre en photoMap, tolerando mayúsculas/espacios), la miniatura para la
+// tarjeta del listado. Si no hay foto, no añade nada (la tarjeta se ve igual
+// que antes de tener este campo).
+function cardPhotoHtml(board, it) {
+  if (!board.photoLookup || !photoMap) return '';
+  const match = lookupValue(photoMap, it[board.photoLookup.matchField]);
+  const url = match && match.imagen ? driveImageUrl(match.imagen) : '';
+  return url ? `<img class="card-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.remove()">` : '';
+}
+
 function render() {
   if (currentBoard.kind === 'resumen') {
     let baseItems = items;
@@ -906,8 +919,11 @@ function render() {
       ? `<div class="card-actions">${visibleActions.map((a, i) => `<button type="button" class="quick-btn${a.variant ? ' quick-btn-' + a.variant : ''}" data-idx="${i}">${escapeHtml(a.label)}</button>`).join('')}</div>`
       : '';
 
+    const photoHtml = cardPhotoHtml(board, it);
+
     card.innerHTML = `
       <div class="card-top">
+        ${photoHtml}
         <div class="card-main">
           <p class="card-title">${escapeHtml(it[board.titleField])}</p>
           <div class="card-meta">${tags}</div>
@@ -1146,6 +1162,34 @@ async function fetchLookup(board) {
   }
 }
 
+// Para tableros con `photoLookup`: trae la hoja de fotos (ej. IMAGENES) y la
+// indexa por nombre, igual que fetchLookup pero para el enlace a la foto en
+// vez de valores del formulario.
+async function fetchPhotoLookup(board) {
+  const src = board.photoLookup;
+  if (!src) return null;
+  try {
+    const rows = await fetchBoardItems(currentModule.spreadsheetId, src.board);
+    const map = {};
+    for (const r of rows) map[r[src.keyField]] = r;
+    return map;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+// Convierte un enlace normal de "Compartir" de Google Drive (el que da el
+// botón "Copiar enlace") en una URL que se puede usar directamente como
+// <img src>. Si no es un enlace de Drive, o ya viene en ese formato, se deja
+// tal cual.
+function driveImageUrl(url) {
+  const raw = String(url || '').trim();
+  if (!raw) return '';
+  const m = raw.match(/\/d\/([a-zA-Z0-9_-]{10,})/) || raw.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w600` : raw;
+}
+
 // Recalcula campos de fecha derivados (ej. Quitar giro / Eclosión máx.) cada
 // vez que cambia alguno de sus campos de origen (ej. Especie / Fecha inicio).
 function wireAutoCalc(lookup, runInitial) {
@@ -1218,6 +1262,16 @@ async function openEditModal(it) {
   itemForm.classList.remove('hidden');
   fichaContent.classList.add('hidden');
   dynamicFields.innerHTML = '';
+  if (currentBoard.photoLookup && photoMap) {
+    const match = lookupValue(photoMap, it[currentBoard.photoLookup.matchField]);
+    const url = match && match.imagen ? driveImageUrl(match.imagen) : '';
+    if (url) {
+      const wrap = document.createElement('div');
+      wrap.className = 'modal-photo-wrap';
+      wrap.innerHTML = `<img class="modal-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.parentElement.remove()">`;
+      dynamicFields.appendChild(wrap);
+    }
+  }
   const lookup = await fetchLookup(currentBoard);
   for (const f of currentBoard.fields) {
     if (f.type === 'computed' || f.type === 'fixed') continue;

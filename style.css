@@ -227,6 +227,24 @@ html, body {
 .card-qty .num.zero { color: var(--danger); }
 .card-qty .lbl { font-size: 11px; color: var(--text-dim); }
 
+.card-photo {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--surface-2);
+}
+
+.modal-photo-wrap { margin-bottom: 14px; }
+.modal-photo {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
 .login-gate {
   min-height: 100vh;
   display: flex;

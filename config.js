@@ -62,6 +62,20 @@ const TODO_QUICK_ACTIONS = [
 // ---------------------------------------------------------------------------
 const ANIMALES_SPREADSHEET_ID = '1sUIJEddbucc5SyYfwnrNulOxL2I6fRI5GINo3uYSD84';
 const ANIMALES_YEARS = [2026, 2025];
+
+// Hoja de referencia con las fotos de los animales (pestaña "IMAGENES" en la
+// misma hoja de cálculo de Animales, no por año): columna A el nombre del
+// animal, columna B un enlace a su foto. Se usa desde `photoLookup` en
+// Población → Detalle para mostrar la foto de cada animal que coincida por
+// nombre (ver fetchPhotoLookup/driveImageUrl en app.js).
+const animalesImagenesBoard = {
+  sheetName: 'IMAGENES',
+  titleField: 'nombre',
+  fields: [
+    { key: 'nombre', col: 'A' },
+    { key: 'imagen', col: 'B' },
+  ],
+};
 const PLANTAS_SPREADSHEET_ID = '17yCW3G1Fj4cJU_akGp0VIEfg_XpF6J5udMKdS4nb_Mk';
 const PLANTAS_YEARS = [2026];
 const ALMACEN_PRECIOS_SPREADSHEET_ID = '1yKc2UlePpejKCC1bQWftuCBPaXWfRYbpOQRyvt_001k';
@@ -184,6 +198,9 @@ function buildPoblacionPicker(year, poblacionSheet) {
             cardClass: (it) => hashClass(it.especie),
             // El UGM se rellena a partir del UGM ya usado para esa especie en otras filas.
             speciesLookup: { fromItems: true, keyField: 'especie' },
+            // Foto del animal: se busca en la pestaña IMAGENES por nombre (columna
+            // "Animal" de esta hoja == columna "nombre" de IMAGENES).
+            photoLookup: { board: animalesImagenesBoard, keyField: 'nombre', matchField: 'animales' },
             autoCalc: [
               {
                 targetKey: 'ugm',
