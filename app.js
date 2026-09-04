@@ -846,6 +846,18 @@ function cardPhotoHtml(board, it) {
   return url ? `<img class="card-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.remove()">` : '';
 }
 
+// Si el `photoLookup` del tablero tiene `extraField` (ej. la época de siembra/
+// poda, en la misma fila de la hoja de fotos que el enlace a la imagen) y hay
+// texto para esta fila, lo devuelve como "Etiqueta: texto" para mostrarlo como
+// una etiqueta más junto a las demás (especie, fecha…).
+function photoLookupExtraText(board, it) {
+  const extra = board.photoLookup && board.photoLookup.extraField;
+  if (!extra || !photoMap) return '';
+  const match = lookupValue(photoMap, it[board.photoLookup.matchField]);
+  const val = match && match[extra.key];
+  return val ? `${extra.label}: ${val}` : '';
+}
+
 function render() {
   if (currentBoard.kind === 'resumen') {
     let baseItems = items;
@@ -899,6 +911,8 @@ function render() {
 
     const tagValues = (board.subtitleFields || []).map((k) => it[k]).filter((v) => v);
     if (board.extraTags) tagValues.push(...board.extraTags(it));
+    const photoExtraTag = photoLookupExtraText(board, it);
+    if (photoExtraTag) tagValues.push(photoExtraTag);
     const tags = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
 
     let badgeHtml = '';
@@ -1265,10 +1279,14 @@ async function openEditModal(it) {
   if (currentBoard.photoLookup && photoMap) {
     const match = lookupValue(photoMap, it[currentBoard.photoLookup.matchField]);
     const url = match && match.imagen ? driveImageUrl(match.imagen) : '';
-    if (url) {
+    const extra = currentBoard.photoLookup.extraField && match ? match[currentBoard.photoLookup.extraField.key] : '';
+    if (url || extra) {
       const wrap = document.createElement('div');
       wrap.className = 'modal-photo-wrap';
-      wrap.innerHTML = `<img class="modal-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.parentElement.remove()">`;
+      wrap.innerHTML = `
+        ${url ? `<img class="modal-photo" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+        ${extra ? `<p class="modal-photo-extra"><b>${escapeHtml(currentBoard.photoLookup.extraField.label)}:</b> ${escapeHtml(extra)}</p>` : ''}
+      `;
       dynamicFields.appendChild(wrap);
     }
   }

@@ -244,6 +244,14 @@ html, body {
   object-fit: cover;
   border-radius: var(--radius);
 }
+.modal-photo-extra {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface-2);
+  padding: 8px 10px;
+  border-radius: 10px;
+}
 
 .login-gate {
   min-height: 100vh;

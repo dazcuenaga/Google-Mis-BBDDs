@@ -78,6 +78,36 @@ const animalesImagenesBoard = {
 };
 const PLANTAS_SPREADSHEET_ID = '17yCW3G1Fj4cJU_akGp0VIEfg_XpF6J5udMKdS4nb_Mk';
 const PLANTAS_YEARS = [2026];
+
+// Hoja de referencia con las fotos (y una nota de época) de árboles y plantas
+// de huerta (pestaña "imagenes" en la misma hoja de cálculo de Plantas, no
+// por año). A diferencia de Animales, aquí árboles y plantas comparten UNA
+// sola tabla: columna A Tipo ("Arbol"/"Planta"), B Elemento (nombre), C URL
+// (foto), D Época Siembra/Poda (texto libre). Se filtra por Tipo (fixedFilter)
+// para que cada tablero (Árboles / Huerta → Detalle) solo vea sus propias
+// filas al buscar por nombre.
+const plantasImagenesArbolesBoard = {
+  sheetName: 'imagenes',
+  titleField: 'elemento',
+  fixedFilter: { field: 'tipo', value: 'Arbol' },
+  fields: [
+    { key: 'tipo', col: 'A' },
+    { key: 'elemento', col: 'B' },
+    { key: 'imagen', col: 'C' },
+    { key: 'epoca', col: 'D' },
+  ],
+};
+const plantasImagenesHuertaBoard = {
+  sheetName: 'imagenes',
+  titleField: 'elemento',
+  fixedFilter: { field: 'tipo', value: 'Planta' },
+  fields: [
+    { key: 'tipo', col: 'A' },
+    { key: 'elemento', col: 'B' },
+    { key: 'imagen', col: 'C' },
+    { key: 'epoca', col: 'D' },
+  ],
+};
 const ALMACEN_PRECIOS_SPREADSHEET_ID = '1yKc2UlePpejKCC1bQWftuCBPaXWfRYbpOQRyvt_001k';
 
 const MONTH_NAMES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -680,6 +710,9 @@ function buildPlantasYear(year) {
     badge: { key: 'cantidad', label: 'cant.' },
     searchFields: ['arbol', 'obtencion'],
     sort: { field: 'fechaPlantacion', type: 'date', dir: 'desc' },
+    // Foto + época de poda: se buscan en la pestaña "imagenes" por nombre
+    // (columna "Árbol" de esta hoja == columna "Elemento" de imagenes, con Tipo="Arbol").
+    photoLookup: { board: plantasImagenesArbolesBoard, keyField: 'elemento', matchField: 'arbol', extraField: { key: 'epoca', label: 'Poda' } },
     fields: [
       { key: 'obtencion', label: 'Obtención', col: 'A', type: 'text', required: true, placeholder: 'Ej. Comprado, Regalo…' },
       { key: 'arbol', label: 'Árbol', col: 'B', type: 'text', required: true },
@@ -775,6 +808,9 @@ function buildPlantasYear(year) {
     // El Importe Unitario y el Lugar de compra se rellenan desde la tabla de
     // precios de la propia hoja (columnas J a M: Proveedor, Planta, Precio Ciento, Precio Unidad).
     speciesLookup: { board: huertaLookupBoard, keyField: 'planta' },
+    // Foto + época de siembra: se buscan en la pestaña "imagenes" por nombre
+    // (columna "Planta" de esta hoja == columna "Elemento" de imagenes, con Tipo="Planta").
+    photoLookup: { board: plantasImagenesHuertaBoard, keyField: 'elemento', matchField: 'planta', extraField: { key: 'epoca', label: 'Siembra' } },
     selectFromLookup: [
       { fieldKey: 'planta' },
       { fieldKey: 'lugarCompra', valueField: 'proveedor' },
