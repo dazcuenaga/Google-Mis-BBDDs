@@ -360,6 +360,91 @@ const MODULES = [
   },
 
   {
+    // Módulo idéntico a Congelador (mismo tablero/pestaña "Contenido", mismas
+    // columnas y quickActions), apuntando a una hoja de cálculo distinta —
+    // solo cambian título/icono y las opciones de Ubicación (Cocina/Despensa
+    // en vez de Nevera/Arcón). El color de cada tarjeta según Ubicación se
+    // saca con hashClass() (determinista, sin CSS nuevo) en vez de la lista
+    // fija Nevera/Arcón que usa Congelador.
+    id: 'despensa',
+    title: 'Despensa',
+    subtitle: 'Inventario de cocina y despensa',
+    icon: '🥫',
+    spreadsheetId: '1qou9QSuawQoGHrXZa0SPQQRtk1SRny46dWv5CwxNFxY',
+    boards: [
+      {
+        id: 'resumen',
+        kind: 'resumen',
+        sheetName: 'Contenido',
+        title: 'Resumen',
+        titleField: 'descripcion',
+        facetFilters: [
+          { key: 'categoria', label: 'Categoría', value: (it) => it.categoria },
+        ],
+        fields: [
+          { key: 'descripcion', col: 'A' },
+          { key: 'categoria', col: 'B' },
+          { key: 'ubicacion', col: 'C' },
+          { key: 'tamano', col: 'D' },
+          { key: 'congelada', col: 'G' },
+        ],
+      },
+      {
+        id: 'contenido',
+        sheetName: 'Contenido',
+        title: 'Detalles',
+        titleField: 'descripcion',
+        subtitleFields: ['ubicacion', 'tamano'],
+        badge: { key: 'congelada', label: 'uds' },
+        searchFields: ['descripcion'],
+        sort: { field: 'descripcion', type: 'text', dir: 'asc' },
+        filters: [
+          { label: 'Todos', match: (it) => parseNum(it.congelada) > 0 },
+          { label: 'Cocina', match: (it) => it.ubicacion === 'Cocina' && parseNum(it.congelada) > 0 },
+          { label: 'Despensa', match: (it) => it.ubicacion === 'Despensa' && parseNum(it.congelada) > 0 },
+          { label: 'Consumidos', match: (it) => parseNum(it.congelada) <= 0 },
+        ],
+        facetFilters: [
+          { key: 'categoria', label: 'Categoría', value: (it) => it.categoria },
+        ],
+        cardClass: (it) => hashClass(it.ubicacion),
+        quickActions: [
+          {
+            label: 'Sacar',
+            variant: 'danger',
+            hideWhen: (it) => parseNum(it.congelada) <= 0,
+            apply: (values) => {
+              values.sacada = String(parseNum(values.sacada) + 1);
+              values.fechaSalida = todayISO();
+            },
+          },
+          {
+            label: 'Añadir',
+            variant: 'primary',
+            apply: (values) => {
+              values.metida = String(parseNum(values.metida) + 1);
+              values.fechaEntrada = todayISO();
+            },
+          },
+        ],
+        speciesLookup: { fromItems: true, keyField: 'categoria' },
+        selectFromLookup: { fieldKey: 'categoria' },
+        fields: [
+          { key: 'descripcion', label: 'Descripción', col: 'A', type: 'text', required: true, placeholder: 'Ej. Arroz' },
+          { key: 'categoria', label: 'Categoría', col: 'B', type: 'text' },
+          { key: 'ubicacion', label: 'Ubicación', col: 'C', type: 'select', options: ['Cocina', 'Despensa'], default: 'Cocina' },
+          { key: 'tamano', label: 'Tamaño', col: 'D', type: 'text', placeholder: 'Ej. 500gr, Bolsa, Tupper…' },
+          { key: 'metida', label: 'Cantidad metida', col: 'E', type: 'number', default: 1 },
+          { key: 'sacada', label: 'Cantidad sacada', col: 'F', type: 'number', default: 0 },
+          { key: 'congelada', label: 'Cantidad', col: 'G', type: 'computed', compute: (v) => parseNum(v.metida) - parseNum(v.sacada) },
+          { key: 'fechaEntrada', label: 'Fecha última entrada', col: 'H', type: 'date', default: 'today' },
+          { key: 'fechaSalida', label: 'Fecha última salida', col: 'I', type: 'date' },
+        ],
+      },
+    ],
+  },
+
+  {
     id: 'familytodos',
     title: 'Tareas',
     subtitle: 'Tareas pendientes por casa',
@@ -988,7 +1073,7 @@ const MODULE_CATEGORIES = [
     icon: '🍽️',
     title: 'Alimentación',
     subtitle: 'Congelador, Recetas y Almacén de Precios',
-    moduleIds: ['congelados', 'recetas', 'almacenprecios'],
+    moduleIds: ['congelados', 'despensa', 'recetas', 'almacenprecios'],
   },
   {
     id: 'infraestructura',
