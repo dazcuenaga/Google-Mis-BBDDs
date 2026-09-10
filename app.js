@@ -942,6 +942,16 @@ function render() {
     if (board.extraTags) tagValues.push(...board.extraTags(it));
     const photoExtraTag = photoLookupExtraText(board, photoLookupName(board, it));
     if (photoExtraTag) tagValues.push(photoExtraTag);
+    // `progressBar`: en tableros de tipo "tarea", muestra el % de realización
+    // como tag y rellena una parte del fondo de la tarjeta en verde clarito,
+    // solo cuando `showWhen` se cumple (ej. la tarea está iniciada).
+    if (board.progressBar && (!board.progressBar.showWhen || board.progressBar.showWhen(it))) {
+      const pct = Math.max(0, Math.min(100, Math.round(parseNum(it[board.progressBar.key]))));
+      tagValues.push(`${pct}% realizado`);
+      if (pct > 0) {
+        card.style.backgroundImage = `linear-gradient(to right, var(--progress-fill) ${pct}%, transparent ${pct}%)`;
+      }
+    }
     const tags = tagValues.map((v) => `<span class="tag">${escapeHtml(v)}</span>`).join('');
 
     let badgeHtml = '';

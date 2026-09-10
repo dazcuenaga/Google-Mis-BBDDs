@@ -43,6 +43,8 @@ const TODO_QUICK_ACTIONS = [
     apply: (values) => {
       values.realizada = 'Si';
       values.fechaFin = todayISO();
+      // Regla del usuario: si Realizada = Si, el % de realización pasa a 100.
+      values.porcentajeRealizacion = 100;
     },
   },
   {
@@ -461,6 +463,8 @@ const MODULES = [
         filters: TODO_FILTERS,
         filterCounts: true,
         quickActions: TODO_QUICK_ACTIONS,
+        // Barra de progreso en la tarjeta del listado, solo para tareas iniciadas.
+        progressBar: { key: 'porcentajeRealizacion', showWhen: (it) => it.iniciada === 'Si' },
         fields: [
           { key: 'prioridad', label: 'Prioridad (1 = más urgente)', col: 'A', type: 'number', default: 3 },
           { key: 'tarea', label: 'Tarea', col: 'B', type: 'text', required: true },
@@ -470,10 +474,11 @@ const MODULES = [
           { key: 'costeEstimado', label: 'Coste estimado', col: 'F', type: 'number' },
           { key: 'fechaLimite', label: 'Fecha límite', col: 'G', type: 'date' },
           { key: 'iniciada', label: 'Iniciada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'realizada', label: 'Realizada', col: 'I', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
-          { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
-          { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'porcentajeRealizacion', label: '% Realización', col: 'I', type: 'number', min: 0, max: 100, default: 0 },
+          { key: 'realizada', label: 'Realizada', col: 'J', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaInicio', label: 'Fecha inicio', col: 'K', type: 'date' },
+          { key: 'fechaFin', label: 'Fecha fin', col: 'L', type: 'date' },
+          { key: 'enBarbecho', label: 'En barbecho', col: 'M', type: 'select', options: SI_NO, default: 'No' },
         ],
       },
       {
@@ -486,6 +491,8 @@ const MODULES = [
         filters: TODO_FILTERS,
         filterCounts: true,
         quickActions: TODO_QUICK_ACTIONS,
+        // Barra de progreso en la tarjeta del listado, solo para tareas iniciadas.
+        progressBar: { key: 'porcentajeRealizacion', showWhen: (it) => it.iniciada === 'Si' },
         fields: [
           { key: 'prioridad', label: 'Prioridad (1 = más urgente)', col: 'A', type: 'number', default: 3 },
           { key: 'tarea', label: 'Tarea', col: 'B', type: 'text', required: true },
@@ -494,10 +501,11 @@ const MODULES = [
           { key: 'tiempoEstimado', label: 'Tiempo estimado (días)', col: 'E', type: 'number' },
           { key: 'fechaLimite', label: 'Fecha límite', col: 'F', type: 'date' },
           { key: 'iniciada', label: 'Iniciada', col: 'G', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'realizada', label: 'Realizada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaInicio', label: 'Fecha inicio', col: 'I', type: 'date' },
-          { key: 'fechaFin', label: 'Fecha fin', col: 'J', type: 'date' },
-          { key: 'enBarbecho', label: 'En barbecho', col: 'K', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'porcentajeRealizacion', label: '% Realización', col: 'H', type: 'number', min: 0, max: 100, default: 0 },
+          { key: 'realizada', label: 'Realizada', col: 'I', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
+          { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
+          { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
         ],
       },
       {
@@ -510,6 +518,8 @@ const MODULES = [
         filters: TODO_FILTERS,
         filterCounts: true,
         quickActions: TODO_QUICK_ACTIONS,
+        // Barra de progreso en la tarjeta del listado, solo para tareas iniciadas.
+        progressBar: { key: 'porcentajeRealizacion', showWhen: (it) => it.iniciada === 'Si' },
         fields: [
           { key: 'prioridad', label: 'Prioridad (1 = más urgente)', col: 'A', type: 'number', default: 3 },
           { key: 'tarea', label: 'Tarea', col: 'B', type: 'text', required: true },
@@ -518,10 +528,11 @@ const MODULES = [
           { key: 'tiempoEstimado', label: 'Tiempo estimado (días)', col: 'E', type: 'number' },
           { key: 'fechaLimite', label: 'Fecha límite', col: 'F', type: 'date' },
           { key: 'iniciada', label: 'Iniciada', col: 'G', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'realizada', label: 'Realizada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaInicio', label: 'Fecha inicio', col: 'I', type: 'date' },
-          { key: 'fechaFin', label: 'Fecha fin', col: 'J', type: 'date' },
-          { key: 'enBarbecho', label: 'En barbecho', col: 'K', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'porcentajeRealizacion', label: '% Realización', col: 'H', type: 'number', min: 0, max: 100, default: 0 },
+          { key: 'realizada', label: 'Realizada', col: 'I', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
+          { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
+          { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
         ],
       },
       {
@@ -534,6 +545,8 @@ const MODULES = [
         filters: TODO_FILTERS,
         filterCounts: true,
         quickActions: TODO_QUICK_ACTIONS,
+        // Barra de progreso en la tarjeta del listado, solo para tareas iniciadas.
+        progressBar: { key: 'porcentajeRealizacion', showWhen: (it) => it.iniciada === 'Si' },
         fields: [
           { key: 'prioridad', label: 'Prioridad (1 = más urgente)', col: 'A', type: 'number', default: 3 },
           { key: 'tarea', label: 'Tarea', col: 'B', type: 'text', required: true },
@@ -542,10 +555,11 @@ const MODULES = [
           { key: 'tiempoEstimado', label: 'Tiempo estimado (días)', col: 'E', type: 'number' },
           { key: 'fechaLimite', label: 'Fecha límite', col: 'F', type: 'date' },
           { key: 'iniciada', label: 'Iniciada', col: 'G', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'realizada', label: 'Realizada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaInicio', label: 'Fecha inicio', col: 'I', type: 'date' },
-          { key: 'fechaFin', label: 'Fecha fin', col: 'J', type: 'date' },
-          { key: 'enBarbecho', label: 'En barbecho', col: 'K', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'porcentajeRealizacion', label: '% Realización', col: 'H', type: 'number', min: 0, max: 100, default: 0 },
+          { key: 'realizada', label: 'Realizada', col: 'I', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
+          { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
+          { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
         ],
       },
     ],

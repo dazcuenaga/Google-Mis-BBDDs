@@ -29,6 +29,10 @@
   --hue-h-bg: #3a2a1a; --hue-h-border: #5c4530;
   --warn-bg: #4a3419;
   --warn-border: #7c5423;
+  /* Verde clarito translúcido para la barra de progreso de tareas (`progressBar`):
+     usa alpha en vez de un color sólido para leerse bien sobre cualquier fondo
+     de tarjeta (oscuro o claro) sin necesitar una variante por tema. */
+  --progress-fill: rgba(34, 197, 94, 0.32);
 }
 
 * { box-sizing: border-box; }
