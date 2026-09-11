@@ -1088,6 +1088,20 @@ function buildRecetasModule() {
 // ---------------------------------------------------------------------------
 const MODULE_CATEGORIES = [
   {
+    id: 'por-hacer',
+    icon: '📝',
+    title: 'Por hacer',
+    subtitle: 'Tareas y Lista de Lectura',
+    moduleIds: ['familytodos', 'listalectura'],
+  },
+  {
+    id: 'agricultura-ganaderia',
+    icon: '🌾',
+    title: 'Agricultura y Ganadería',
+    subtitle: 'Animales, Incubaciones y Plantas',
+    moduleIds: ['animales', 'incubaciones', 'plantas'],
+  },
+  {
     id: 'alimentacion',
     icon: '🍽️',
     title: 'Alimentación',
@@ -1100,19 +1114,5 @@ const MODULE_CATEGORIES = [
     title: 'Infraestructura',
     subtitle: 'Fontanería y Electricidad',
     moduleIds: ['fontaneria', 'electricidad-el-rellano'],
-  },
-  {
-    id: 'agricultura-ganaderia',
-    icon: '🌾',
-    title: 'Agricultura y Ganadería',
-    subtitle: 'Animales, Incubaciones y Plantas',
-    moduleIds: ['animales', 'incubaciones', 'plantas'],
-  },
-  {
-    id: 'por-hacer',
-    icon: '📝',
-    title: 'Por hacer',
-    subtitle: 'Tareas y Lista de Lectura',
-    moduleIds: ['familytodos', 'listalectura'],
   },
 ];
