@@ -1178,7 +1178,7 @@ function buildFieldInput(f, value) {
     input.value = value != null ? value : (f.default || f.options[0]);
   } else {
     input = document.createElement('input');
-    input.type = f.type === 'number' ? 'number' : f.type === 'date' ? 'date' : 'text';
+    input.type = f.type === 'number' ? 'number' : f.type === 'date' ? 'date' : f.type === 'url' ? 'url' : 'text';
     if (f.placeholder) input.placeholder = f.placeholder;
     if (f.step != null) input.step = f.step;
     if (f.min != null) input.min = f.min;
@@ -1206,6 +1206,17 @@ function buildFieldInput(f, value) {
   input.id = `f_${f.key}`;
   if (f.required) input.required = true;
   wrap.appendChild(input);
+  // `type: 'url'` (ej. Documentos de Tareas): si ya hay un enlace guardado,
+  // añade un acceso directo para abrirlo, aparte del input editable.
+  if (f.type === 'url' && value) {
+    const link = document.createElement('a');
+    link.href = value;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.className = 'doc-link';
+    link.textContent = '🔗 Abrir documento';
+    wrap.appendChild(link);
+  }
   return wrap;
 }
 

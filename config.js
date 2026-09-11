@@ -479,6 +479,7 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio', col: 'K', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin', col: 'L', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'M', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'documento', label: 'Documentos', col: 'N', type: 'url', placeholder: 'Enlace de Google Drive' },
         ],
       },
       {
@@ -506,6 +507,7 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
         ],
       },
       {
@@ -533,6 +535,7 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
         ],
       },
       {
@@ -560,6 +563,7 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio', col: 'J', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
         ],
       },
     ],

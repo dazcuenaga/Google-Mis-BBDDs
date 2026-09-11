@@ -257,6 +257,21 @@ html, body {
   border-radius: 10px;
 }
 
+/* Acceso directo a un documento enlazado (campo `type: 'url'`, ej. Documentos
+   de Tareas), mostrado junto al input editable en la ficha de detalle. */
+.doc-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.doc-link:active { background: var(--border); }
+
 .login-gate {
   min-height: 100vh;
   display: flex;
