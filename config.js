@@ -621,6 +621,63 @@ const MODULES = [
     ],
   },
 
+  {
+    id: 'listavisualizacion',
+    title: 'Lista de Visualización',
+    subtitle: 'Películas y series pendientes y vistas',
+    icon: '🎬',
+    spreadsheetId: '141w6h11l9kuoNYbmDQbkeMRgL1jpUqPH_OarAFaNuPQ',
+    boards: [
+      {
+        id: 'hoja1', sheetName: 'Hoja 1', title: 'Lista de Visualización',
+        titleField: 'titulo', subtitleFields: ['tipo'],
+        badge: { key: 'interes', label: 'interés' },
+        searchFields: ['titulo', 'tema', 'dondeSeEmite'],
+        sort: { field: 'interes', type: 'number', dir: 'desc' },
+        filters: [
+          { label: 'Todos' },
+          { label: 'Pendientes', match: (it) => !it.fechaFin && it.iniciada !== 'Si' },
+          { label: 'Viendo', match: (it) => !it.fechaFin && it.iniciada === 'Si' },
+          { label: 'Vistos', match: (it) => !!it.fechaFin },
+        ],
+        quickActions: [
+          {
+            label: 'Empezar', variant: 'success',
+            hideWhen: (it) => it.iniciada === 'Si',
+            apply: (values) => {
+              values.iniciada = 'Si';
+              values.fechaInicio = todayISO();
+            },
+          },
+          {
+            label: 'Visto', field: 'fechaFin', value: 'today', variant: 'primary',
+            hideWhen: (it) => !!it.fechaFin,
+          },
+        ],
+        // Fondo de la tarjeta según el estado de visionado.
+        cardClass: (it) => {
+          if (it.fechaFin) return 'finished';
+          if (it.iniciada === 'Si') return 'reading';
+          return '';
+        },
+        // Estrellas de valoración, solo se muestran en la tarjeta si hay valor.
+        extraTags: (it) => (parseNum(it.valoracion) > 0 ? [starsText(it.valoracion)] : []),
+        fields: [
+          { key: 'titulo', label: 'Título', col: 'A', type: 'text', required: true },
+          { key: 'tipo', label: 'Tipo', col: 'B', type: 'select', options: ['Película', 'Serie'], default: 'Película' },
+          { key: 'tema', label: 'Tema', col: 'C', type: 'text' },
+          { key: 'dondeSeEmite', label: 'Dónde se emite', col: 'D', type: 'text', placeholder: 'Ej. Netflix, HBO Max, Cine…' },
+          { key: 'interes', label: 'Interés (0-10)', col: 'E', type: 'number', step: '0.5', min: 0, max: 10 },
+          { key: 'disponible', label: 'Disponible', col: 'F', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'iniciada', label: 'Empezada', col: 'G', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaInicio', label: 'Fecha inicio visionado', col: 'H', type: 'date' },
+          { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
+          { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
+        ],
+      },
+    ],
+  },
+
   buildAnimalesModule(),
 
   buildIncubacionesModule(),
@@ -1091,8 +1148,8 @@ const MODULE_CATEGORIES = [
     id: 'por-hacer',
     icon: '📝',
     title: 'Por hacer',
-    subtitle: 'Tareas y Lista de Lectura',
-    moduleIds: ['familytodos', 'listalectura'],
+    subtitle: 'Tareas, Lista de Lectura y Lista de Visualización',
+    moduleIds: ['familytodos', 'listalectura', 'listavisualizacion'],
   },
   {
     id: 'agricultura-ganaderia',
