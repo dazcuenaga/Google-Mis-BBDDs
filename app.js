@@ -533,6 +533,15 @@ function quoteSheet(name) {
   return `'${String(name).replace(/'/g, "''")}'`;
 }
 
+// Normaliza texto para comparaciones tolerantes: sin espacios extra, sin
+// distinguir mayúsculas/minúsculas ni acentos (ej. "Arbol"/"arbol "/"Árbol"
+// deben considerarse el mismo valor). Usado por `fixedFilter` para que un
+// typo de mayúscula/acento en la hoja no haga desaparecer filas enteras en
+// silencio (ver también `lookupValue`, que ya era tolerante en mayúsculas).
+function normalizeMatch(v) {
+  return String(v || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
 async function fetchBoardItems(spreadsheetId, board) {
   const start = dataStartRow(board);
   const range = `${quoteSheet(board.sheetName)}!A${start}:${dataRangeEnd(board)}`;
@@ -542,7 +551,7 @@ async function fetchBoardItems(spreadsheetId, board) {
     .map((r, i) => parseRow(board, r, i + start))
     .filter((it) => (it[board.titleField] || '').trim() !== '');
   if (board.fixedFilter) {
-    boardItems = boardItems.filter((it) => it[board.fixedFilter.field] === board.fixedFilter.value);
+    boardItems = boardItems.filter((it) => normalizeMatch(it[board.fixedFilter.field]) === normalizeMatch(board.fixedFilter.value));
   }
   return boardItems;
 }
@@ -607,7 +616,7 @@ async function loadItems() {
       .map((r, i) => parseRow(currentBoard, r, i + start))
       .filter((it) => (it[currentBoard.titleField] || '').trim() !== '');
     if (currentBoard.fixedFilter) {
-      items = items.filter((it) => it[currentBoard.fixedFilter.field] === currentBoard.fixedFilter.value);
+      items = items.filter((it) => normalizeMatch(it[currentBoard.fixedFilter.field]) === normalizeMatch(currentBoard.fixedFilter.value));
     }
     photoMap = currentBoard.photoLookup ? await fetchPhotoLookup(currentBoard) : null;
     renderFacetFilters();
@@ -1176,6 +1185,14 @@ function buildFieldInput(f, value) {
       input.appendChild(o);
     }
     input.value = value != null ? value : (f.default || f.options[0]);
+  } else if (f.type === 'textarea') {
+    // Campos de texto largo (ej. Tema, Descripción): varias líneas visibles
+    // en vez de un <input> de una sola línea, para que en móvil se pueda leer
+    // todo el contenido sin desplazarse dentro de la caja.
+    input = document.createElement('textarea');
+    input.rows = f.rows || 4;
+    if (f.placeholder) input.placeholder = f.placeholder;
+    input.value = value != null ? value : (f.default != null ? f.default : '');
   } else {
     input = document.createElement('input');
     input.type = f.type === 'number' ? 'number' : f.type === 'date' ? 'date' : f.type === 'url' ? 'url' : 'text';
