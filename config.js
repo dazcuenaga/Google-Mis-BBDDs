@@ -683,10 +683,13 @@ const MODULES = [
           { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
           { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
         ],
-        // Filtro combo por Nacionalidad, con las opciones sacadas directamente
-        // de los valores que ya hay en la hoja (no una lista fija) — mismo
-        // mecanismo genérico 'facetFilters' que usan otros tableros.
+        // Filtros combo por Tipo y por Nacionalidad, con las opciones sacadas
+        // directamente de los valores que ya hay en la hoja (no una lista
+        // fija) — mismo mecanismo genérico 'facetFilters' que usan otros
+        // tableros. Se pueden combinar entre sí y con el chip de arriba
+        // (Todos/Pendientes/Viendo/Vistos).
         facetFilters: [
+          { key: 'tipo', label: 'Tipo', value: (it) => it.tipo },
           { key: 'nacionalidad', label: 'Nacionalidad', value: (it) => it.nacionalidad },
         ],
       },
