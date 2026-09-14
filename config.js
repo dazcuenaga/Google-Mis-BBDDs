@@ -673,6 +673,11 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio visionado', col: 'H', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
           { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
+          // Columna nueva añadida al final de la hoja (col K) — solo en la ficha,
+          // como 'tema'/'dondeSeEmite'. Textarea (no un input de una línea) porque
+          // suele ser una lista de varios nombres (director + reparto).
+          { key: 'directorActores', label: 'Director y Actores', col: 'K', type: 'textarea', rows: 3 },
+          { key: 'nacionalidad', label: 'Nacionalidad', col: 'L', type: 'text' },
         ],
       },
     ],
