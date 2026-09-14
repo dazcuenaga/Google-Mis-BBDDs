@@ -1541,7 +1541,29 @@ itemForm.addEventListener('submit', async (e) => {
       continue;
     }
     const input = el(`f_${f.key}`);
-    values[f.key] = input.value.trim ? input.value.trim() : input.value;
+    let v = input.value.trim ? input.value.trim() : input.value;
+    // Un <input type="date"> solo puede mostrar fechas que toDateInputValue()
+    // sepa interpretar (ver su comentario más arriba). Si el valor guardado
+    // en la hoja NO encajaba (ej. texto suelto tecleado a mano antes de que
+    // existiera este selector), el campo aparece en blanco en la ficha — y
+    // si el usuario no lo toca, sin este guardado se perdería para siempre
+    // al pulsar Guardar (se reescribiría como '' encima del texto original).
+    // Por eso, en edición, un campo de fecha que se queda vacío Y cuyo valor
+    // original tampoco se pudo interpretar como fecha conserva ese valor
+    // original tal cual en vez de borrarlo.
+    if (f.type === 'date' && !v && editingRow && editingItem && editingItem[f.key] && !toDateInputValue(editingItem[f.key])) {
+      v = editingItem[f.key];
+    }
+    values[f.key] = v;
+  }
+  // Regla del usuario (2026-09-14): si se marca una tarea como Realizada,
+  // el % de Realización pasa automáticamente a 100 — esto ya lo hacía el
+  // botón rápido "Terminado" (ver TODO_QUICK_ACTIONS), pero no cuando se
+  // cambia el campo "Realizada" a mano dentro de la ficha y se pulsa
+  // Guardar; con esto queda igual en los dos casos, en cualquier tablero que
+  // tenga ambos campos (los 4 de Tareas).
+  if (values.realizada === 'Si' && currentBoard.fields.some((f) => f.key === 'realizada') && currentBoard.fields.some((f) => f.key === 'porcentajeRealizacion')) {
+    values.porcentajeRealizacion = 100;
   }
   if (currentBoard.titleField && !values[currentBoard.titleField]) return;
 
@@ -1611,8 +1633,14 @@ function hashClass(str) {
 }
 
 // Las hojas guardan fechas como dd/mm/aaaa; los <input type=date> usan aaaa-mm-dd.
+// Admite también "-" y "." como separador (ej. 05-10-2026, 05.10.2026): hay
+// columnas de fecha, como "Fecha límite" de Tareas, que ya tenían valores
+// tecleados a mano en la hoja antes de que la ficha tuviera un selector de
+// fecha, y no todos se escribieron con "/". Si el texto no encaja en ningún
+// formato reconocido, devuelve '' (ver el comentario en itemForm.submit más
+// abajo sobre por qué eso, por sí solo, ya no borra el valor original).
 function toDateInputValue(str) {
-  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec((str || '').trim());
+  const m = /^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})$/.exec((str || '').trim());
   if (!m) return '';
   const [, d, mo, y] = m;
   return `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`;
@@ -1629,7 +1657,15 @@ function daysUntil(ddmmyyyy) {
 
 function fromDateInputValue(str) {
   if (!str) return '';
-  const [y, mo, d] = str.split('-');
+  // Solo convierte valores con pinta de aaaa-mm-dd (lo que realmente escribe
+  // un <input type=date>). Si no encaja, se deja tal cual: puede ser texto
+  // original conservado tal cual porque no se pudo interpretar como fecha
+  // (ver el comentario en itemForm.submit sobre por qué no se borra) — sin
+  // este chequeo, ese texto se destrozaba aquí (ej. "antes de Navidad" se
+  // convertía en "undefined/undefined/antes de Navidad").
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str);
+  if (!m) return str;
+  const [, y, mo, d] = m;
   return `${d}/${mo}/${y}`;
 }
 
