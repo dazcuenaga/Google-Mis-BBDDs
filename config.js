@@ -3,12 +3,33 @@ const CONFIG = {
   // Client ID de OAuth 2.0 (tipo "Aplicación web") creado en Google Cloud Console.
   CLIENT_ID: '533970188000-bnae6dgrpvrb1d97gvmohm1k1rf0lb97.apps.googleusercontent.com',
 
-  // Permiso que se pide al usuario: leer y escribir en Google Sheets (cualquier hoja suya).
-  SCOPES: 'https://www.googleapis.com/auth/spreadsheets',
+  // Permisos que se piden al usuario: leer y escribir en Google Sheets (cualquier hoja suya),
+  // más su nombre de perfil de Google (userinfo.profile/email) — se usa solo para rellenar
+  // automáticamente el campo "Añadida por" con quien está conectado (ver anadidaPorField
+  // más abajo y fetchCurrentUserName() en app.js). Añadido 2026-09-14: los usuarios que ya
+  // habían iniciado sesión antes de este cambio verán una pantalla de consentimiento de
+  // Google nueva la próxima vez que inicien sesión, para aceptar este permiso adicional.
+  SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
 };
 
 // Campos Si/No reutilizados en varios tableros.
 const SI_NO = ['Si', 'No'];
+
+// Campos genéricos "Añadida Por" / "Fecha añadida", reutilizados en Tareas,
+// Lista de Lectura y Lista de Visualización. Son de solo lectura: NO
+// aparecen en la ficha de alta/edición (openAddModal/openEditModal los
+// saltan igual que los campos 'computed'/'fixed'), se rellenan SOLOS al
+// crear el registro (nombre de la cuenta de Google conectada + fecha de
+// hoy) y, en una edición posterior, conservan su valor original sin
+// tocarlo — el submit handler de app.js distingue alta de edición para no
+// sobrescribirlos. `col` se pasa aparte porque cada tablero tiene sus
+// columnas ya usadas hasta una letra distinta.
+function anadidaPorField(col) {
+  return { key: 'anadidaPor', label: 'Añadida por', col, type: 'auto', compute: () => currentUserName };
+}
+function fechaAnadidaField(col) {
+  return { key: 'fechaAnadida', label: 'Fecha añadida', col, type: 'auto', compute: () => fromDateInputValue(todayISO()) };
+}
 
 // "★★★☆☆" a partir de un número de estrellas.
 function starsText(n) {
@@ -356,6 +377,8 @@ const MODULES = [
           { key: 'congelada', label: 'Cantidad Congelada', col: 'G', type: 'computed', compute: (v) => parseNum(v.metida) - parseNum(v.sacada) },
           { key: 'fechaEntrada', label: 'Fecha última entrada', col: 'H', type: 'date', default: 'today' },
           { key: 'fechaSalida', label: 'Fecha última salida', col: 'I', type: 'date' },
+          anadidaPorField('J'),
+          fechaAnadidaField('K'),
         ],
       },
     ],
@@ -441,6 +464,8 @@ const MODULES = [
           { key: 'congelada', label: 'Cantidad', col: 'G', type: 'computed', compute: (v) => parseNum(v.metida) - parseNum(v.sacada) },
           { key: 'fechaEntrada', label: 'Fecha última entrada', col: 'H', type: 'date', default: 'today' },
           { key: 'fechaSalida', label: 'Fecha última salida', col: 'I', type: 'date' },
+          anadidaPorField('J'),
+          fechaAnadidaField('K'),
         ],
       },
     ],
@@ -480,6 +505,8 @@ const MODULES = [
           { key: 'fechaFin', label: 'Fecha fin', col: 'L', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'M', type: 'select', options: SI_NO, default: 'No' },
           { key: 'documento', label: 'Documentos', col: 'N', type: 'url', placeholder: 'Enlace de Google Drive' },
+          anadidaPorField('O'),
+          fechaAnadidaField('P'),
         ],
       },
       {
@@ -508,6 +535,8 @@ const MODULES = [
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
           { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
+          anadidaPorField('N'),
+          fechaAnadidaField('O'),
         ],
       },
       {
@@ -536,6 +565,8 @@ const MODULES = [
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
           { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
+          anadidaPorField('N'),
+          fechaAnadidaField('O'),
         ],
       },
       {
@@ -564,6 +595,8 @@ const MODULES = [
           { key: 'fechaFin', label: 'Fecha fin', col: 'K', type: 'date' },
           { key: 'enBarbecho', label: 'En barbecho', col: 'L', type: 'select', options: SI_NO, default: 'No' },
           { key: 'documento', label: 'Documentos', col: 'M', type: 'url', placeholder: 'Enlace de Google Drive' },
+          anadidaPorField('N'),
+          fechaAnadidaField('O'),
         ],
       },
     ],
@@ -616,6 +649,8 @@ const MODULES = [
           { key: 'iniciado', label: 'Iniciado', col: 'G', type: 'select', options: SI_NO, default: 'No' },
           { key: 'fechaLectura', label: 'Fecha de lectura', col: 'H', type: 'date' },
           { key: 'valoracion', label: 'Valoración', col: 'I', type: 'stars', max: 5 },
+          anadidaPorField('J'),
+          fechaAnadidaField('K'),
         ],
       },
     ],
@@ -682,6 +717,8 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio visionado', col: 'H', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
           { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
+          anadidaPorField('M'),
+          fechaAnadidaField('N'),
         ],
         // Filtros combo por Tipo y por Nacionalidad, con las opciones sacadas
         // directamente de los valores que ya hay en la hoja (no una lista

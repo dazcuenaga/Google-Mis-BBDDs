@@ -4,6 +4,7 @@ const SHEETS_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
 let accessToken = null;
 let tokenClient = null;
+let currentUserName = ''; // nombre de la cuenta de Google conectada, para el campo 'auto' "Añadida por"
 
 let currentModule = null;
 let currentBoard = null;
@@ -14,6 +15,9 @@ let containsFilterState = {}; // valor seleccionado por cada containsFilter acti
 let activeFilterIdx = 0;
 let searchTerm = '';
 let editingRow = null;     // null = alta nueva, número = edición de esa fila
+let editingItem = null;    // el item original que se está editando (null en alta), para
+                            // preservar el valor de los campos 'auto' (Añadida Por/Fecha
+                            // añadida) al guardar una edición sin tocarlos
 let sheetIdCache = {};     // `${spreadsheetId}:${sheetName}` -> sheetId numérico
 let photoMap = null;       // tablero.photoLookup: {nombre -> fila de la hoja de fotos} del tablero actual
 
@@ -124,12 +128,33 @@ loginBtnGate.addEventListener('click', requestLogin);
 logoutBtn.addEventListener('click', () => {
   if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
   accessToken = null;
+  currentUserName = '';
   showGate();
 });
 
-function onLogin() {
+// Nombre de la cuenta de Google conectada, para rellenar "Añadida por" solo
+// (ver anadidaPorField en config.js). Se pide una única vez justo después del
+// login, usando el mismo access token ya obtenido — requiere que CONFIG.SCOPES
+// incluya userinfo.profile/userinfo.email (ver config.js). Si falla (sin red,
+// endpoint caído…) currentUserName se queda vacío y "Añadida por" se guarda
+// en blanco esa vez, sin bloquear el resto de la app.
+async function fetchCurrentUserName() {
+  try {
+    const resp = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    currentUserName = data.name || data.given_name || data.email || '';
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function onLogin() {
   loginGate.classList.add('hidden');
   logoutBtn.classList.remove('hidden');
+  await fetchCurrentUserName();
   showModules();
 }
 
@@ -1351,6 +1376,7 @@ function resolveField(f, lookup) {
 
 async function openAddModal() {
   editingRow = null;
+  editingItem = null;
   modalTitle.textContent = 'Añadir';
   deleteBtn.classList.add('hidden');
   itemForm.classList.remove('hidden');
@@ -1358,7 +1384,7 @@ async function openAddModal() {
   dynamicFields.innerHTML = '';
   const lookup = await fetchLookup(currentBoard);
   for (const f of currentBoard.fields) {
-    if (f.type === 'computed' || f.type === 'fixed') continue;
+    if (f.type === 'computed' || f.type === 'fixed' || f.type === 'auto') continue;
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), null));
   }
   wireAutoCalc(lookup, true);
@@ -1367,6 +1393,7 @@ async function openAddModal() {
 
 async function openEditModal(it) {
   editingRow = it.row;
+  editingItem = it;
   modalTitle.textContent = 'Editar';
   deleteBtn.classList.remove('hidden');
   itemForm.classList.remove('hidden');
@@ -1388,7 +1415,7 @@ async function openEditModal(it) {
   }
   const lookup = await fetchLookup(currentBoard);
   for (const f of currentBoard.fields) {
-    if (f.type === 'computed' || f.type === 'fixed') continue;
+    if (f.type === 'computed' || f.type === 'fixed' || f.type === 'auto') continue;
     const val = f.type === 'date' ? toDateInputValue(it[f.key]) : it[f.key];
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), val));
   }
@@ -1400,11 +1427,12 @@ async function openEditModal(it) {
 // referencia de incubación): un renglón por cada campo, sin edición posible.
 function openInfoFicha(it) {
   editingRow = null;
+  editingItem = null;
   modalTitle.textContent = it[currentBoard.titleField];
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
   const rowsHtml = currentBoard.fields
-    .filter((f) => f.type !== 'computed' && f.key !== currentBoard.titleField)
+    .filter((f) => f.type !== 'computed' && f.type !== 'auto' && f.key !== currentBoard.titleField)
     .map((f) => `
       <div class="ficha-row">
         <span class="ficha-loc">${escapeHtml(f.label || f.key)}</span>
@@ -1418,6 +1446,7 @@ function openInfoFicha(it) {
 // Ficha de solo lectura para un grupo del Resumen de Congelados.
 function openFicha(group) {
   editingRow = null;
+  editingItem = null;
   modalTitle.textContent = group.descripcion;
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
@@ -1443,6 +1472,7 @@ function openFicha(group) {
 // desglose por subgrupo con los valores calculados (suma/última fecha…).
 function openFichaAgg(group) {
   editingRow = null;
+  editingItem = null;
   modalTitle.textContent = group.group;
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
@@ -1466,6 +1496,7 @@ function openFichaAgg(group) {
 function closeModal() {
   modalOverlay.classList.add('hidden');
   editingRow = null;
+  editingItem = null;
   itemForm.classList.remove('hidden');
   fichaContent.classList.add('hidden');
 }
@@ -1476,6 +1507,15 @@ itemForm.addEventListener('submit', async (e) => {
   for (const f of currentBoard.fields) {
     if (f.type === 'computed') continue;
     if (f.type === 'fixed') { values[f.key] = f.value; continue; }
+    if (f.type === 'auto') {
+      // Alta nueva: se calcula ahora mismo (nombre de usuario / fecha de
+      // hoy). Edición: se conserva el valor que ya tenía la fila (no hay
+      // input en el DOM para este campo, así que hay que leerlo del item
+      // original, no recalcularlo) — así "Añadida por"/"Fecha añadida"
+      // nunca cambian al editar un registro ya existente.
+      values[f.key] = editingRow ? (editingItem ? editingItem[f.key] : '') : f.compute();
+      continue;
+    }
     const input = el(`f_${f.key}`);
     values[f.key] = input.value.trim ? input.value.trim() : input.value;
   }
