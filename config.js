@@ -662,10 +662,19 @@ const MODULES = [
         },
         // Estrellas de valoración, solo se muestran en la tarjeta si hay valor.
         extraTags: (it) => (parseNum(it.valoracion) > 0 ? [starsText(it.valoracion)] : []),
+        // El ORDEN de este array es solo el orden en que aparecen los campos en
+        // la ficha (add/edit modal) — NO tiene que coincidir con el orden de las
+        // columnas reales de la hoja, que sigue viniendo de 'col'. Reordenado a
+        // petición del usuario (2026-09-14): 'nacionalidad' justo debajo de
+        // 'titulo', 'directorActores' justo debajo de 'tema'.
         fields: [
           { key: 'titulo', label: 'Título', col: 'A', type: 'text', required: true },
+          { key: 'nacionalidad', label: 'Nacionalidad', col: 'L', type: 'text' },
           { key: 'tipo', label: 'Tipo', col: 'B', type: 'select', options: ['Película', 'Serie'], default: 'Película' },
           { key: 'tema', label: 'Tema', col: 'C', type: 'textarea' },
+          // Textarea (no un input de una línea) porque suele ser una lista de
+          // varios nombres (director + reparto).
+          { key: 'directorActores', label: 'Director y Actores', col: 'K', type: 'textarea', rows: 3 },
           { key: 'dondeSeEmite', label: 'Dónde se emite', col: 'D', type: 'text', placeholder: 'Ej. Netflix, HBO Max, Cine…' },
           { key: 'interes', label: 'Interés (0-10)', col: 'E', type: 'number', step: '0.5', min: 0, max: 10 },
           { key: 'disponible', label: 'Disponible', col: 'F', type: 'select', options: SI_NO, default: 'No' },
@@ -673,11 +682,12 @@ const MODULES = [
           { key: 'fechaInicio', label: 'Fecha inicio visionado', col: 'H', type: 'date' },
           { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
           { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
-          // Columna nueva añadida al final de la hoja (col K) — solo en la ficha,
-          // como 'tema'/'dondeSeEmite'. Textarea (no un input de una línea) porque
-          // suele ser una lista de varios nombres (director + reparto).
-          { key: 'directorActores', label: 'Director y Actores', col: 'K', type: 'textarea', rows: 3 },
-          { key: 'nacionalidad', label: 'Nacionalidad', col: 'L', type: 'text' },
+        ],
+        // Filtro combo por Nacionalidad, con las opciones sacadas directamente
+        // de los valores que ya hay en la hoja (no una lista fija) — mismo
+        // mecanismo genérico 'facetFilters' que usan otros tableros.
+        facetFilters: [
+          { key: 'nacionalidad', label: 'Nacionalidad', value: (it) => it.nacionalidad },
         ],
       },
     ],
