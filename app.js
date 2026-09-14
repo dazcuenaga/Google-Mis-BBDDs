@@ -95,6 +95,7 @@ const facetFiltersEl = el('facetFilters');
 const addBtn = el('addBtn');
 const modalOverlay = el('modalOverlay');
 const modalTitle = el('modalTitle');
+const modalMeta = el('modalMeta');
 const itemForm = el('itemForm');
 const dynamicFields = el('dynamicFields');
 const fichaContent = el('fichaContent');
@@ -1374,10 +1375,28 @@ function resolveField(f, lookup) {
   return { ...f, type: 'select', options };
 }
 
+// "Añadida por (Fecha añadida)" en la esquina superior derecha de la ficha,
+// junto al botón de cerrar — solo texto, sin etiquetas ("David Cuenca
+// (14/09/2026)"). Aparece SOLO en openEditModal(), para tableros que tengan
+// los campos type:'auto' anadidaPor/fechaAnadida (ver su propio comentario
+// más abajo) Y cuando el registro ya tiene un valor en anadidaPor — los
+// registros creados antes de que este campo existiera quedan en blanco, así
+// que no se muestra nada para ellos en vez de un "(vacío)" feo. El resto de
+// fichas (alta, solo-lectura, cierre) lo dejan vacío.
+function updateModalMeta(it) {
+  const hasAutoMeta = currentBoard && currentBoard.fields.some((f) => f.key === 'anadidaPor');
+  if (hasAutoMeta && it && it.anadidaPor) {
+    modalMeta.textContent = it.fechaAnadida ? `${it.anadidaPor} (${it.fechaAnadida})` : it.anadidaPor;
+  } else {
+    modalMeta.textContent = '';
+  }
+}
+
 async function openAddModal() {
   editingRow = null;
   editingItem = null;
   modalTitle.textContent = 'Añadir';
+  modalMeta.textContent = '';
   deleteBtn.classList.add('hidden');
   itemForm.classList.remove('hidden');
   fichaContent.classList.add('hidden');
@@ -1395,6 +1414,7 @@ async function openEditModal(it) {
   editingRow = it.row;
   editingItem = it;
   modalTitle.textContent = 'Editar';
+  updateModalMeta(it);
   deleteBtn.classList.remove('hidden');
   itemForm.classList.remove('hidden');
   fichaContent.classList.add('hidden');
@@ -1429,6 +1449,7 @@ function openInfoFicha(it) {
   editingRow = null;
   editingItem = null;
   modalTitle.textContent = it[currentBoard.titleField];
+  modalMeta.textContent = '';
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
   const rowsHtml = currentBoard.fields
@@ -1448,6 +1469,7 @@ function openFicha(group) {
   editingRow = null;
   editingItem = null;
   modalTitle.textContent = group.descripcion;
+  modalMeta.textContent = '';
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
   const rowsHtml = group.rows
@@ -1474,6 +1496,7 @@ function openFichaAgg(group) {
   editingRow = null;
   editingItem = null;
   modalTitle.textContent = group.group;
+  modalMeta.textContent = '';
   itemForm.classList.add('hidden');
   fichaContent.classList.remove('hidden');
   const board = currentBoard;
@@ -1497,6 +1520,7 @@ function closeModal() {
   modalOverlay.classList.add('hidden');
   editingRow = null;
   editingItem = null;
+  modalMeta.textContent = '';
   itemForm.classList.remove('hidden');
   fichaContent.classList.add('hidden');
 }

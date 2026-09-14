@@ -309,13 +309,26 @@ html, body {
 .modal-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 18px 16px 8px;
   position: sticky;
   top: 0;
   background: var(--surface);
 }
 .modal-header h2 { font-size: 17px; margin: 0; }
+/* "Añadida por (fecha añadida)" — solo texto, sin etiqueta, pegado a la
+   izquierda del botón de cerrar (✕). Se rellena solo en openEditModal()
+   cuando el tablero tiene los campos type:'auto' anadidaPor/fechaAnadida y
+   el registro ya los tiene rellenos; en cualquier otro caso queda vacío. */
+.modal-meta {
+  margin-left: auto;
+  margin-right: 10px;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 45%;
+}
 .icon-btn {
   background: var(--surface-2);
   border: none;
