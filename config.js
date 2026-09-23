@@ -749,6 +749,8 @@ const MODULES = [
   buildFontaneriaModule(),
 
   buildRecetasModule(),
+
+  buildGuiasModule(),
 ];
 
 // ---------------------------------------------------------------------------
@@ -1188,6 +1190,27 @@ function buildRecetasModule() {
 }
 
 // ---------------------------------------------------------------------------
+// GUÍAS: tampoco lee ninguna hoja — es una galería fija de imágenes de
+// guías rápidas (GUIAS_LISTA en guias-data.js: herramientas, tornillería,
+// etc.). Al abrir el módulo se ve un listado con el nombre de cada guía;
+// tocar una la abre directamente a pantalla completa, salvo que tenga varias
+// fotos (ej. Multímetro: Uso y Símbolos), en cuyo caso se ve antes un
+// submenú con esos apartados (mismo patrón que el submenú de
+// Fontanería/Recetas). `custom: 'guias'` hace que app.js abra una pantalla
+// propia (openGuiasMenu) en vez del flujo normal de tableros.
+// ---------------------------------------------------------------------------
+function buildGuiasModule() {
+  return {
+    id: 'guias',
+    title: 'Guías',
+    subtitle: 'Fichas rápidas de herramientas y materiales',
+    icon: '📘',
+    custom: 'guias',
+    lista: GUIAS_LISTA,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // CATEGORÍAS DE MÓDULOS: agrupa los módulos de MODULES en un nivel superior
 // de navegación (Módulos → categoría → módulo, en vez de Módulos → módulo
 // directamente). Cada categoría es solo `{id, icon, title, subtitle,
@@ -1227,7 +1250,7 @@ const MODULE_CATEGORIES = [
     id: 'infraestructura',
     icon: '🛠️',
     title: 'Infraestructura',
-    subtitle: 'Fontanería y Electricidad',
-    moduleIds: ['fontaneria', 'electricidad-el-rellano'],
+    subtitle: 'Fontanería, Electricidad y Guías',
+    moduleIds: ['fontaneria', 'electricidad-el-rellano', 'guias'],
   },
 ];

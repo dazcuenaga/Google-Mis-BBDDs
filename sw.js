@@ -1,5 +1,13 @@
-const CACHE = 'congelados-v75';
-const SHELL = ['./', './index.html', './style.css', './app.js', './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './config.js', './manifest.json', './icon.svg'];
+const CACHE = 'congelados-v76';
+const SHELL = [
+  './', './index.html', './style.css', './app.js',
+  './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './config.js',
+  './manifest.json', './icon.svg',
+  './guias/multimetro-uso.png', './guias/multimetro-simbolos.png',
+  './guias/tipos-de-alicate.png', './guias/tipos-de-brocas.png',
+  './guias/tipos-de-cabezas-de-tornillos.png', './guias/tipos-de-disco-para-amoladora.png',
+  './guias/tipos-de-lija.png', './guias/tipos-de-tacos.png',
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));

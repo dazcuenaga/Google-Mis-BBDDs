@@ -838,6 +838,23 @@ html, body {
 }
 .receta-nota strong { color: var(--text); }
 
+/* ---------- Módulo "Guías" ---------- */
+/* Imagen de una guía a pantalla completa (ej. "Tipos de Brocas", o Uso/
+   Símbolos dentro de Multímetro): una sola imagen, ajustada al ancho de la
+   pantalla, con scroll vertical si hace falta (foto de una lámina/tabla). */
+.guia-imagen-wrap {
+  padding: 12px 16px 24px;
+  display: flex;
+  justify-content: center;
+}
+.guia-imagen-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f4f6fb;

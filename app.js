@@ -82,6 +82,16 @@ const recetaFichaBody = el('recetaFichaBody');
 
 let recetasMod = null;           // módulo actual (definición completa: secciones + recetasPorSeccion)
 let recetasSeccionActual = null; // sección actual (objeto de RECETAS_SECCIONES), para el back y la lista
+
+const guiasScreen = el('guiasScreen');
+const guiasList = el('guiasList');
+const guiaSubScreen = el('guiaSubScreen');
+const guiaSubList = el('guiaSubList');
+const guiaImagenScreen = el('guiaImagenScreen');
+const guiaImagenImg = el('guiaImagenImg');
+
+let guiasMod = null;   // módulo actual (definición completa: lista de guías)
+let guiaActual = null; // guía actual (objeto de GUIAS_LISTA), para el back cuando tiene submenú de fotos (Multímetro)
 const moduleList = el('moduleList');
 const categoryScreen = el('categoryScreen');
 const categoryModuleList = el('categoryModuleList');
@@ -174,6 +184,9 @@ function showGate() {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   logoutBtn.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
@@ -199,6 +212,9 @@ function showModules() {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.add('hidden');
   topIcon.textContent = '📋';
   topTitle.textContent = 'Mis-BBDDs';
@@ -222,6 +238,9 @@ function showBoards(mod) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -245,6 +264,9 @@ function showPicker() {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = node.icon || currentModule.icon;
   topTitle.textContent = node.title;
@@ -273,6 +295,9 @@ async function openDynamicPicker(mod) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = mod.title;
@@ -317,6 +342,9 @@ function showBoard(mod, board) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
   topTitle.textContent = board.title;
@@ -359,6 +387,23 @@ backBtn.addEventListener('click', () => {
     return;
   }
   if (!recetasMenuScreen.classList.contains('hidden')) {
+    backToModuleList();
+    return;
+  }
+  // Mismo patrón en el módulo Guías: la imagen vuelve al submenú de su guía
+  // si tenía varios apartados (ej. Multímetro: Uso/Símbolos), o directamente
+  // al listado principal si se abrió desde ahí; el submenú vuelve al
+  // listado, y el listado vuelve a la lista de módulos de la categoría.
+  if (!guiaImagenScreen.classList.contains('hidden')) {
+    if (guiaActual && guiaActual.imagenes) openGuiaSub(guiasMod, guiaActual);
+    else openGuiasMenu(guiasMod);
+    return;
+  }
+  if (!guiaSubScreen.classList.contains('hidden')) {
+    openGuiasMenu(guiasMod);
+    return;
+  }
+  if (!guiasScreen.classList.contains('hidden')) {
     backToModuleList();
     return;
   }
@@ -428,6 +473,9 @@ function openCategory(cat) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = cat.icon;
   topTitle.textContent = cat.title;
@@ -464,6 +512,8 @@ function renderCategoryModules(cat) {
         openFontaneriaMenu(mod);
       } else if (mod.custom === 'recetas') {
         openRecetasMenu(mod);
+      } else if (mod.custom === 'guias') {
+        openGuiasMenu(mod);
       } else if (mod.dynamicTree) {
         openDynamicPicker(mod);
       } else if (mod.tree) {
@@ -1708,6 +1758,9 @@ function openElectricidad(mod) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   electricidadScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -1862,6 +1915,9 @@ function openFontaneriaMenu(mod) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   fontaneriaMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -1915,6 +1971,9 @@ function openFontProximamente(sec) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   fontProximamenteScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -1957,6 +2016,9 @@ function openFontaneria(mod, sec) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   fontaneriaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'manantial-deposito');
@@ -1993,6 +2055,9 @@ function openFontDepositoCasa(mod, sec) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   fontDepositoCasaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'deposito-casa');
@@ -2057,6 +2122,9 @@ function openFontInteriorCasa(mod, sec) {
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   fontInteriorCasaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   sec = sec || (mod.secciones || []).find((s) => s.id === 'interior-casa');
@@ -2181,6 +2249,9 @@ function openRecetasMenu(mod) {
   fontInteriorCasaScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   recetasMenuScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = mod.icon;
@@ -2231,6 +2302,9 @@ function openRecetasSeccion(mod, sec) {
   fontInteriorCasaScreen.classList.add('hidden');
   recetasMenuScreen.classList.add('hidden');
   recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   recetasSeccionScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -2300,6 +2374,9 @@ function openRecetaFicha(mod, sec, receta) {
   fontInteriorCasaScreen.classList.add('hidden');
   recetasMenuScreen.classList.add('hidden');
   recetasSeccionScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
   recetaFichaScreen.classList.remove('hidden');
   backBtn.classList.remove('hidden');
   topIcon.textContent = sec.icon;
@@ -2347,6 +2424,144 @@ function renderRecetaFicha(receta) {
     <div class="receta-pasos">${pasosHtml}</div>
     ${notaHtml}
   `;
+}
+
+// ---------- Módulo "Guías" (galería de imágenes) ----------
+// Datos en GUIAS_LISTA (guias-data.js). Listado principal (openGuiasMenu):
+// tocar una guía la abre directamente (openGuiaImagen) salvo que tenga
+// varias fotos (`imagenes`, ej. Multímetro: Uso y Símbolos), en cuyo caso
+// se abre antes un submenú con esos apartados (openGuiaSub) — mismo patrón
+// de navegación en tres niveles que Fontanería/Recetas (ver backBtn más
+// arriba, sección "Guías").
+function openGuiasMenu(mod) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
+  guiasScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = mod.icon;
+  topTitle.textContent = mod.title;
+
+  guiasMod = mod;
+  guiaActual = null;
+  renderGuiasList();
+}
+
+function renderGuiasList() {
+  guiasList.innerHTML = '';
+  for (const guia of guiasMod.lista) {
+    const card = document.createElement('div');
+    card.className = 'card module-card';
+    card.innerHTML = `
+      <div class="module-icon">${guia.icon || guiasMod.icon}</div>
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(guia.titulo)}</p>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => {
+      if (guia.imagenes) openGuiaSub(guiasMod, guia);
+      else openGuiaImagen(guiasMod, guia, null);
+    });
+    guiasList.appendChild(card);
+  }
+}
+
+// Submenú de apartados de una guía con varias fotos (de momento solo
+// Multímetro: Uso y Símbolos). Tocar un apartado abre su imagen.
+function openGuiaSub(mod, guia) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaImagenScreen.classList.add('hidden');
+  guiaSubScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  topIcon.textContent = guia.icon || mod.icon;
+  topTitle.textContent = guia.titulo;
+
+  guiasMod = mod;
+  guiaActual = guia;
+  renderGuiaSubList();
+}
+
+function renderGuiaSubList() {
+  guiaSubList.innerHTML = '';
+  for (const sub of guiaActual.imagenes) {
+    const card = document.createElement('div');
+    card.className = 'card module-card';
+    card.innerHTML = `
+      <div class="module-icon">${guiaActual.icon || guiasMod.icon}</div>
+      <div class="card-main">
+        <p class="card-title">${escapeHtml(sub.titulo)}</p>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    card.addEventListener('click', () => openGuiaImagen(guiasMod, guiaActual, sub));
+    guiaSubList.appendChild(card);
+  }
+}
+
+// Imagen de una guía a pantalla completa. `sub` es el apartado concreto
+// (Uso/Símbolos) cuando la guía tiene varias fotos, o null cuando la guía
+// tiene una sola imagen y se abrió directamente desde el listado principal.
+function openGuiaImagen(mod, guia, sub) {
+  currentModule = mod;
+  currentBoard = null;
+  navStack = [];
+  modulesScreen.classList.add('hidden');
+  categoryScreen.classList.add('hidden');
+  boardsScreen.classList.add('hidden');
+  boardScreen.classList.add('hidden');
+  electricidadScreen.classList.add('hidden');
+  fontaneriaMenuScreen.classList.add('hidden');
+  fontaneriaScreen.classList.add('hidden');
+  fontDepositoCasaScreen.classList.add('hidden');
+  fontProximamenteScreen.classList.add('hidden');
+  fontInteriorCasaScreen.classList.add('hidden');
+  recetasMenuScreen.classList.add('hidden');
+  recetasSeccionScreen.classList.add('hidden');
+  recetaFichaScreen.classList.add('hidden');
+  guiasScreen.classList.add('hidden');
+  guiaSubScreen.classList.add('hidden');
+  guiaImagenScreen.classList.remove('hidden');
+  backBtn.classList.remove('hidden');
+  const titulo = sub ? sub.titulo : guia.titulo;
+  topIcon.textContent = guia.icon || mod.icon;
+  topTitle.textContent = titulo;
+
+  guiasMod = mod;
+  guiaActual = guia;
+  guiaImagenImg.src = sub ? sub.imagen : guia.imagen;
+  guiaImagenImg.alt = titulo;
 }
 
 // ---------- Service worker (instalación como app) ----------

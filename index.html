@@ -579,6 +579,28 @@
   <section class="receta-ficha" id="recetaFichaBody"></section>
 </main>
 
+<!-- Módulo "Guías": listado de guías (nombres de las imágenes de la carpeta
+     guias/, ver guias-data.js). Tocar una guía abre directamente su imagen
+     (guiaImagenScreen); las guías con varias fotos (ej. Multímetro: Uso y
+     Símbolos) abren antes este mismo tipo de submenú con sus apartados
+     (guiaSubScreen) — mismo patrón de navegación en tres niveles que
+     Recetas/Fontanería. -->
+<main id="guiasScreen" class="screen hidden">
+  <section class="list module-list" id="guiasList"></section>
+</main>
+
+<!-- Submenú de apartados de una guía con varias fotos (ej. Multímetro). -->
+<main id="guiaSubScreen" class="screen hidden">
+  <section class="list module-list" id="guiaSubList"></section>
+</main>
+
+<!-- Imagen de una guía a pantalla completa. -->
+<main id="guiaImagenScreen" class="screen hidden">
+  <section class="guia-imagen-wrap">
+    <img id="guiaImagenImg" class="guia-imagen-img" alt="">
+  </section>
+</main>
+
 <!-- Listado de un tablero concreto -->
 <main id="boardScreen" class="screen hidden">
   <section class="toolbar">
@@ -665,6 +687,7 @@
 <script src="electricidad-data.js"></script>
 <script src="fontaneria-data.js"></script>
 <script src="recetas-data.js"></script>
+<script src="guias-data.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>
