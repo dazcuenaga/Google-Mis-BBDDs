@@ -1430,6 +1430,46 @@ function resolveField(f, lookup) {
   return { ...f, type: 'select', options };
 }
 
+// Combos dependientes: un `selectFromLookup` con `filterBy` (ej. Animal filtrado
+// por Especie) solo ofrece las filas del lookup cuyo `lookupField` coincide con
+// el valor elegido en el combo `filterBy.fieldKey`. Se reconstruyen las opciones
+// cada vez que cambia el combo padre; al abrir una ficha de edición se conserva
+// el valor ya guardado aunque no figure en la lista.
+function wireDependentSelects(lookup, isEdit) {
+  if (!lookup || !currentBoard.selectFromLookup) return;
+  const configs = Array.isArray(currentBoard.selectFromLookup) ? currentBoard.selectFromLookup : [currentBoard.selectFromLookup];
+  for (const cfg of configs.filter((c) => c.filterBy && c.valueField)) {
+    const child = el(`f_${cfg.fieldKey}`);
+    const parent = el(`f_${cfg.filterBy.fieldKey}`);
+    if (!child || !parent || child.tagName !== 'SELECT') continue;
+    const rebuild = (keepStored) => {
+      const parentVal = normalizeMatch(parent.value);
+      const options = [...new Set(
+        Object.values(lookup)
+          .filter((r) => normalizeMatch(r[cfg.filterBy.lookupField]) === parentVal)
+          .map((r) => r[cfg.valueField])
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, 'es'));
+      const current = child.value;
+      if (keepStored && current && !options.includes(current)) options.push(current);
+      child.innerHTML = '';
+      for (const opt of options) {
+        const o = document.createElement('option');
+        o.value = opt;
+        o.textContent = opt;
+        child.appendChild(o);
+      }
+      child.value = options.includes(current) ? current : (options[0] || '');
+    };
+    parent.addEventListener('change', () => {
+      rebuild(false);
+      // El cambio de Animal es programático: avisamos a los cálculos (ej. UGM).
+      child.dispatchEvent(new Event('change'));
+    });
+    rebuild(isEdit);
+  }
+}
+
 // "Añadida por (Fecha añadida)" en la esquina superior derecha de la ficha,
 // junto al botón de cerrar — solo texto, sin etiquetas ("David Cuenca
 // (14/09/2026)"). Aparece SOLO en openEditModal(), para tableros que tengan
@@ -1461,6 +1501,7 @@ async function openAddModal() {
     if (f.type === 'computed' || f.type === 'fixed' || f.type === 'auto') continue;
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), null));
   }
+  wireDependentSelects(lookup, false);
   wireAutoCalc(lookup, true);
   modalOverlay.classList.remove('hidden');
 }
@@ -1494,6 +1535,7 @@ async function openEditModal(it) {
     const val = f.type === 'date' ? toDateInputValue(it[f.key]) : it[f.key];
     dynamicFields.appendChild(buildFieldInput(resolveField(f, lookup), val));
   }
+  wireDependentSelects(lookup, true);
   wireAutoCalc(lookup);
   modalOverlay.classList.remove('hidden');
 }

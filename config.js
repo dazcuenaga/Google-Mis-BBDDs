@@ -263,7 +263,8 @@ function buildPoblacionPicker(year, poblacionSheet) {
             speciesLookup: { board: animalesImagenesBoard, keyFn: (r) => animalEspecieKey(r.nombre, r.especie) },
             selectFromLookup: [
               { fieldKey: 'especie', valueField: 'especie' },
-              { fieldKey: 'animales', valueField: 'nombre' },
+              // El combo Animal solo ofrece los animales de la Especie elegida.
+              { fieldKey: 'animales', valueField: 'nombre', filterBy: { fieldKey: 'especie', lookupField: 'especie' } },
             ],
             // Foto del animal: se busca en la pestaña IMAGENES por nombre (columna
             // "Animal" de esta hoja == columna "nombre" de IMAGENES).
