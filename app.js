@@ -1254,7 +1254,10 @@ function buildFieldInput(f, value) {
   }
   if (f.type === 'select') {
     input = document.createElement('select');
-    for (const opt of f.options) {
+    // Un valor ya guardado que no esté entre las opciones (ej. dato antiguo) se
+    // conserva como opción extra para que editar la fila no lo pierda.
+    const options = value && !f.options.includes(value) ? [...f.options, value] : f.options;
+    for (const opt of options) {
       const o = document.createElement('option');
       o.value = opt;
       o.textContent = opt === 'Si' ? 'Sí' : opt === 'Arcon' ? 'Arcón' : opt;
@@ -1340,7 +1343,8 @@ async function fetchLookup(board) {
   try {
     const rows = await fetchBoardItems(currentModule.spreadsheetId, src.board);
     const map = {};
-    for (const r of rows) map[r[src.keyField]] = r;
+    // `keyFn` permite una clave compuesta (ej. Animal + Especie) en vez de un solo campo.
+    for (const r of rows) map[src.keyFn ? src.keyFn(r) : r[src.keyField]] = r;
     return map;
   } catch (err) {
     console.error(err);
@@ -1392,6 +1396,7 @@ function wireAutoCalc(lookup, runInitial) {
       if (!targetInput) continue;
       const val = calc.compute(values, lookup);
       if (val) targetInput.value = val;
+      else if (calc.clearWhenEmpty) targetInput.value = '';
     }
   };
   const deps = new Set();

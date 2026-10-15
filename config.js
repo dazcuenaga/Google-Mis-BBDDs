@@ -86,19 +86,27 @@ const TODO_QUICK_ACTIONS = [
 const ANIMALES_SPREADSHEET_ID = '1sUIJEddbucc5SyYfwnrNulOxL2I6fRI5GINo3uYSD84';
 const ANIMALES_YEARS = [2026, 2025];
 
-// Hoja de referencia con las fotos de los animales (pestaña "IMAGENES" en la
-// misma hoja de cálculo de Animales, no por año): columna A el nombre del
-// animal, columna B un enlace a su foto. Se usa desde `photoLookup` en
-// Población → Detalle para mostrar la foto de cada animal que coincida por
-// nombre (ver fetchPhotoLookup/driveImageUrl en app.js).
+// Hoja de referencia de los animales (pestaña "IMAGENES" en la misma hoja de
+// cálculo de Animales, no por año): columna A el nombre del animal, B un
+// enlace a su foto, C su UGM unitario y D su especie. Se usa desde
+// `photoLookup` en Población → Detalle para mostrar la foto de cada animal
+// (ver fetchPhotoLookup/driveImageUrl en app.js) y desde `speciesLookup` para
+// los desplegables Especie/Animal y el cálculo del UGM de cada combinación
+// Animal + Especie.
 const animalesImagenesBoard = {
   sheetName: 'IMAGENES',
   titleField: 'nombre',
   fields: [
     { key: 'nombre', col: 'A' },
     { key: 'imagen', col: 'B' },
+    { key: 'ugm', col: 'C' },
+    { key: 'especie', col: 'D' },
   ],
 };
+// Clave compuesta Animal + Especie para localizar su fila en IMAGENES.
+function animalEspecieKey(animal, especie) {
+  return `${String(animal || '').trim()}|${String(especie || '').trim()}`;
+}
 const PLANTAS_SPREADSHEET_ID = '17yCW3G1Fj4cJU_akGp0VIEfg_XpF6J5udMKdS4nb_Mk';
 const PLANTAS_YEARS = [2026];
 
@@ -249,18 +257,28 @@ function buildPoblacionPicker(year, poblacionSheet) {
               { key: 'especie', label: 'Especie', value: (it) => it.especie },
             ],
             cardClass: (it) => hashClass(it.especie),
-            // El UGM se rellena a partir del UGM ya usado para esa especie en otras filas.
-            speciesLookup: { fromItems: true, keyField: 'especie' },
+            // Los desplegables Especie y Animal se nutren de las columnas D y A de la
+            // pestaña IMAGENES; el UGM sale de la fila de IMAGENES con esa misma
+            // combinación Animal + Especie.
+            speciesLookup: { board: animalesImagenesBoard, keyFn: (r) => animalEspecieKey(r.nombre, r.especie) },
+            selectFromLookup: [
+              { fieldKey: 'especie', valueField: 'especie' },
+              { fieldKey: 'animales', valueField: 'nombre' },
+            ],
             // Foto del animal: se busca en la pestaña IMAGENES por nombre (columna
             // "Animal" de esta hoja == columna "nombre" de IMAGENES).
             photoLookup: { board: animalesImagenesBoard, keyField: 'nombre', matchField: 'animales' },
             autoCalc: [
               {
+                // UGM = Cantidad × UGM unitario (columna C de IMAGENES) de esa
+                // combinación Animal + Especie. Si no existe la combinación, se vacía.
                 targetKey: 'ugm',
-                dependsOn: ['especie'],
+                dependsOn: ['especie', 'animales', 'cantidad'],
+                clearWhenEmpty: true,
                 compute: (values, lookup) => {
-                  const sp = lookupValue(lookup, values.especie);
-                  return sp && sp.ugm ? sp.ugm : '';
+                  const row = lookupValue(lookup, animalEspecieKey(values.animales, values.especie));
+                  if (!row || !row.ugm) return '';
+                  return Math.round(parseNum(values.cantidad) * parseNum(row.ugm) * 1000) / 1000;
                 },
               },
             ],
@@ -269,7 +287,7 @@ function buildPoblacionPicker(year, poblacionSheet) {
               { key: 'animales', label: 'Animal', col: 'B', type: 'text', required: true },
               { key: 'cantidad', label: 'Cantidad', col: 'C', type: 'number', default: 1 },
               { key: 'ugm', label: 'UGM', col: 'D', type: 'number', step: '0.001' },
-              { key: 'totalUgm', label: 'UGM total', col: 'E', type: 'computed', compute: (v) => parseNum(v.cantidad) * parseNum(v.ugm) },
+              { key: 'totalUgm', label: 'UGM total', col: 'E', type: 'computed', compute: (v) => parseNum(v.ugm) },
               { key: 'precio', label: 'Precio', col: 'F', type: 'number', step: '0.01' },
               { key: 'totalPrecio', label: 'Total precio', col: 'G', type: 'computed', compute: (v) => parseNum(v.cantidad) * parseNum(v.precio) },
               { key: 'fechaRevision', label: 'Fecha revisión', col: 'H', type: 'date', default: 'today' },
