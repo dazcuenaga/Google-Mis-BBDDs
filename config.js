@@ -16,7 +16,7 @@ const CONFIG = {
 const SI_NO = ['Si', 'No'];
 
 // Campos genéricos "Añadida Por" / "Fecha añadida", reutilizados en Tareas,
-// Lista de Lectura y Lista de Visualización. Son de solo lectura: NO
+// y Lista de Lectura. Son de solo lectura: NO
 // aparecen en la ficha de alta/edición (openAddModal/openEditModal los
 // saltan igual que los campos 'computed'/'fixed'), se rellenan SOLOS al
 // crear el registro (nombre de la cuenta de Google conectada + fecha de
@@ -678,78 +678,45 @@ const MODULES = [
     ],
   },
 
+  // Visitas: bodegas de Cantabria para visitar (hoja "Visitas", pestaña "Bodegas Cantabria").
+  // Visitada = Si/No (las visitadas se muestran con el fondo de "terminado").
   {
-    id: 'listavisualizacion',
-    title: 'Lista de Visualización',
-    subtitle: 'Películas y series pendientes y vistas',
-    icon: '🎬',
-    spreadsheetId: '141w6h11l9kuoNYbmDQbkeMRgL1jpUqPH_OarAFaNuPQ',
+    id: 'visitas',
+    title: 'Visitas',
+    subtitle: 'Bodegas de Cantabria pendientes y visitadas',
+    icon: '🍷',
+    spreadsheetId: '176aUlIV12cUXxdRbn865AiLAi5V4Kv34SRCcnvYQNcE',
     boards: [
       {
-        id: 'hoja1', sheetName: 'Hoja 1', title: 'Lista de Visualización',
-        titleField: 'titulo', subtitleFields: ['tipo'],
-        badge: { key: 'interes', label: 'interés' },
-        searchFields: ['titulo', 'tema', 'dondeSeEmite'],
-        sort: { field: 'interes', type: 'number', dir: 'desc' },
+        id: 'bodegas', sheetName: 'Bodegas Cantabria', title: 'Bodegas Cantabria',
+        titleField: 'nombre', subtitleFields: ['ubicacion', 'igp'],
+        badge: { key: 'valoracionVisita', label: 'visita' },
+        searchFields: ['nombre', 'ubicacion', 'igp', 'vinos'],
+        sort: { field: 'nombre', type: 'text', dir: 'asc' },
         filters: [
-          { label: 'Todos' },
-          { label: 'Pendientes', match: (it) => !it.fechaFin && it.iniciada !== 'Si' },
-          { label: 'Viendo', match: (it) => !it.fechaFin && it.iniciada === 'Si' },
-          { label: 'Vistos', match: (it) => !!it.fechaFin },
+          { label: 'Todas' },
+          { label: 'Pendientes', match: (it) => it.visitada !== 'Si' },
+          { label: 'Visitadas', match: (it) => it.visitada === 'Si' },
         ],
-        quickActions: [
-          {
-            label: 'Empezar', variant: 'success',
-            hideWhen: (it) => it.iniciada === 'Si',
-            apply: (values) => {
-              values.iniciada = 'Si';
-              values.fechaInicio = todayISO();
-            },
-          },
-          {
-            label: 'Visto', field: 'fechaFin', value: 'today', variant: 'primary',
-            hideWhen: (it) => !!it.fechaFin,
-          },
-        ],
-        // Fondo de la tarjeta según el estado de visionado.
-        cardClass: (it) => {
-          if (it.fechaFin) return 'finished';
-          if (it.iniciada === 'Si') return 'reading';
-          return '';
-        },
-        // Estrellas de valoración, solo se muestran en la tarjeta si hay valor.
-        extraTags: (it) => (parseNum(it.valoracion) > 0 ? [starsText(it.valoracion)] : []),
-        // El ORDEN de este array es solo el orden en que aparecen los campos en
-        // la ficha (add/edit modal) — NO tiene que coincidir con el orden de las
-        // columnas reales de la hoja, que sigue viniendo de 'col'. Reordenado a
-        // petición del usuario (2026-09-14): 'nacionalidad' justo debajo de
-        // 'titulo', 'directorActores' justo debajo de 'tema'.
-        fields: [
-          { key: 'titulo', label: 'Título', col: 'A', type: 'text', required: true },
-          { key: 'nacionalidad', label: 'Nacionalidad', col: 'L', type: 'text' },
-          { key: 'tipo', label: 'Tipo', col: 'B', type: 'select', options: ['Película', 'Serie'], default: 'Película' },
-          { key: 'tema', label: 'Tema', col: 'C', type: 'textarea' },
-          // Textarea (no un input de una línea) porque suele ser una lista de
-          // varios nombres (director + reparto).
-          { key: 'directorActores', label: 'Director y Actores', col: 'K', type: 'textarea', rows: 3 },
-          { key: 'dondeSeEmite', label: 'Dónde se emite', col: 'D', type: 'text', placeholder: 'Ej. Netflix, HBO Max, Cine…' },
-          { key: 'interes', label: 'Interés (0-10)', col: 'E', type: 'number', step: '0.5', min: 0, max: 10 },
-          { key: 'disponible', label: 'Disponible', col: 'F', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'iniciada', label: 'Empezada', col: 'G', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaInicio', label: 'Fecha inicio visionado', col: 'H', type: 'date' },
-          { key: 'fechaFin', label: 'Fecha fin visionado', col: 'I', type: 'date' },
-          { key: 'valoracion', label: 'Valoración', col: 'J', type: 'stars', max: 5 },
-          anadidaPorField('M'),
-          fechaAnadidaField('N'),
-        ],
-        // Filtros combo por Tipo y por Nacionalidad, con las opciones sacadas
-        // directamente de los valores que ya hay en la hoja (no una lista
-        // fija) — mismo mecanismo genérico 'facetFilters' que usan otros
-        // tableros. Se pueden combinar entre sí y con el chip de arriba
-        // (Todos/Pendientes/Viendo/Vistos).
+        cardClass: (it) => (it.visitada === 'Si' ? 'finished' : ''),
         facetFilters: [
-          { key: 'tipo', label: 'Tipo', value: (it) => it.tipo },
-          { key: 'nacionalidad', label: 'Nacionalidad', value: (it) => it.nacionalidad },
+          { key: 'igp', label: 'IGP', value: (it) => it.igp },
+          { key: 'enoturismo', label: 'Enoturismo', value: (it) => it.enoturismo },
+        ],
+        fields: [
+          { key: 'nombre', label: 'Nombre bodega', col: 'A', type: 'text', required: true },
+          { key: 'igp', label: 'IGP', col: 'B', type: 'text' },
+          { key: 'url', label: 'URL', col: 'C', type: 'url' },
+          { key: 'ubicacion', label: 'Ubicación', col: 'D', type: 'text' },
+          { key: 'telefono', label: 'Teléfono', col: 'L', type: 'text' },
+          { key: 'email', label: 'Email', col: 'M', type: 'text' },
+          { key: 'vinos', label: 'Vinos', col: 'E', type: 'textarea', rows: 5 },
+          { key: 'enoturismo', label: 'Enoturismo / Cata pública', col: 'F', type: 'select', options: ['Si', 'No', '???'], default: '???' },
+          { key: 'precio', label: 'Precio', col: 'G', type: 'text', placeholder: 'Ej. 30 - visita + cata + pinchos' },
+          { key: 'visitada', label: 'Visitada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
+          { key: 'fechaVisita', label: 'Fecha visita', col: 'I', type: 'date' },
+          { key: 'valoracionVisita', label: 'Valoración visita (0-10)', col: 'J', type: 'number', step: '0.5', min: 0, max: 10 },
+          { key: 'valoracionVinos', label: 'Valoración vinos (0-10)', col: 'K', type: 'number', step: '0.5', min: 0, max: 10 },
         ],
       },
     ],
@@ -1248,8 +1215,8 @@ const MODULE_CATEGORIES = [
     id: 'por-hacer',
     icon: '📝',
     title: 'Por hacer',
-    subtitle: 'Tareas, Lista de Lectura y Lista de Visualización',
-    moduleIds: ['familytodos', 'listalectura', 'listavisualizacion'],
+    subtitle: 'Tareas, Lista de Lectura y Visitas',
+    moduleIds: ['familytodos', 'listalectura', 'visitas'],
   },
   {
     id: 'agricultura-ganaderia',
