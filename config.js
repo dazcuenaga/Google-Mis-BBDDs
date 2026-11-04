@@ -309,6 +309,45 @@ function buildAnimalesModule() {
   };
 }
 
+// Tablero de una pestaña del módulo Visitas (una por región: Cantabria, Rioja…).
+// Todas las pestañas comparten columnas A-M, así que solo cambian id y sheetName.
+// Visitada = Si/No (las visitadas se muestran con el fondo de "terminado").
+function buildBodegasBoard(id, sheetName) {
+  return {
+    id, sheetName, title: sheetName,
+    titleField: 'nombre', subtitleFields: ['ubicacion', 'igp'],
+    badge: { key: 'valoracionVisita', label: 'visita' },
+    searchFields: ['nombre', 'ubicacion', 'igp', 'vinos'],
+    sort: { field: 'nombre', type: 'text', dir: 'asc' },
+    filters: [
+      { label: 'Todas' },
+      { label: 'Pendientes', match: (it) => it.visitada !== 'Si' },
+      { label: 'Visitadas', match: (it) => it.visitada === 'Si' },
+    ],
+    cardClass: (it) => (it.visitada === 'Si' ? 'finished' : ''),
+    facetFilters: [
+      { key: 'igp', label: 'IGP', value: (it) => it.igp },
+      { key: 'enoturismo', label: 'Enoturismo', value: (it) => it.enoturismo },
+    ],
+    // Teléfono, Email, Precio y Vinos pueden tener varias líneas.
+    fields: [
+      { key: 'nombre', label: 'Nombre bodega', col: 'A', type: 'text', required: true },
+      { key: 'igp', label: 'IGP', col: 'B', type: 'text' },
+      { key: 'url', label: 'URL', col: 'C', type: 'url' },
+      { key: 'ubicacion', label: 'Ubicación', col: 'D', type: 'text' },
+      { key: 'telefono', label: 'Teléfono', col: 'L', type: 'textarea', rows: 3 },
+      { key: 'email', label: 'Email', col: 'M', type: 'textarea', rows: 3 },
+      { key: 'vinos', label: 'Vinos', col: 'E', type: 'textarea', rows: 5 },
+      { key: 'enoturismo', label: 'Enoturismo / Cata pública', col: 'F', type: 'select', options: ['Si', 'No', 'Sin Confirmar'], default: 'Sin Confirmar' },
+      { key: 'precio', label: 'Precio', col: 'G', type: 'textarea', rows: 3, placeholder: 'Ej. 30 - visita + cata + pinchos' },
+      { key: 'visitada', label: 'Visitada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
+      { key: 'fechaVisita', label: 'Fecha visita', col: 'I', type: 'date' },
+      { key: 'valoracionVisita', label: 'Valoración visita (0-10)', col: 'J', type: 'number', step: '0.5', min: 0, max: 10 },
+      { key: 'valoracionVinos', label: 'Valoración vinos (0-10)', col: 'K', type: 'number', step: '0.5', min: 0, max: 10 },
+    ],
+  };
+}
+
 // ---------------------------------------------------------------------------
 // MÓDULOS: cada uno es una hoja de cálculo. Cada módulo tiene uno o varios
 // "tableros" (pestañas de esa hoja), que pueden tener columnas distintas.
@@ -678,45 +717,47 @@ const MODULES = [
     ],
   },
 
-  // Visitas: bodegas de Cantabria para visitar (hoja "Visitas", pestaña "Bodegas Cantabria").
-  // Visitada = Si/No (las visitadas se muestran con el fondo de "terminado").
+  // Visitas: bodegas para visitar (hoja "Visitas"), una pestaña por región. Al entrar
+  // se elige la pestaña (Cantabria / Rioja); todas tienen las mismas columnas A-M.
   {
     id: 'visitas',
     title: 'Visitas',
-    subtitle: 'Bodegas de Cantabria pendientes y visitadas',
+    subtitle: 'Bodegas de Cantabria y Rioja',
     icon: '🍷',
     spreadsheetId: '176aUlIV12cUXxdRbn865AiLAi5V4Kv34SRCcnvYQNcE',
     boards: [
+      buildBodegasBoard('bodegas-cantabria', 'Bodegas Cantabria'),
+      buildBodegasBoard('bodegas-rioja', 'Bodegas Rioja'),
+    ],
+  },
+
+  // Dónde comer: restaurantes recomendados (hoja "Donde Comer"). La única pestaña
+  // de la hoja se llama "Bodegas Cantabria" (heredada de otra hoja): hay que usar
+  // ese nombre exacto aunque no tenga que ver con el contenido.
+  {
+    id: 'dondecomer',
+    title: 'Dónde comer',
+    subtitle: 'Restaurantes y bares recomendados',
+    icon: '🍴',
+    spreadsheetId: '194-t9h9sgcFavaakbs9_NaLOFDdPC8i_uDJ2KuoM1wM',
+    boards: [
       {
-        id: 'bodegas', sheetName: 'Bodegas Cantabria', title: 'Bodegas Cantabria',
-        titleField: 'nombre', subtitleFields: ['ubicacion', 'igp'],
-        badge: { key: 'valoracionVisita', label: 'visita' },
-        searchFields: ['nombre', 'ubicacion', 'igp', 'vinos'],
+        id: 'restaurantes', sheetName: 'Restaurantes', title: 'Dónde comer',
+        titleField: 'nombre', subtitleFields: ['provincia', 'ubicacion'],
+        badge: { key: 'precio', label: '€' },
+        searchFields: ['nombre', 'ubicacion', 'provincia', 'opinion'],
         sort: { field: 'nombre', type: 'text', dir: 'asc' },
-        filters: [
-          { label: 'Todas' },
-          { label: 'Pendientes', match: (it) => it.visitada !== 'Si' },
-          { label: 'Visitadas', match: (it) => it.visitada === 'Si' },
-        ],
-        cardClass: (it) => (it.visitada === 'Si' ? 'finished' : ''),
         facetFilters: [
-          { key: 'igp', label: 'IGP', value: (it) => it.igp },
-          { key: 'enoturismo', label: 'Enoturismo', value: (it) => it.enoturismo },
+          { key: 'provincia', label: 'Provincia', value: (it) => it.provincia },
         ],
         fields: [
-          { key: 'nombre', label: 'Nombre bodega', col: 'A', type: 'text', required: true },
-          { key: 'igp', label: 'IGP', col: 'B', type: 'text' },
-          { key: 'url', label: 'URL', col: 'C', type: 'url' },
-          { key: 'ubicacion', label: 'Ubicación', col: 'D', type: 'text' },
-          { key: 'telefono', label: 'Teléfono', col: 'L', type: 'textarea', rows: 3 },
-          { key: 'email', label: 'Email', col: 'M', type: 'textarea', rows: 3 },
-          { key: 'vinos', label: 'Vinos', col: 'E', type: 'textarea', rows: 5 },
-          { key: 'enoturismo', label: 'Enoturismo / Cata pública', col: 'F', type: 'select', options: ['Si', 'No', '???'], default: '???' },
-          { key: 'precio', label: 'Precio', col: 'G', type: 'textarea', rows: 3, placeholder: 'Ej. 30 - visita + cata + pinchos' },
-          { key: 'visitada', label: 'Visitada', col: 'H', type: 'select', options: SI_NO, default: 'No' },
-          { key: 'fechaVisita', label: 'Fecha visita', col: 'I', type: 'date' },
-          { key: 'valoracionVisita', label: 'Valoración visita (0-10)', col: 'J', type: 'number', step: '0.5', min: 0, max: 10 },
-          { key: 'valoracionVinos', label: 'Valoración vinos (0-10)', col: 'K', type: 'number', step: '0.5', min: 0, max: 10 },
+          { key: 'nombre', label: 'Nombre', col: 'A', type: 'text', required: true },
+          { key: 'url', label: 'URL', col: 'B', type: 'url' },
+          { key: 'ubicacion', label: 'Ubicación', col: 'C', type: 'textarea', rows: 2 },
+          { key: 'provincia', label: 'Provincia', col: 'D', type: 'text' },
+          { key: 'precio', label: 'Precio (€ por persona)', col: 'E', type: 'text', placeholder: 'Ej. 20-30' },
+          { key: 'telefono', label: 'Teléfono', col: 'F', type: 'textarea', rows: 2 },
+          { key: 'opinion', label: 'Opinión', col: 'G', type: 'textarea', rows: 4 },
         ],
       },
     ],
@@ -1229,8 +1270,8 @@ const MODULE_CATEGORIES = [
     id: 'alimentacion',
     icon: '🍽️',
     title: 'Alimentación',
-    subtitle: 'Congelador, Recetas y Almacén de Precios',
-    moduleIds: ['congelados', 'despensa', 'recetas', 'almacenprecios'],
+    subtitle: 'Congelador, Recetas, Almacén de Precios y Dónde comer',
+    moduleIds: ['congelados', 'despensa', 'recetas', 'almacenprecios', 'dondecomer'],
   },
   {
     id: 'infraestructura',
