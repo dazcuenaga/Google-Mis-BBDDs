@@ -595,11 +595,14 @@
   <section class="list module-list" id="guiaSubList"></section>
 </main>
 
-<!-- Imagen de una guía a pantalla completa. -->
+<!-- Imagen de una guía a pantalla completa, o su ficha de texto (guías con
+     `html` en guias-data.js, ej. Cuadro eléctrico): openGuiaImagen muestra
+     una de las dos secciones y oculta la otra. -->
 <main id="guiaImagenScreen" class="screen hidden">
   <section class="guia-imagen-wrap">
     <img id="guiaImagenImg" class="guia-imagen-img" alt="">
   </section>
+  <section id="guiaDocBody" class="guia-doc hidden"></section>
 </main>
 
 <!-- Listado de un tablero concreto -->
@@ -688,6 +691,7 @@
 <script src="fontaneria-data.js"></script>
 <script src="recetas-data.js"></script>
 <script src="guias-data.js"></script>
+<script src="cabana-data.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>

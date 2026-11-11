@@ -778,6 +778,8 @@ const MODULES = [
   buildRecetasModule(),
 
   buildGuiasModule(),
+
+  buildCabanaModule(),
 ];
 
 // ---------------------------------------------------------------------------
@@ -1238,6 +1240,23 @@ function buildGuiasModule() {
 }
 
 // ---------------------------------------------------------------------------
+// ESQUEMA CABAÑA: tampoco lee ninguna hoja — fichas fijas (CABANA_LISTA en
+// cabana-data.js): plano de situación, tabla de volúmenes y materiales y
+// costes. Reutiliza la pantalla de Guías (`custom: 'guias'`): un listado con
+// las tres fichas, y cada una se abre como ficha de texto (`html`).
+// ---------------------------------------------------------------------------
+function buildCabanaModule() {
+  return {
+    id: 'cabana',
+    title: 'Esquema Cabaña',
+    subtitle: 'Plano, volúmenes y materiales',
+    icon: '🛖',
+    custom: 'guias',
+    lista: CABANA_LISTA,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // CATEGORÍAS DE MÓDULOS: agrupa los módulos de MODULES en un nivel superior
 // de navegación (Módulos → categoría → módulo, en vez de Módulos → módulo
 // directamente). Cada categoría es solo `{id, icon, title, subtitle,
@@ -1277,7 +1296,7 @@ const MODULE_CATEGORIES = [
     id: 'infraestructura',
     icon: '🛠️',
     title: 'Infraestructura',
-    subtitle: 'Fontanería, Electricidad y Guías',
-    moduleIds: ['fontaneria', 'electricidad-el-rellano', 'guias'],
+    subtitle: 'Fontanería, Electricidad, Guías y Esquema Cabaña',
+    moduleIds: ['fontaneria', 'electricidad-el-rellano', 'guias', 'cabana'],
   },
 ];

@@ -855,6 +855,69 @@ html, body {
   border: 1px solid var(--border);
 }
 
+/* Ficha de texto de una guía (guías con `html` en guias-data.js, ej. Cuadro
+   eléctrico de vivienda): título de sección, párrafos, listas y tabla. */
+.guia-doc { padding: 16px 16px 28px; max-width: 760px; margin: 0 auto; font-size: 14px; line-height: 1.55; }
+.guia-doc h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 24px 0 10px;
+}
+.guia-doc p { margin: 0 0 12px; }
+.guia-doc ul { margin: 0 0 12px; padding-left: 20px; }
+.guia-doc li { margin-bottom: 8px; }
+.guia-doc a { color: var(--primary); }
+.guia-doc strong { color: var(--text); }
+/* Contenedores con scroll horizontal (esquema SVG y tabla en pantallas estrechas). */
+.guia-doc-scroll { overflow-x: auto; margin: 0 0 12px; }
+.guia-doc-svg {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+}
+.guia-doc-svg svg { display: block; width: 100%; min-width: 620px; height: auto; }
+.guia-doc table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 13px; }
+.guia-doc th, .guia-doc td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+.guia-doc th { background: var(--surface-2); font-weight: 700; }
+.guia-doc .num { text-align: right; white-space: nowrap; }
+.guia-doc .centro { text-align: center; }
+.guia-doc-ayuda { color: var(--text-dim); font-size: 12px; }
+
+/* Plano de tamaño fijo (Esquema Cabaña): ver ajustarPlano en app.js. Cerrado se
+   ve entero y reducido; `ampliado` lo deja al 60 % con scroll horizontal. */
+.guia-plano {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+}
+.guia-plano.ampliado { overflow-x: auto; cursor: zoom-out; }
+.guia-plano-inner { width: 1711px; transform-origin: 0 0; }
+
+/* Tablas de Esquema Cabaña (volúmenes y materiales). */
+.cabana-id {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #d32f2f;
+  color: #d32f2f;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+}
+.cabana-nada { color: var(--text-dim); }
+.cabana-aviso, .cabana-aviso strong { color: var(--danger); }
+.guia-doc tfoot th, .guia-doc tfoot td { border-top: 2px solid var(--text); }
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f4f6fb;

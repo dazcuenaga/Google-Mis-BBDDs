@@ -1,7 +1,7 @@
-const CACHE = 'congelados-v88';
+const CACHE = 'congelados-v90';
 const SHELL = [
   './', './index.html', './style.css', './app.js',
-  './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './config.js',
+  './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './cabana-data.js', './config.js',
   './manifest.json', './icon.svg',
   './guias/multimetro-uso.png', './guias/multimetro-simbolos.png',
   './guias/tipos-de-alicate.png', './guias/tipos-de-brocas.png',

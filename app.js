@@ -88,6 +88,7 @@ const guiaSubScreen = el('guiaSubScreen');
 const guiaSubList = el('guiaSubList');
 const guiaImagenScreen = el('guiaImagenScreen');
 const guiaImagenImg = el('guiaImagenImg');
+const guiaDocBody = el('guiaDocBody');
 
 let guiasMod = null;   // módulo actual (definición completa: lista de guías)
 let guiaActual = null; // guía actual (objeto de GUIAS_LISTA), para el back cuando tiene submenú de fotos (Multímetro)
@@ -2656,9 +2657,41 @@ function openGuiaImagen(mod, guia, sub) {
 
   guiasMod = mod;
   guiaActual = guia;
-  guiaImagenImg.src = sub ? sub.imagen : guia.imagen;
-  guiaImagenImg.alt = titulo;
+  // Guías con `html` (ficha de texto, ej. Cuadro eléctrico): se pinta el
+  // contenido propio de guias-data.js en vez de la imagen.
+  const esFicha = !sub && !!guia.html;
+  guiaImagenImg.parentElement.classList.toggle('hidden', esFicha);
+  guiaDocBody.classList.toggle('hidden', !esFicha);
+  if (esFicha) {
+    guiaDocBody.innerHTML = guia.html;
+    guiaDocBody.scrollTop = 0;
+    window.scrollTo(0, 0);
+    guiaDocBody.querySelectorAll('.guia-plano').forEach((p) => {
+      p.addEventListener('click', () => { p.classList.toggle('ampliado'); ajustarPlano(p); });
+      ajustarPlano(p);
+    });
+  } else {
+    guiaDocBody.innerHTML = '';
+    guiaImagenImg.src = sub ? sub.imagen : guia.imagen;
+    guiaImagenImg.alt = titulo;
+  }
 }
+
+// Plano de tamaño fijo en píxeles (ej. el de Esquema Cabaña, 1711 × 1262 — ver
+// cabana-data.js): se escala para caber en el ancho de la pantalla, y al
+// tocarlo (clase `ampliado`) pasa a 60 % con scroll para poder leer los textos.
+const PLANO_ZOOM = 0.6;
+function ajustarPlano(plano) {
+  const inner = plano.firstElementChild;
+  const w = Number(plano.dataset.w), h = Number(plano.dataset.h);
+  const ampliado = plano.classList.contains('ampliado');
+  const escala = ampliado ? PLANO_ZOOM : Math.min(1, plano.clientWidth / w);
+  inner.style.transform = `scale(${escala})`;
+  plano.style.height = `${Math.round(h * escala)}px`;
+}
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.guia-plano').forEach(ajustarPlano);
+});
 
 // ---------- Service worker (instalación como app) ----------
 if ('serviceWorker' in navigator) {
