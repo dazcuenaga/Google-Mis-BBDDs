@@ -3,7 +3,6 @@
 const SHEETS_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
 let accessToken = null;
-let tokenClient = null;
 let currentUserName = ''; // nombre de la cuenta de Google conectada, para el campo 'auto' "Añadida por"
 
 let currentModule = null;
@@ -115,29 +114,79 @@ const deleteBtn = el('deleteBtn');
 const toastEl = el('toast');
 
 // ---------- Autenticación ----------
-window.addEventListener('load', () => {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CONFIG.CLIENT_ID,
-    scope: CONFIG.SCOPES,
-    callback: (resp) => {
-      if (resp.error) {
-        showToast('No se pudo iniciar sesión: ' + resp.error, true);
-        return;
-      }
-      accessToken = resp.access_token;
-      onLogin();
-    },
-  });
-});
+// Login por redirección (flujo implícito de OAuth 2.0): en vez de la ventana
+// emergente de Google Identity Services — que fallaba con "popup_closed" —, la
+// propia pestaña va a accounts.google.com y Google nos devuelve a esta misma
+// URL con el access token en el fragmento (#access_token=…). Requiere que
+// REDIRECT_URI esté en "URIs de redireccionamiento autorizados" del cliente
+// OAuth en Google Cloud (http://localhost:5500/ y la URL de GitHub Pages).
+const loginError = el('loginError');
+function showLoginError(msg) {
+  console.error(msg);
+  loginError.textContent = msg;
+  loginError.classList.remove('hidden');
+}
+
+function redirectUri() {
+  return location.origin + location.pathname;
+}
 
 function requestLogin() {
-  tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+  loginError.classList.add('hidden');
+  const state = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  try { sessionStorage.setItem('oauthState', state); } catch (e) { /* sin sessionStorage: no se valida el state */ }
+  const params = new URLSearchParams({
+    client_id: CONFIG.CLIENT_ID,
+    redirect_uri: redirectUri(),
+    response_type: 'token',
+    scope: CONFIG.SCOPES,
+    include_granted_scopes: 'true',
+    state,
+  });
+  location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
+
+// Al volver de Google: lee el resultado del fragmento de la URL, lo borra de la
+// barra de direcciones y entra al menú (o muestra el error de Google).
+function handleLoginRedirect() {
+  if (!/access_token=|error=/.test(location.hash)) return;
+  const resp = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
+  history.replaceState(null, '', location.pathname + location.search);
+  let expected = null;
+  try { expected = sessionStorage.getItem('oauthState'); sessionStorage.removeItem('oauthState'); } catch (e) { /* idem */ }
+  if (expected && resp.state !== expected) {
+    showLoginError('Respuesta de inicio de sesión no válida (state distinto). Vuelve a intentarlo.');
+    return;
+  }
+  if (resp.error) {
+    showLoginError('Google devolvió un error: ' + resp.error + (resp.error_description ? ' — ' + resp.error_description : ''));
+    return;
+  }
+  const granted = (resp.scope || '').split(' ');
+  const missing = CONFIG.SCOPES.split(' ').filter((s) => !granted.includes(s));
+  if (missing.length) {
+    showLoginError('Faltan permisos: en la pantalla de Google hay que dejar marcadas TODAS las casillas (sobre todo la de Hojas de cálculo). Faltan: ' + missing.join(', '));
+    return;
+  }
+  accessToken = resp.access_token;
+  onLogin().catch((err) => {
+    console.error(err);
+    showLoginError('Sesión iniciada pero falló al cargar el menú: ' + (err && err.message ? err.message : err));
+  });
+}
+
+window.addEventListener('load', handleLoginRedirect);
 
 loginBtnGate.addEventListener('click', requestLogin);
 
 logoutBtn.addEventListener('click', () => {
-  if (accessToken) google.accounts.oauth2.revoke(accessToken, () => {});
+  if (accessToken) {
+    fetch('https://oauth2.googleapis.com/revoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'token=' + encodeURIComponent(accessToken),
+    }).catch(() => {});
+  }
   accessToken = null;
   currentUserName = '';
   showGate();
