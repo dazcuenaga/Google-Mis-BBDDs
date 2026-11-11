@@ -1,13 +1,13 @@
 // Datos del módulo "Esquema Cabaña" (categoría Infraestructura): no lee ninguna
-// hoja — son tres fichas fijas con el plano de situación de la cabaña, la tabla
-// de volúmenes de hormigón y la tabla de materiales y costes, copiadas del
-// lienzo de diseño original. Usa la misma pantalla de fichas de texto que el
-// módulo Guías (`custom: 'guias'`, entradas con `html`; ver guias-data.js y
-// openGuiaImagen en app.js), así que no necesita navegación propia.
+// hoja — es una ficha fija con el plano de situación de la cabaña y, debajo, la
+// tabla de volúmenes de hormigón, copiados del lienzo de diseño original. Usa
+// la misma pantalla de fichas de texto que el módulo Guías (`custom: 'guias'`,
+// entradas con `html`; ver guias-data.js y openGuiaImagen en app.js), así que
+// no necesita navegación propia.
 //
 // El plano es el HTML original del lienzo (todo posicionado en píxeles sobre un
 // área de 1711 × 1262): app.js lo escala al ancho de la pantalla y se amplía al
-// tocarlo (ver initPlano en app.js). Los números en círculo rojo del plano son
+// tocarlo (ver ajustarPlano en app.js). Los números en círculo rojo del plano son
 // los Id. de la tabla de volúmenes.
 
 const CABANA_PLANO_HTML = `
@@ -279,52 +279,13 @@ function cabanaTablaVolumenes() {
   </div>`;
 }
 
-// [material, P.U. Obramat, P.U. Construagro, cantidad, total Obramat, total Construagro]; null = sin precio.
-const CABANA_MATERIALES = [
-  ['Zócalo 100X20X8', '4,40', null, 20, '88,00', null],
-  ['Zócalo 50X20X8', null, '1,74', 40, null, '69,60'],
-  ['Hormigón seco 25Kg', '3,40', '3,71', 180, '612,00', '667,80'],
-  ['Cemento 25Kg', '4,55', '5,30', 20, '91,00', '106,00'],
-  ['Big Bag Arena 1000Kg', '38,00', null, 1, '38,00', null],
-  ['Big Bag guijillo 1000Kg', '38,00', null, 3, '114,00', null],
-  ['Big Bag Arena 1200Kg', null, '50,29', 1, null, '50,29'],
-  ['Big Bag guijillo 1200Kg', null, '49,94', 3, null, '149,82'],
-  ['Bloque 39X19X19', '2,22', '1,15', 14, '31,08', '16,10'],
-  ['Albardilla 50X20', null, '7,85', 4, null, '31,40'],
-  ['Albardilla 25X20', '1,20', '1,20', 8, '9,60', '9,60'],
-  ['Transporte hasta 3000kg', '79,00', null, 0, null, null],
-  ['Transporte 3001-5000', '109,00', null, 1, '109,00', null],
-  ['Transporte 5001-9000', '175,00', null, 0, null, null],
-  ['Transporte', null, '36,00', 1, null, '36,00'],
-];
-
-function cabanaTablaMateriales() {
-  const eur = (v) => (v === null ? null : `€ ${v}`);
-  const filas = CABANA_MATERIALES.map(([mat, puO, puC, cant, totO, totC]) => `
-    <tr>
-      <td><strong>${mat}</strong></td>
-      <td class="num">${cabanaNum(eur(puO))}</td>
-      <td class="num">${cabanaNum(eur(puC))}</td>
-      <td class="num">${cant}</td>
-      <td class="num"><strong>${cabanaNum(eur(totO))}</strong></td>
-      <td class="num"><strong>${cabanaNum(eur(totC))}</strong></td>
-    </tr>`).join('');
-  return `
-  <p>Importes en euros · total = precio unidad × cantidad · comparativa Obramat / Construagro.</p>
-  <div class="guia-doc-scroll">
-    <table class="cabana-tabla">
-      <thead><tr><th>Material</th><th class="num">P.U. Obramat</th><th class="num">P.U. Construagro</th><th class="num">Cantidad</th><th class="num">Total Obramat</th><th class="num">Total Construagro</th></tr></thead>
-      <tbody>${filas}</tbody>
-      <tfoot>
-        <tr><th colspan="4" class="num">Suma con big bags</th><td class="num"><strong>€ 480,68</strong></td><td class="num"><strong>€ 468,81</strong></td></tr>
-        <tr><th colspan="4" class="num">Suma con sacos</th><td class="num"><strong>€ 849,68</strong></td><td class="num"><strong>€ 830,50</strong></td></tr>
-      </tfoot>
-    </table>
-  </div>`;
-}
-
+// Una sola ficha: el plano arriba y, debajo, la tabla de volúmenes (los Id. en
+// círculo rojo del plano son los de la tabla).
 const CABANA_LISTA = [
-  { id: 'plano', icon: '🗺️', titulo: 'Plano de situación', html: CABANA_PLANO_HTML },
-  { id: 'volumenes', icon: '📐', titulo: 'Tabla de volúmenes', html: cabanaTablaVolumenes() },
-  { id: 'materiales', icon: '🧱', titulo: 'Materiales y costes', html: cabanaTablaMateriales() },
+  {
+    id: 'plano',
+    icon: '🗺️',
+    titulo: 'Plano y volúmenes',
+    html: CABANA_PLANO_HTML + '<h2>Tabla de volúmenes</h2>' + cabanaTablaVolumenes(),
+  },
 ];

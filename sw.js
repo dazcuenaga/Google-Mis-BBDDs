@@ -1,4 +1,4 @@
-const CACHE = 'congelados-v90';
+const CACHE = 'congelados-v91';
 const SHELL = [
   './', './index.html', './style.css', './app.js',
   './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './cabana-data.js', './config.js',

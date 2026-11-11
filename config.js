@@ -1240,16 +1240,16 @@ function buildGuiasModule() {
 }
 
 // ---------------------------------------------------------------------------
-// ESQUEMA CABAÑA: tampoco lee ninguna hoja — fichas fijas (CABANA_LISTA en
-// cabana-data.js): plano de situación, tabla de volúmenes y materiales y
-// costes. Reutiliza la pantalla de Guías (`custom: 'guias'`): un listado con
-// las tres fichas, y cada una se abre como ficha de texto (`html`).
+// ESQUEMA CABAÑA: tampoco lee ninguna hoja — una ficha fija (CABANA_LISTA en
+// cabana-data.js) con el plano de situación y, debajo, la tabla de volúmenes.
+// Reutiliza la pantalla de Guías (`custom: 'guias'`): la ficha se abre como
+// ficha de texto (`html`).
 // ---------------------------------------------------------------------------
 function buildCabanaModule() {
   return {
     id: 'cabana',
     title: 'Esquema Cabaña',
-    subtitle: 'Plano, volúmenes y materiales',
+    subtitle: 'Plano y tabla de volúmenes',
     icon: '🛖',
     custom: 'guias',
     lista: CABANA_LISTA,
