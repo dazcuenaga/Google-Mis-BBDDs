@@ -2702,6 +2702,33 @@ window.addEventListener('resize', () => {
   document.querySelectorAll('.guia-plano').forEach(ajustarPlano);
 });
 
+// Pie "Versión … · Actualizar app" (login y menú de módulos). La versión es la
+// de la caché del service worker en uso (congelados-vNN, ver sw.js). "Actualizar
+// app" borra el service worker y todas las cachés y recarga: sirve cuando el
+// navegador se queda con archivos viejos (p. ej. módulos nuevos que no aparecen).
+async function pintarVersionApp() {
+  let version = 'sin caché';
+  try {
+    const claves = (await caches.keys()).filter((k) => k.startsWith('congelados-'));
+    if (claves.length) version = claves[0].replace('congelados-', '');
+  } catch (e) { /* sin Cache API */ }
+  document.querySelectorAll('.app-version').forEach((p) => {
+    p.innerHTML = `Versión ${escapeHtml(version)} · <button type="button" class="link-btn">Actualizar app</button>`;
+    p.querySelector('button').addEventListener('click', actualizarApp);
+  });
+}
+
+async function actualizarApp() {
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+    await Promise.all((await caches.keys()).map((k) => caches.delete(k)));
+  } catch (e) { console.error(e); }
+  location.reload();
+}
+
+window.addEventListener('load', pintarVersionApp);
+
 // ---------- Service worker (instalación como app) ----------
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {

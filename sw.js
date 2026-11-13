@@ -1,4 +1,4 @@
-const CACHE = 'congelados-v95';
+const CACHE = 'congelados-v96';
 const SHELL = [
   './', './index.html', './style.css', './app.js',
   './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './cabana-data.js', './huerto-data.js', './config.js',
@@ -25,9 +25,27 @@ self.addEventListener('activate', (e) => {
 });
 
 // Solo cachea el "shell" de la app; las llamadas a la API de Sheets siempre van a red.
+// Los archivos de la propia app van primero a la red (saltando la caché HTTP del
+// navegador, 'no-cache') y la copia guardada solo se usa sin conexión: antes era
+// al revés (caché primero) y un navegador podía quedarse con archivos viejos,
+// p. ej. sin los módulos nuevos, aunque ya estuvieran publicados.
 self.addEventListener('fetch', (e) => {
+  if (e.request.method !== 'GET') return;
   if (e.request.url.includes('sheets.googleapis.com') || e.request.url.includes('accounts.google.com')) return;
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) {
+    e.respondWith(caches.match(e.request).then((cached) => cached || fetch(e.request)));
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
+    fetch(new Request(e.request.url, { cache: 'no-cache' }))
+      .then((resp) => {
+        if (resp.status === 200) {
+          const copia = resp.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copia)).catch(() => {});
+        }
+        return resp;
+      })
+      .catch(() => caches.match(e.request, { ignoreSearch: true }))
   );
 });
