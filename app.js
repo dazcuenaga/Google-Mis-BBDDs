@@ -144,6 +144,14 @@ function requestLogin() {
     include_granted_scopes: 'true',
     state,
   });
+  // Si el intento anterior volvió sin todos los permisos, Google recuerda esa
+  // autorización parcial y no vuelve a preguntar: se fuerza la pantalla de permisos.
+  try {
+    if (sessionStorage.getItem('oauthForceConsent')) {
+      params.set('prompt', 'consent');
+      sessionStorage.removeItem('oauthForceConsent');
+    }
+  } catch (e) { /* sin sessionStorage: no se fuerza */ }
   location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
@@ -166,7 +174,8 @@ function handleLoginRedirect() {
   const granted = (resp.scope || '').split(' ');
   const missing = CONFIG.SCOPES.split(' ').filter((s) => !granted.includes(s));
   if (missing.length) {
-    showLoginError('Faltan permisos: en la pantalla de Google hay que dejar marcadas TODAS las casillas (sobre todo la de Hojas de cálculo). Faltan: ' + missing.join(', '));
+    try { sessionStorage.setItem('oauthForceConsent', '1'); } catch (e) { /* idem */ }
+    showLoginError('Faltan permisos: en la pantalla de Google hay que dejar marcadas TODAS las casillas (sobre todo la de Hojas de cálculo). Pulsa de nuevo "Iniciar sesión" y márcalas. Faltan: ' + missing.join(', '));
     return;
   }
   accessToken = resp.access_token;
