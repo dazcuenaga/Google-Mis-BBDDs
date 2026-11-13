@@ -868,6 +868,22 @@ html, body {
 }
 .guia-doc h2 { clear: both; }
 .guia-doc p { margin: 0 0 12px; }
+/* Franja roja con el error inesperado de la app (ver mostrarErrorApp en app.js). */
+#errorApp {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1000;
+  padding: 10px 14px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+  cursor: pointer;
+}
+
 /* Pie con la versión de la app y el botón "Actualizar app" (login y menú). */
 .app-version { text-align: center; color: var(--text-dim); font-size: 12px; margin: 18px 0 8px; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--primary); font: inherit; text-decoration: underline; cursor: pointer; }

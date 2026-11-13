@@ -2702,6 +2702,28 @@ window.addEventListener('resize', () => {
   document.querySelectorAll('.guia-plano').forEach(ajustarPlano);
 });
 
+// Aviso de errores inesperados de la app: sin esto un fallo de JavaScript deja la
+// pantalla en blanco sin ninguna pista. Muestra el mensaje y el archivo:línea en
+// una franja roja fija arriba, que se cierra tocándola.
+function mostrarErrorApp(texto) {
+  console.error(texto);
+  let banda = document.getElementById('errorApp');
+  if (!banda) {
+    banda = document.createElement('div');
+    banda.id = 'errorApp';
+    banda.addEventListener('click', () => banda.remove());
+    document.body.appendChild(banda);
+  }
+  banda.textContent = 'Error de la app (toca para cerrar): ' + texto;
+}
+window.addEventListener('error', (e) => {
+  const donde = e.filename ? ` [${e.filename.split('/').pop()}:${e.lineno}]` : '';
+  mostrarErrorApp((e.message || 'error desconocido') + donde);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  mostrarErrorApp(String((e.reason && e.reason.message) || e.reason || 'promesa rechazada'));
+});
+
 // Pie "Versión … · Actualizar app" (login y menú de módulos). La versión es la
 // de la caché del service worker en uso (congelados-vNN, ver sw.js). "Actualizar
 // app" borra el service worker y todas las cachés y recarga: sirve cuando el
