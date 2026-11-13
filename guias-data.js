@@ -100,6 +100,76 @@ const GUIA_CUADRO_ELECTRICO_HTML = `
   </ul>
 `;
 
+// Cartucho de silicona dibujado (ilustración, no foto) con la etiqueta del tipo.
+// Los colores solo sirven para distinguir un tipo de otro: los botes reales
+// varían según la marca.
+function siliconaBoteSvg(nombre, color, tipo) {
+  const borde = 'var(--text-dim)';
+  return `<svg viewBox="0 0 60 150" role="img" aria-label="Cartucho de silicona ${tipo} (ilustración)">
+    <path d="M26 4h8l2 18H24z" fill="#d6d3cc" stroke="${borde}" stroke-width="1.2" stroke-linejoin="round"/>
+    <rect x="19" y="22" width="22" height="8" rx="2" fill="#bdb9af" stroke="${borde}" stroke-width="1.2"/>
+    <rect x="12" y="30" width="36" height="98" rx="4" fill="#f1efe8" stroke="${borde}" stroke-width="1.2"/>
+    <rect x="12" y="46" width="36" height="66" fill="${color}"/>
+    <text transform="translate(34 79) rotate(-90)" text-anchor="middle" font-size="${nombre.length > 8 ? 8.5 : 10.5}" font-weight="700" fill="#fff" letter-spacing="0.4">${nombre}</text>
+    <rect x="15" y="128" width="30" height="9" rx="3" fill="#bdb9af" stroke="${borde}" stroke-width="1.2"/>
+  </svg>`;
+}
+const siliconaBote = (nombre, color, tipo) => `<div class="silicona-bote">${siliconaBoteSvg(nombre, color, tipo)}</div>`;
+
+// Guía de tipos de silicona, basada en la transcripción de un vídeo de
+// Instagram (Tu Vuelta de Tuerca).
+const GUIA_SILICONAS_HTML = `
+  <p>Qué tipo de silicona elegir según el material y el sitio donde se va a usar: acética, neutra, acrílica y las de usos especiales.</p>
+
+  <div class="guia-doc-scroll">
+    <table>
+      <thead><tr><th>Tipo</th><th>Sirve para</th><th>Evitar en</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Acética</strong></td><td>Baños y zonas húmedas; vidrio, cerámica, azulejo y aluminio</td><td>Espejos, metales ferrosos y materiales porosos (hormigón, mármol)</td></tr>
+        <tr><td><strong>Neutra</strong></td><td>Materiales delicados y porosos; juntas de dilatación en fachadas y exteriores</td><td>—</td></tr>
+        <tr><td><strong>Acrílica</strong></td><td>Interiores con poco movimiento; grietas, rodapiés, zócalos y marcos</td><td>Agua estancada y exteriores con humedad extrema</td></tr>
+        <tr><td><strong>Alta temperatura</strong></td><td>Hornos, motores, tuberías, calefacción y chimeneas (hasta 300 °C)</td><td>—</td></tr>
+        <tr><td><strong>Polímeros MS</strong></td><td>Pegar y sellar a la vez, incluso en mojado o bajo agua; estanqueidad en paredes, ventanas y tejados</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>1. Silicona acética</h2>
+  ${siliconaBote('ACÉTICA', '#b45309', 'acética')}
+  <p>El tipo más común y económico, muy usado en cuartos de baño o zonas húmedas. Desprende un fuerte olor a vinagre durante el secado, por la liberación de ácido acético. Ofrece una excelente elasticidad y resistencia mecánica.</p>
+  <ul>
+    <li><strong>Ideal para:</strong> materiales no porosos como el vidrio, la cerámica, el azulejo y el aluminio.</li>
+    <li><strong>No usar en espejos,</strong> porque daña la laca posterior.</li>
+    <li><strong>No usar en metales ferrosos,</strong> porque los corroe.</li>
+    <li><strong>No usar en materiales de construcción porosos,</strong> como el hormigón o el mármol.</li>
+  </ul>
+
+  <h2>2. Silicona neutra</h2>
+  ${siliconaBote('NEUTRA', '#1d4ed8', 'neutra')}
+  <p>Carece de ácidos y no desprende olor fuerte. Destaca por su máxima elasticidad y su resistencia a los rayos ultravioleta y a la intemperie. Es la opción más segura y versátil del mercado.</p>
+  <ul>
+    <li><strong>Perfecta para:</strong> materiales delicados y porosos como el mármol, el hormigón, la madera, el PVC, los plásticos y el espejo.</li>
+    <li><strong>La más recomendada</strong> para juntas de dilatación en fachadas y exteriores.</li>
+  </ul>
+
+  <h2>3. Silicona acrílica</h2>
+  ${siliconaBote('ACRÍLICA', '#6b7280', 'acrílica')}
+  <p>Su fórmula se basa en polímeros derivados del ácido acrílico. A diferencia de las siliconas puras, se puede pintar y barnizar una vez se ha secado por completo. Muy usada para juntas en interiores con poco movimiento.</p>
+  <ul>
+    <li><strong>Se usa para:</strong> tapar grietas en paredes de yeso, sellar rodapiés o zócalos, y marcos de puertas o ventanas.</li>
+    <li><strong>Limitaciones:</strong> no resiste el agua estancada ni es apta para exteriores expuestos a la humedad extrema.</li>
+  </ul>
+
+  <h2>4. Siliconas con usos especiales</h2>
+  <ul>
+    <li>${siliconaBote('ALTA TEMP.', '#b91c1c', 'para altas temperaturas')}<strong>Silicona para altas temperaturas:</strong> formulación especial capaz de resistir hasta 300 grados sin perder sus propiedades. Se utiliza para el sellado de juntas en hornos, motores, tuberías, calefacción o chimeneas.</li>
+    <li>${siliconaBote('MS', '#15803d', 'de polímero MS')}<strong>Polímeros MS:</strong> aunque técnicamente es una evolución química, se comercializan junto a la silicona. Tienen la ventaja de que pegan y sellan al mismo tiempo, incluso sobre superficies totalmente mojadas o bajo agua. Muy usados para mantener la estanqueidad en paredes, ventanas o tejados.</li>
+  </ul>
+
+  <h2>Fuente</h2>
+  <p>Transcripción de un vídeo de Instagram de Tu Vuelta de Tuerca.</p>
+`;
+
 const GUIAS_LISTA = [
   {
     id: 'multimetro',
@@ -117,4 +187,5 @@ const GUIAS_LISTA = [
   { id: 'discos-amoladora', icon: '⚙️', titulo: 'Tipos de Disco para Amoladora', imagen: 'guias/tipos-de-disco-para-amoladora.png' },
   { id: 'lija', icon: '🧽', titulo: 'Tipos de Lija', imagen: 'guias/tipos-de-lija.png' },
   { id: 'tacos', icon: '🔧', titulo: 'Tipos de Tacos', imagen: 'guias/tipos-de-tacos.png' },
+  { id: 'siliconas', icon: '🧴', titulo: 'Tipos de Silicona', html: GUIA_SILICONAS_HTML },
 ];

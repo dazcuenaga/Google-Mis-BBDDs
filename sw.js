@@ -1,7 +1,7 @@
-const CACHE = 'congelados-v91';
+const CACHE = 'congelados-v94';
 const SHELL = [
   './', './index.html', './style.css', './app.js',
-  './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './cabana-data.js', './config.js',
+  './electricidad-data.js', './fontaneria-data.js', './recetas-data.js', './guias-data.js', './cabana-data.js', './huerto-data.js', './config.js',
   './manifest.json', './icon.svg',
   './guias/multimetro-uso.png', './guias/multimetro-simbolos.png',
   './guias/tipos-de-alicate.png', './guias/tipos-de-brocas.png',
@@ -10,7 +10,10 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  // cache: 'reload' salta la caché HTTP del navegador: sin esto, al actualizar la
+  // versión podía guardarse un index.html viejo junto a un config.js nuevo (y la
+  // app no arrancaba, p. ej. "MODULE_CATEGORIES is not defined").
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))));
   self.skipWaiting();
 });
 

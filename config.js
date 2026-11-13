@@ -780,6 +780,8 @@ const MODULES = [
   buildGuiasModule(),
 
   buildCabanaModule(),
+
+  buildHuertoModule(),
 ];
 
 // ---------------------------------------------------------------------------
@@ -1252,7 +1254,27 @@ function buildCabanaModule() {
     subtitle: 'Plano y tabla de volúmenes',
     icon: '🛖',
     custom: 'guias',
-    lista: CABANA_LISTA,
+    // Si cabana-data.js no se ha cargado, el módulo sale vacío en vez de romper toda la app.
+    lista: typeof CABANA_LISTA !== 'undefined' ? CABANA_LISTA : [],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// CALENDARIO DEL HUERTO: tampoco lee ninguna hoja — 12 fichas fijas, una por
+// mes (HUERTO_LISTA en huerto-data.js), con el contenido del PDF de Ediciones
+// Mimura. Es aparte del módulo Plantas (que lee su hoja). Reutiliza la
+// pantalla de Guías (`custom: 'guias'`): listado de meses y cada mes se abre
+// como ficha de texto (`html`).
+// ---------------------------------------------------------------------------
+function buildHuertoModule() {
+  return {
+    id: 'huerto',
+    title: 'Calendario del huerto',
+    subtitle: 'Qué sembrar, trasplantar y recolectar cada mes',
+    icon: '🗓️',
+    custom: 'guias',
+    // Si huerto-data.js no se ha cargado, el módulo sale vacío en vez de romper toda la app.
+    lista: typeof HUERTO_LISTA !== 'undefined' ? HUERTO_LISTA : [],
   };
 }
 
@@ -1282,8 +1304,8 @@ const MODULE_CATEGORIES = [
     id: 'agricultura-ganaderia',
     icon: '🌾',
     title: 'Agricultura y Ganadería',
-    subtitle: 'Animales, Incubaciones y Plantas',
-    moduleIds: ['animales', 'incubaciones', 'plantas'],
+    subtitle: 'Animales, Incubaciones, Plantas y Calendario del huerto',
+    moduleIds: ['animales', 'incubaciones', 'plantas', 'huerto'],
   },
   {
     id: 'alimentacion',
